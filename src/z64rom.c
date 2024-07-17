@@ -1618,6 +1618,14 @@ static void Main_SearchRoms() {
 		info_nl();
 		info(gLang.main.search_index);
 		
+		// if only one rom found, dump automatically
+		if (list.num == 1) {
+			info(" 0");
+			info_nl();
+			g64.input = strdup(list.item[0]);
+			return;
+		}
+		
 		str = cli_gets();
 		if (str && isdigit(str[0])) {
 			index = sint(str);
