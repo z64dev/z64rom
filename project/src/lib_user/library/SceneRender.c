@@ -440,8 +440,19 @@ static s32 SceneAnim_CameraEffect(PlayState* play, Gfx** disp, CameraEffect* cam
 /* change pointer as time progresses (each pointer has its own time) */
 /* skipped if flag is undesirable */
 static s32 SceneAnim_DrawCondition(PlayState* play, Gfx** disp, DrawCondition* _ptr) {
+    Matrix_Push();
     if (!SceneAnim_Flag(play, &_ptr->flag))
-        return 0;
+    {
+        Matrix_Scale(0.0f, 0.0f, 0.0f, MTXMODE_NEW);
+    }
+    else
+    {
+        Matrix_Scale(1.0f, 1.0f, 1.0f, MTXMODE_NEW);
+    }
+
+    gSPMatrix((*disp)++, Matrix_NewMtx(play->state.gfxCtx, __FILE__, __LINE__),G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
+
+    Matrix_Pop();
     
     return 1;
 }
