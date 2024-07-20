@@ -4905,7 +4905,7 @@ void Player_LoadGetItemObject(Player* this, s16 objectId) {
         size = gObjectTable[objectId].vromEnd - gObjectTable[objectId].vromStart;
         
         LOG_HEX("size", size, "../z_player.c", 9090);
-        ASSERT(size <= 1024 * 8, "size <= 1024 * 8", "../z_player.c", 9091);
+        ASSERT(size <= Pathch_GetItem_SegmentSize, "GetItem model filesize is too big!", "../z_player.c", 9091);
         
         DmaMgr_SendRequest2(
             &this->giObjectDmaRequest,
