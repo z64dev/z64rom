@@ -390,7 +390,6 @@ void Template_NewActor(const char* argName, const char* aId, const char* oId) {
 	Package_FreeCtx();
 	
 	info(gLang.success);
-	info_getc(gLang.press_enter);
 }
 
 void Template_NewEffect(const char* argName, const char* index) {
@@ -478,7 +477,6 @@ void Template_NewEffect(const char* argName, const char* index) {
 	Package_FreeCtx();
 	
 	info(gLang.success);
-	info_getc(gLang.press_enter);
 }
 
 void Template_NewSequence(const char* file) {
@@ -535,6 +533,7 @@ void Template_NewSequence(const char* file) {
 	Memfile_Free(&mem);
 	
 	info(gLang.package.new_seq, id, x_basename(file));
+	// only show exit prompt if the program has no further operations pending, like below
 	info_getc(gLang.press_enter);
 	
 	exit(0);
@@ -595,6 +594,7 @@ static void Template_NewSampleImpl(const char* file, const char* name, Memfile* 
 		Make_SfxEnum();
 		
 		info(gLang.success);
+		// only show exit prompt if the program has no further operations pending, like below
 		info_getc(gLang.press_enter);
 		
 		exit(0);

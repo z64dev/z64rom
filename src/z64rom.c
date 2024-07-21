@@ -1256,12 +1256,12 @@ Exit ArgParse(Rom* rom, const s32 narg, const char** arg) {
 			case ARG_NEW_ACTOR:
 				Template_NewActor(arg[i], arg[i + 1], arg[i + 2]);
 				
-				return EXIT_INSTANT;
+				return EXIT_PROMPT;
 				
 			case ARG_NEW_EFFECT:
 				Template_NewEffect(arg[i], arg[i + 1]);
 				
-				return EXIT_INSTANT;
+				return EXIT_PROMPT;
 				
 			case ARG_SYM:
 				GetSymInfo(arg[i]);
@@ -1654,6 +1654,7 @@ int Scene_GetHeaderNum(void* segment);
 s32 main(int narg, const char** arg) {
 	Rom* rom = new(Rom);
 	Toml* t = &rom->toml;
+	bool showPromptAtExit = false;
 	
 	g64.threadNum = clamp(sys_getcorenum() * 1.5f, 1, 128);
 	g64.workDir = strdup(sys_workdir());
@@ -1744,12 +1745,25 @@ s32 main(int narg, const char** arg) {
 	
 	info(gLang.success);
 	
+	//
+	// deferred 'press enter to exit' prompt
+	//
+	// the 'prompt' label was once used to jump directly to the
+	// 'press enter to exit' prompt, but doing that leads to
+	// problems if the user terminates the program any other
+	// way (e.g. by clicking the 'X' on the terminal window)
+	// because the code that follows does not get executed
+	// (settings were lost, which caused the program to behave
+	// unpredictably on subsequent executions)
+	//
+	// this change defers the prompt until it's safe to display it
+	//
+	// the 'exit' label below can still be used for skipping the prompt
+	//
 	prompt:
-#ifdef _WIN32
-		if (!g64.noWait)
-			info_getc(gLang.press_enter);
-#endif
+		showPromptAtExit = true;
 	exit:
+		do { } while(0);
 	
 	if (rom->toml.changed && !g64.cleanDump && g64.baseRom[0])
 		Toml_Save(&rom->toml, gProjectConfig);
@@ -1765,6 +1779,13 @@ s32 main(int narg, const char** arg) {
 	delete(g64.gccFlags.gcc, g64.gccFlags.actor, g64.gccFlags.code, g64.gccFlags.kaleido, g64.gccFlags.state);
 	delete(g64.linkerFlags.base, g64.linkerFlags.code, g64.linkerFlags.scene, g64.linkerFlags.ulib);
 	delete(g64.workDir, g64.makeTarget);
+	
+#ifdef _WIN32
+	if (showPromptAtExit && !g64.noWait)
+		info_getc(gLang.press_enter);
+#else
+	(void)showPromptAtExit; // silence -Wunused-but-set-variable
+#endif
 	
 	return 0;
 }
