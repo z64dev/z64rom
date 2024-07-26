@@ -35,32 +35,42 @@ Sequence Assembler (seqas) by [Zelda Reverse Engineering Team](https://zelda64.d
 
 # Development
 
-## Compiling
-
-Compiling works on Linux, native or WSL.
-You need git, make, and possibly other standard tools (`apt install build-essential git` ...).
-
-You may need (?) the following packages to build:
+## Cloning the repo
 
 ```bash
-sudo apt-get install glib2.0-dev libelf-dev libcurl4-gnutls-dev
+git clone --recurse-submodules https://github.com/z64utils/z64rom.git
 ```
 
-Clone repository and all the submodules:
+## Compiling for Win32
+
+To compile for Win32, you need MXE running in WSL or native Linux: https://mxe.cc/
+
+When building MXE, run this command:
 
 ```bash
-git clone --recurse-submodules https://github.com/z64tools/z64rom.git
+make gcc glib
 ```
 
-`cd` inside z64rom directory and do the following:
+Now you can build for Windows by running:
+
+```
+make win32 -j
+```
+
+You can then find the Win32 build in `app_win32/z64rom.exe`
+
+## Compiling for Linux
+
+Make sure you have the dependencies:
 
 ```bash
-# clones ExtLib to the current directory
-# if the permission is denied run this: chmod u+x setup.sh
-./setup.sh
+sudo apt install build-essential git gcc g++ glib2.0-dev libelf-dev libcurl4-gnutls-dev
+```
 
-# Magic happens here
+Now you can build for Linux by running:
+
+```
 make linux -j
 ```
 
-This will output linux build into `app_linux/z64rom`
+This will output a Linux build into `app_linux/z64rom`
