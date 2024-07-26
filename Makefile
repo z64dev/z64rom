@@ -126,7 +126,7 @@ project/tools/novl: $(SOURCE_nOVL_C)
 	@gcc -o $@ -s -Os -DNOVL_DEBUG=1 -flto $^ -Wno-unused-result `pkg-config --cflags --libs libelf glib-2.0`
 project/tools/novl.exe: $(SOURCE_nOVL_C)
 	@echo "$(PRNT_RSET)[$(PRNT_PRPL)$(notdir $@)$(PRNT_RSET)]"
-	@i686-w64-mingw32.static-gcc -o $@ tools/novl/src/*.c -Wall -Wno-unused-const-variable -DNDEBUG -Os -s -flto `i686-w64-mingw32.static-pkg-config --cflags --libs glib-2.0` -luuid -Itools/novl/libelf -D__LIBELF_INTERNAL__=1 -DHAVE_MEMCPY=1 -DHAVE_MEMCMP=1 -DHAVE_MEMMOVE=1 -DSTDC_HEADERS=1 tools/novl/libelf/*.c
+	@i686-w64-mingw32.static-gcc -o $@ tools/nOVL/src/*.c -Wall -Wno-unused-const-variable -DNDEBUG -Os -s -flto `i686-w64-mingw32.static-pkg-config --cflags --libs glib-2.0` -luuid -Itools/nOVL/libelf -D__LIBELF_INTERNAL__=1 -DHAVE_MEMCPY=1 -DHAVE_MEMCMP=1 -DHAVE_MEMMOVE=1 -DSTDC_HEADERS=1 tools/nOVL/libelf/*.c
 
 project/tools/z64audio: # $(ExtLib_Linux_O)
 	@echo "$(PRNT_RSET)[$(PRNT_PRPL)$(notdir $@)$(PRNT_RSET)]"
