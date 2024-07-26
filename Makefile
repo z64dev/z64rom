@@ -1,6 +1,4 @@
-ifeq (,$(wildcard settings.mk))
-  $(error Please run ./setup.sh to automatically install ExtLib)
-endif
+$(shell echo PATH_EXTLIB = $(CURDIR)/ext_lib > settings.mk)
 include settings.mk
 
 CFLAGS          = -Ofast -Wall -DEXTLIB=220
