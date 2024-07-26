@@ -13,3 +13,6 @@
 [submodule "tools/z64convert"]
 	path = tools/z64convert
 	url = https://github.com/z64tools/z64convert.git
+[submodule "ext_lib"]
+	path = ext_lib
+	url = https://github.com/z64utils/ext_lib
