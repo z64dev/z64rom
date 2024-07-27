@@ -287,6 +287,7 @@ typedef struct {
 	const char* baseWad;
 	const char* vanilla;
 	const char* input;
+	const char* instantPrev;
 	
 	struct {
 		const char* z64hdr;

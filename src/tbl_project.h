@@ -8,6 +8,7 @@ PROJECT_TABLE(BASEROM,       "project.baserom",      "z_baserom",       "\"%s\""
 PROJECT_TABLE(BUILDROM,      "project.buildrom",     "z_buildrom",      "\"%s\"",              "build"),
 PROJECT_TABLE(VANILLA,       "project.vanilla",      "z_vanilla",       "\"%s\"",              ".vanilla"),
 PROJECT_TABLE(CHECK_UPDATES, "project.check_update", "z_updates",       "%s",                  "true"),
+PROJECT_TABLE(INSTANT_PREV,  "project.instant_prev", NULL,              "\"%s\"",              "first-build"),
 PROJECT_TABLE(PROJECT64,     "project.project64",    "project64",       "\"%s\"",              ""),
 PROJECT_TABLE(BASEWAD,       "project.basewad",      "vc_basewad",      "\"%s\"",              ""),
 PROJECT_TABLE(DOLPHIN,       "project.dolphin",      "vc_dolphin",      "\"%s\"",              ""),

@@ -896,6 +896,7 @@ void Project_Read(Rom* rom) {
 		{ PROJECT_ITEM(SUFFIX_REL),    .dchar       = &g64.suffix[0]         },
 		{ PROJECT_ITEM(SUFFIX_DEV),    .dchar       = &g64.suffix[1]         },
 		
+		{ PROJECT_ITEM(INSTANT_PREV),  .dchar       = &g64.instantPrev       },
 		{ PROJECT_ITEM(CHECK_UPDATES), .dbool       = &g64.checkUpdates      },
 		{ PROJECT_ITEM(YAZ_HEADER),    .dbool       = &g64.yazHeader         },
 		
@@ -1462,8 +1463,6 @@ Exit ArgParse(Rom* rom, const s32 narg, const char** arg) {
 				break;
 				
 			case ARG_INSTANT_SCENE:
-				sys_touch("src/system/state/0x02-BootTitle/BootTitle.c");
-				sys_touch("src/system/state/0x04-Opening/Opening.c");
 				g64.instant.use = true;
 				
 				for (int j = 0; j < 4; j++)
@@ -1670,6 +1669,32 @@ s32 main(int narg, const char** arg) {
 		case EXIT_INSTANT: goto exit;
 		case EXIT_PROMPT: goto prompt;
 		default: break;
+	}
+	
+	// patch and unpatch instant scene load hack based on previous run
+	{
+		char instant[100];
+		
+		if (g64.instant.use)
+			snprintf(
+				instant
+				, sizeof(instant)
+				, "on,%d,%d,%d,%d"
+				, g64.instant.scene
+				, g64.instant.spawn
+				, g64.instant.header
+				, g64.instant.age
+			);
+		else
+			strcpy(instant, "off");
+		
+		// on change, trigger rebuild for these files, and update project toml
+		if (!g64.instantPrev || strcmp(g64.instantPrev, instant))
+		{
+			sys_touch("src/system/state/0x02-BootTitle/BootTitle.c");
+			sys_touch("src/system/state/0x04-Opening/Opening.c");
+			Toml_SetVar(t, PROJECT_ITEM(INSTANT_PREV), "\"%s\"", instant);
+		}
 	}
 	
 	switch (Tools_Init()) {
