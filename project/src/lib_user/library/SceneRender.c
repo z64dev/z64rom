@@ -4,6 +4,18 @@
 void func_8009BEEC(PlayState* play);
 asm ("func_8009BEEC = 0x8009BEEC");
 
+// add -DMATCH_MM_UV_SCROLL to your build flags (or add
+// #define MATCH_MM_UV_SCROLL to the top of this file)
+// to use MM's UV scrolling direction
+// (this exists because my original implementation had
+// it backwards; it is left off by default so older
+// projects and tools will not be broken by it)
+#ifdef MATCH_MM_TEXSCROLL
+#    define VSCROLL -1
+#else
+#    define VSCROLL 1
+#endif
+
 static SceneAnimContext gSceneAnimCtx = {
     .magic = 0xDEADBEEF,
 };
@@ -353,7 +365,7 @@ static s32 SceneAnim_Pointer_LoopFlag(PlayState* play, Gfx** disp, PointerLoopFl
 
 static void SceneAnim_TexScroll_One(PlayState* play, Gfx** disp, TexScroll* sc) {
     u32 frame = play->gameplayFrames;
-    Gfx* dl = Gfx_TexScroll(play->state.gfxCtx, sc->u * frame, sc->v * frame, sc->w, sc->h);
+    Gfx* dl = Gfx_TexScroll(play->state.gfxCtx, sc->u * frame, sc->v * frame * VSCROLL, sc->w, sc->h);
     
     gSPDisplayList((*disp)++, dl);
 }
@@ -362,8 +374,8 @@ static void SceneAnim_TexScroll_Two(PlayState* play, Gfx** disp, TexScroll* sc) 
     u32 frame = play->gameplayFrames;
     Gfx* dl = Gfx_TwoTexScroll(
         play->state.gfxCtx,
-        0, sc[0].u * frame, (sc[0].v * frame), sc[0].w, sc[0].h,
-        1, sc[1].u * frame, (sc[1].v * frame), sc[1].w, sc[1].h);
+        0, sc[0].u * frame, (sc[0].v * frame) * VSCROLL, sc[0].w, sc[0].h,
+        1, sc[1].u * frame, (sc[1].v * frame) * VSCROLL, sc[1].w, sc[1].h);
     
     gSPDisplayList((*disp)++, dl);
 }
@@ -381,7 +393,7 @@ static void SceneAnim_TexScroll_Flag(PlayState* play, Gfx** disp, TexScrollFlag*
         ,
         0,
         sc->u * frame,
-        sc->v * frame,
+        sc->v * frame * VSCROLL,
         sc->w,
         sc->h
     );
@@ -391,7 +403,7 @@ static void SceneAnim_TexScroll_Flag(PlayState* play, Gfx** disp, TexScrollFlag*
         ,
         1,
         sc1->u * frame,
-        sc1->v * frame,
+        sc1->v * frame * VSCROLL,
         sc1->w,
         sc1->h
     );
