@@ -41,7 +41,8 @@ int Scene_GetHeaderNum(void* segment) {
 		
 		if (cmd->code == 0x18) {
 			offset_header = cmd->data2;
-			
+			if (cmd->data1) // optional header count
+				return cmd->data1 + 1;
 			continue;
 		}
 		
