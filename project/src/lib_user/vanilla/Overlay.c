@@ -169,8 +169,6 @@ Actor* Actor_Spawn(ActorContext* actorCtx, PlayState* playState, s16 actorId, f3
         return NULL;
     }
     
-    ASSERT((u8)overlayEntry->numLoaded < 255, "actor_dlftbl->clients < 255", "../z_actor.c", 7031);
-    
     overlayEntry->numLoaded++;
     
     if (HREG(20) != 0) {
