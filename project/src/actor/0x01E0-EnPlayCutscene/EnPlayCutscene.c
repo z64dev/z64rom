@@ -7,7 +7,7 @@ void EnPlayCutscene_Update(EnPlayCutscene* this, PlayState* play);
 const ActorInit sEnPlayCutscene_InitVars = {
     .id           = 0x01E0,
     .category     = ACTORCAT_SWITCH,
-    .flags        = 0x00000000,
+    .flags        = 0x00000010,
     .objectId     = 0x0001,
     .instanceSize = sizeof(EnPlayCutscene),
     .init         = (ActorFunc)EnPlayCutscene_Init,
