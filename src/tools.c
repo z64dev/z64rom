@@ -92,17 +92,16 @@ static s32 Tools_ValidateTools_Required(void) {
 	if (fail) {
 		printf("\n");
 		warn(gLang.setup.err_missing_components,
-			"https://github.com/z64tools/z64rom/releases");
+			"https://github.com/z64utils/z64rom/releases");
 	}
 	
 	return fail;
 }
 
 static void Tools_CheckUpdateImpl() {
-	char* url = "https://api.github.com/repos/z64tools/z64rom/releases/latest";
-	char buffer[1024];
+	char* url = "https://github.com/z64utils/z64rom/releases.atom";
+	char* find = "/tag/";
 	char* tag;
-	u32 sz = 0;
 	u32 vnum[3] = { -1, -1, -1 };
 	u32 cnum[3] = { -1, -1, -1 };
 	u32 curVer, newVer;
@@ -111,16 +110,12 @@ static void Tools_CheckUpdateImpl() {
 	if (Memfile_Download(&api, url, NULL))
 		goto error;
 	
-	tag = strstr(api.str, "\"tag_name\":");
+	tag = strstr(api.str, find);
 	if (tag == NULL) goto error;
-	tag += strlen("\"tag_name\":\"");
-	while (tag[sz] != '\"') sz++;
+	tag += strlen(find);
 	
-	memset(buffer, 0, sz + 1);
-	memcpy(buffer, tag, sz);
-	
-	sscanf(buffer, "%d.%d.%d", &vnum[0], &vnum[1], &vnum[2]);
-	sscanf(gToolName, "" PRNT_CYAN "z64rom " PRNT_GRAY "%d.%d.%d", &cnum[0], &cnum[1], &cnum[2]);
+	if (sscanf(tag, "%d.%d.%d", &vnum[0], &vnum[1], &vnum[2]) != 3) goto error;
+	if (sscanf(gToolName, "" PRNT_CYAN "z64rom " PRNT_GRAY "%d.%d.%d", &cnum[0], &cnum[1], &cnum[2]) != 3) goto error;
 	
 	newVer = vnum[0] * 1000 + vnum[1] * 100 + vnum[2];
 	curVer = cnum[0] * 1000 + cnum[1] * 100 + cnum[2];
@@ -131,7 +126,7 @@ static void Tools_CheckUpdateImpl() {
 #ifdef _WIN32
 		warn(gLang.setup.update_prompt);
 		if (cli_yesno()) {
-			sys_exed(x_fmt("tools\\z64upgrade.exe --version \"%s\"", gToolName + strlen("" PRNT_BLUE "z64rom " PRNT_GRAY)));
+			sys_exed(x_fmt("tools\\z64upgrade.exe --version \"%s\" --nextversion \"%d.%d.%d\"", gToolName + strlen("" PRNT_BLUE "z64rom " PRNT_GRAY), vnum[0], vnum[1], vnum[2]));
 			
 			exit(0);
 		}

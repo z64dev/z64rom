@@ -188,6 +188,7 @@ static void BackupFile(const char* name) {
 int main(int n, const char** arg) {
 	Zip* z = new(Zip);
 	Memfile* mem = new(Memfile);
+	char *nextVersion = 0;
 	s32 narg;
 	s32 version[3] = { };
 	List files = List_New();
@@ -206,12 +207,18 @@ int main(int n, const char** arg) {
 		errr("z64upgrade can be only called by z64rom!");
 	gVersion = x_strunq(arg[narg]);
 	
+	if (!(narg = strarg(arg, "nextversion")))
+		errr("z64upgrade can be only called by z64rom!");
+	nextVersion = x_strunq(arg[narg]);
+	
 	sscanf(gVersion, "%d.%d.%d", &version[0], &version[1], &version[2]);
 	
 	if (!sys_stat("update.zip")) {
 		Memfile mem = Memfile_New();
 		
-		if (Memfile_Download(&mem, "https://github.com/z64tools/z64rom/releases/latest/download/app_win32.zip", "Downloading"))
+		char url[1024];
+		snprintf(url, sizeof(url), "https://github.com/z64utils/z64rom/releases/latest/download/z64rom-%s-win32.zip", nextVersion);
+		if (Memfile_Download(&mem, url, "Downloading"))
 			errr("Failed to retrieve update!");
 		
 		Memfile_SaveBin(&mem, "update.zip");
