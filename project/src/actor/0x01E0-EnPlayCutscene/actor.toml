@@ -1,5 +1,7 @@
 Name = "Cutscene Trigger"
 Category = "SWITCH"
+Version = 1
+Notes = "Starts a cutscene if Set Flag is not set and Get Flag is either set or its NULL. If distance is not set to 0 then it only starts when Link is inside the specified area. Force will ignore any ongoing cutscenes. Flip Get makes the cutscene run when the Get Flag is not set. The cutscene is played from the header specified by header index."
 
 [[Property]]
 	Mask          = 0xFF00
@@ -45,6 +47,7 @@ Category = "SWITCH"
 	Mask          = 0x03FF
 	Name          = "Distance (x10)"
 	Target        = "Var"
+	Decimal       = true
 [[Property]]
 	Mask          = 0xF0
 	Name          = "Distance Type"
