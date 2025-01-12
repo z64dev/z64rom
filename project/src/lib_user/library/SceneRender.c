@@ -1,5 +1,6 @@
 #include "uLib.h"
 #include "SceneRender.h"
+//Version 1.2
 
 void func_8009BEEC(PlayState* play);
 asm ("func_8009BEEC = 0x8009BEEC");
@@ -449,9 +450,8 @@ static s32 SceneAnim_CameraEffect(PlayState* play, Gfx** disp, CameraEffect* cam
     return 1;
 }
 
-/* change pointer as time progresses (each pointer has its own time) */
-/* skipped if flag is undesirable */
-static s32 SceneAnim_DrawCondition(PlayState* play, Gfx** disp, DrawCondition* _ptr) {
+/* Draws or hides a display list depending on flag by scaling it with a matrix */
+static s32 SceneAnim_DrawCondition(PlayState* play, Gfx** disp, DrawCondition* _ptr, u8 seg) {
     Matrix_Push();
     if (!SceneAnim_Flag(play, &_ptr->flag))
     {
@@ -462,10 +462,11 @@ static s32 SceneAnim_DrawCondition(PlayState* play, Gfx** disp, DrawCondition* _
         Matrix_Scale(1.0f, 1.0f, 1.0f, MTXMODE_NEW);
     }
 
-    gSPMatrix((*disp)++, Matrix_NewMtx(play->state.gfxCtx, __FILE__, __LINE__),G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
+
+    gSPSegment((*disp)++, seg, Matrix_NewMtx(play->state.gfxCtx, __FILE__, __LINE__));
 
     Matrix_Pop();
-    
+
     return 1;
 }
 
@@ -646,7 +647,7 @@ void SceneAnim_Update(PlayState* play) {
                 break;
                 
             case 0x0010:
-                SceneAnim_DrawCondition(play, &disp, data);
+                SceneAnim_DrawCondition(play, &disp, data, seg);
                 break;
                 
             default:
