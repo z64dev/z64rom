@@ -31,6 +31,9 @@ typedef struct {
     u16 frames;                /* frames flag is on */
 } Flag;
 
+#define FreezeFlag_Freeze 1
+#define FreezeFlag_StopAtEnd 2
+
 /* data processed by SceneAnim_Pointer_Flag functions */
 typedef struct {
     u32  ptr[2];               /* pointer pointers  */

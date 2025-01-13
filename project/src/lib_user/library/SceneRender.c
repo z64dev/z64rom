@@ -1,16 +1,17 @@
 #include "uLib.h"
 #include "SceneRender.h"
-//Version 1.2
+//Version: 1.2
+/*This version value is used by SharpOcarina to determine if it needs to update the SceneRender.c of an old project
+to use newly added features. Put a high value like 99 if you want SharpOcarina to stop asking if you want to update.
+*/
 
 void func_8009BEEC(PlayState* play);
 asm ("func_8009BEEC = 0x8009BEEC");
 
-// add -DMATCH_MM_UV_SCROLL to your build flags (or add
-// #define MATCH_MM_UV_SCROLL to the top of this file)
-// to use MM's UV scrolling direction
-// (this exists because my original implementation had
-// it backwards; it is left off by default so older
-// projects and tools will not be broken by it)
+/*add -DMATCH_MM_UV_SCROLL to your build flags (or add #define MATCH_MM_UV_SCROLL to the top of this file)
+to use MM's UV scrolling direction (this exists because my original implementation hadit backwards; 
+it is left off by default so older projects and tools will not be broken by it)
+*/
 #ifdef MATCH_MM_TEXSCROLL
 #    define VSCROLL -1
 #else
@@ -268,27 +269,33 @@ static void SceneAnim_Color_LoopFlag(PlayState* play, Gfx** disp, ColorListFlag*
     enum8(ColorKeyTypes) which = list->which;
     
     /* not across-fading, and flag is not active */
-    if (!active && !f->frames && !f->freeze)
+    if (!active && (!(f->freeze & FreezeFlag_Freeze)))
         return;
     
     key = &gSceneAnimCtx.Pcolorkey;
     
+    if (SceneAnim_Flag(play, &c->flag) && (!(f->freeze & FreezeFlag_StopAtEnd) || 
+        ((f->freeze & FreezeFlag_StopAtEnd) && c->flag.frames < list->dur-SceneAnim_GetNextColorKey(list, &list->key[0])->next)))
+        c->flag.frames++;
+    u32 frame = c->flag.frames;
+    
     /* if cross fading or flag is active, compute colors */
-    if (active) {
-        ColorKey* from;
-        ColorKey* to;
-        u32 frame = play->gameplayFrames;
-        float factor;
-        
-        from = SceneAnim_GetColorKey(list, &frame);
-        to = SceneAnim_GetNextColorKey(list, from);
-        
-        factor = SceneAnim_Interpolate(frame, from->next, list->ease);
-        
-        /* blend color keys (result goes into key) */
-        SceneAnim_BlendColorKey(which, factor, from, to, key);
-    } else
-        SceneAnim_PutColorKey(which, disp, key);
+
+    ColorKey* from;
+    ColorKey* to;
+
+    float factor;
+    
+    from = SceneAnim_GetColorKey(list, &frame);
+    to = SceneAnim_GetNextColorKey(list, from);
+
+    
+    
+    factor = SceneAnim_Interpolate(frame, from->next, list->ease);
+    
+    /* blend color keys (result goes into key) */
+    SceneAnim_BlendColorKey(which, factor, from, to, key);
+
     
     SceneAnim_PutColorKey(which, disp, key);
 }
@@ -358,7 +365,7 @@ static s32 SceneAnim_Pointer_LoopFlag(PlayState* play, Gfx** disp, PointerLoopFl
     SceneAnim_Pointer_Loop(play, disp, ptr);
     
     // if freeze mode is set, time doesnt advance when flag is not set
-    if (!flagstate && f->freeze == 1)
+    if (!flagstate && f->freeze & FreezeFlag_Freeze)
         ptr->time -= 1;
     
     return 1;
