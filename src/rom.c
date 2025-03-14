@@ -1,4 +1,5 @@
 #include "z64rom.h"
+#include "tools.h"
 
 static const char* sRestrEntryTbl[] = {
 	"bottles",
@@ -1786,6 +1787,50 @@ static void Build_State(Rom* rom, Memfile* memData, Memfile* memCfg) {
 	List_Free(&list);
 }
 
+// updates the size of the Player struct stored in Player_InitVars
+// (allows appending new members onto Player struct in z64player.h)
+static void Build_SizeofPlayer(Rom* rom)
+{
+#define STR_DEADBEEF "deadbeef"
+	const char code[] =
+		"#include \"global.h\"\n"
+		"#include \"z64player.h\"\n"
+		"unsigned int tmp[] = { 0x" STR_DEADBEEF ", sizeof(Player) };\n";
+	const char* fn = "sizeofPlayer";
+	FILE* file;
+	const char* dump;
+	const char* match;
+	u32 tmp[2];
+	
+	file = fopen(x_fmt("%s.c", fn), "wb");
+	fwrite(code, 1, sizeof(code) - 1, file);
+	fclose(file);
+	
+	sys_exes(x_fmt(
+		"%s -G 0 -nostdinc -DNDEBUG -Iinclude/z64hdr/include -Iinclude/z64hdr/oot_mq_debug"
+		" -Os -s --std=gnu99 -march=vr4300 -mfix4300 -mabi=32 -mno-abicalls -mdivide-breaks"
+		" -fno-zero-initialized-in-bss -fno-toplevel-reorder -ffreestanding -fno-common"
+		" -fno-merge-constants -mno-explicit-relocs -mno-split-addresses -funsigned-char"
+		" -mno-memcpy -c %s.c -o %s.o",
+		Tools_Get(mips64_gcc), fn, fn));
+	dump = sys_exes(x_fmt("%s -s %s.o", Tools_Get(mips64_objdump), fn));
+	
+	match = strstr(dump, STR_DEADBEEF);
+	if (match && sscanf(match, "%x %x", &tmp[0], &tmp[1]) == 2)
+	{
+		const u32 Player_InitVars = 0xBA2130 - 0xA94000;
+		u8 *data = (u8*)(rom->code.str + Player_InitVars + 0xC);
+		u32 v = tmp[1];
+		data[0] = v >> 24;
+		data[1] = v >> 16;
+		data[2] = v >> 8;
+		data[3] = v;
+	}
+	else
+		warn("Build_SizeofPlayer() failed");
+#undef STR_DEADBEEF
+}
+
 static void Build_Kaleido(Rom* rom, Memfile* memData, Memfile* memCfg) {
 	List list = List_New();
 	KaleidoEntry* entry = rom->table.kaleido;
@@ -2009,6 +2054,7 @@ static void Build_Static(Rom* rom, Memfile* memData, Memfile* memCfg) {
 			
 				Patch_File(&rom->code, list.item[k]);
 				Build_VanillaHook(rom);
+				Build_SizeofPlayer(rom);
 				
 				Dma_WriteMemfile(rom, id, &rom->code, NOCACHE_COMPRESS);
 				
