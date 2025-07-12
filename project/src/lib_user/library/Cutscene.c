@@ -1,5 +1,12 @@
+
 #include <uLib.h>
 #include <code/z_demo.h>
+//Version: 1.1
+/*This version value is used by SharpOcarina to determine if it needs to update the Cutscene.c of an old project
+to use newly added features. Put a high value like 99 to stop SharpOcarina from ever asking to update it again.
+*/
+
+#define motionBlurAlpha unk_12428[0]
 
 typedef enum {
     TYPE_EVENT_CHK_INF,
@@ -27,6 +34,30 @@ typedef struct {
 } CmdHeader;
 
 #define CLEAR_ITEMGETINF(flag) (gSaveContext.itemGetInf[(flag) >> 4] &= ~(1 << ((flag) & 0xF)))
+
+s16 MotionBlurCacheDif = 0;
+
+static void CutsceneCmd_MotionBlur(PlayState* play, CutsceneContext* csCtx, CsCmdBase* cmd) {
+
+        if ((csCtx->frames >= cmd->startFrame) && (csCtx->frames <= cmd->endFrame)) {
+
+            s16 tmp = (u8)play->motionBlurAlpha;
+            u8 speed = CLAMP_MIN(cmd->endFrame-cmd->startFrame,1);
+            if (MotionBlurCacheDif == 0) MotionBlurCacheDif = cmd->base - (u8)play->motionBlurAlpha;
+            s16 add = (s16)(MotionBlurCacheDif * (1.0f / speed) + 0.5f);
+            tmp += add;
+            if (tmp < 0) tmp = 0;
+            if (tmp > 255) tmp = 255;
+            
+            if (csCtx->frames == cmd->endFrame) 
+            {
+                    MotionBlurCacheDif = 0;
+                    tmp = cmd->base;
+            }
+            play->motionBlurAlpha = tmp;
+        }
+    
+}
 
 static void* CutsceneCmd_ExitParam(PlayState* play, void* ptr) {
     CmdHeader* cmd = ptr;
@@ -438,9 +469,16 @@ void Cutscene_ProcessCommands(PlayState* play, CutsceneContext* csCtx, u8* cutsc
                 cutscenePtr += 8;
                 break;
                 
-            // z64rom
+            // z64rom trigger exit
             case CS_CMD_EXITPARAM:
                 cutscenePtr = CutsceneCmd_ExitParam(play, cutscenePtr);
+                break;
+
+            // z64rom motion blur
+            case 0xDE01:
+                cutscenePtr += 4;
+                CutsceneCmd_MotionBlur(play, csCtx, (void*)cutscenePtr);
+                cutscenePtr += 8;
                 break;
                 
             default:
