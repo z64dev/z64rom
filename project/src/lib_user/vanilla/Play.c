@@ -2,6 +2,11 @@
 #include "code/z_play.h"
 #include <code/z_scene_table.h>
 
+//Version: 1.1
+/*This version value is used by SharpOcarina to determine if it needs to update the Play.c of an old project
+to use newly added features. Put a high value like 99 to stop it from ever asking to update it again.
+*/
+
 asm ("TitleSetup_Init = 0x80803CAC");
 asm ("FileSelect_Init = 0x80811A20");
 
@@ -690,7 +695,7 @@ void Play_Draw(PlayState* playState) {
     if ((HREG(80) != 10) || (HREG(82) != 0)){
         z64rom_PrePlayDraw(playState);
         Play_Draw2(playState);
-        z64rom_PostPlayUpdate(playState);
+        z64rom_PostPlayDraw(playState);
     }
     
     if (playState->view.unk_124 != 0) {
