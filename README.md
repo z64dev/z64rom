@@ -1,10 +1,8 @@
 # z64rom
 
-### For questions and feature requests [join z64tools discord](https://discord.gg/52DgAggYAT)!
+### [Download z64rom here!](https://github.com/z64utils/z64rom/releases)
 
-### [Download z64rom here!](https://github.com/z64tools/z64rom/releases)
-
-### Read the documentation [here](https://github.com/z64tools/z64rom/wiki)!
+### Read the documentation [here](https://github.com/z64utils/z64rom/wiki)!
 
 # Credits
 
@@ -18,6 +16,7 @@ Nokaubure <br>
 Skawo <br>
 sklitte22 <br>
 Zeldaboy14 <br>
+Javarooster <br>
 zfg
 
 **Special Thanks:** <br>
@@ -74,3 +73,12 @@ make linux -j
 ```
 
 This will output a Linux build into `app_linux/z64rom`
+
+## Linux Troubleshooting
+
+If you are experiencing issues building the game after installing z64rom, navigate to the `app_linux` directory and run the following command to apply execute permissions to your local `mips64-binutils` toolchain:
+
+```
+find tools/mips64-binutils/ -type f -exec chmod +x {} +
+```
+
