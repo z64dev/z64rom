@@ -1549,11 +1549,54 @@ static void Build_TitleCard(Rom* rom, SceneEntry* entry_table, List* title_list,
 		{
 			Memfile mem = Memfile_New();
 			Memfile_LoadBin(&mem, title_list->item[i]);
+			
+			// sanitize to only allow printable characters
+			for (int k = 0; k < mem.size; ++k)
+			{
+				if (!isprint((unsigned char)mem.str[k]))
+				{
+					memmove(&mem.str[k], &mem.str[k + 1], mem.size - (k + 1));
+					mem.size -= 1;
+					--k;
+				}
+			}
+			
+			// expand escape sequences into in-game control codes (color, etc)
+			for (int k = 0; k < mem.size - 2; ++k)
+			{
+				char *s = &mem.str[k];
+				
+				// bytes
+				if (!memcmp(s, "\\x", 2) && k < mem.size - 4)
+				{
+					int v;
+					sscanf(s + 2, "%02x", &v);
+					*s = v;
+					memmove(s + 1, s + 4, mem.size - (k + 4));
+					mem.size -= 3;
+				}
+				/* \\ -> \ */
+				else if (!memcmp(s, "\\\\", 2))
+				{
+					memmove(s + 1, s + 2, mem.size - (k + 2));
+					mem.size -= 1;
+				}
+			}
+			
+			// in absence of padding, guarantee inline zero terminator
+			if (!(mem.size & 15))
+			{
+				Memfile_Seek(&mem, MEMFILE_SEEK_END);
+				Memfile_Insert(&mem, "", 1);
+				//warn("test for noka: adding a padding byte to titlecard %s, new size = %d bytes", title_list->item[i], mem.size);
+			}
 
 			entry_table[title_card_scene_index[i]].titleVromStart = Dma_Write(rom, DMA_FIND_FREE, mem.data, mem.size, NULL, NOCACHE_COMPRESS);
 			entry_table[title_card_scene_index[i]].titleVromEnd = Dma_GetVRomEnd();
 			SwapBE(entry_table[title_card_scene_index[i]].titleVromStart);
 			SwapBE(entry_table[title_card_scene_index[i]].titleVromEnd);
+			
+			Memfile_Free(&mem);
 		}
 		else
 		{
