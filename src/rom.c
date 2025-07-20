@@ -1829,6 +1829,7 @@ static void Build_SizeofPlayer(Rom* rom)
 	else
 		warn("Build_SizeofPlayer() failed");
 #undef STR_DEADBEEF
+	IO_FixWin32();
 }
 
 static void Build_Kaleido(Rom* rom, Memfile* memData, Memfile* memCfg) {
