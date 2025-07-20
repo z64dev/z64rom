@@ -1,6 +1,10 @@
 #include "z64rom.h"
 #include "tools.h"
 
+#ifdef _WIN32
+#	include "windows.h"
+#endif
+
 static const char* sRestrEntryTbl[] = {
 	"bottles",
 	"a_button",
@@ -1812,6 +1816,10 @@ static void Build_SizeofPlayer(Rom* rom)
 	fwrite(code, 1, sizeof(code) - 1, file);
 	fclose(file);
 	
+#ifdef _WIN32
+	SetDllDirectory("tools/mips64-binutils/bin/");
+#endif
+	
 	sys_exes(x_fmt(
 		"%s -G 0 -nostdinc -DNDEBUG -Iinclude/z64hdr/include -Iinclude/z64hdr/oot_mq_debug"
 		" -Os -s --std=gnu99 -march=vr4300 -mfix4300 -mabi=32 -mno-abicalls -mdivide-breaks"
@@ -1836,6 +1844,10 @@ static void Build_SizeofPlayer(Rom* rom)
 		warn("Build_SizeofPlayer() failed");
 #undef STR_DEADBEEF
 	IO_FixWin32();
+	
+#ifdef _WIN32
+	SetDllDirectory(NULL);
+#endif
 }
 
 static void Build_Kaleido(Rom* rom, Memfile* memData, Memfile* memCfg) {
