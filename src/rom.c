@@ -1545,6 +1545,18 @@ static void Build_TitleCard(Rom* rom, SceneEntry* entry_table, List* title_list,
 	Hash* hash_list = new(Hash[title_list->num]);
 	
 	for (int i = 0; i < title_list->num; i++) {
+		if (striend(title_list->item[i], ".bin"))
+		{
+			Memfile mem = Memfile_New();
+			Memfile_LoadBin(&mem, title_list->item[i]);
+
+			entry_table[title_card_scene_index[i]].titleVromStart = Dma_Write(rom, DMA_FIND_FREE, mem.data, mem.size, NULL, NOCACHE_COMPRESS);
+			entry_table[title_card_scene_index[i]].titleVromEnd = Dma_GetVRomEnd();
+			SwapBE(entry_table[title_card_scene_index[i]].titleVromStart);
+			SwapBE(entry_table[title_card_scene_index[i]].titleVromEnd);
+		}
+		else
+		{
 		Image* texel = Texture_Load(title_list->item[i], TEX_FMT_IA, TEX_BSIZE_8, 144, 24);
 		
 		hash_list[i] = HashMem(texel->data, texel->size);
@@ -1565,6 +1577,7 @@ static void Build_TitleCard(Rom* rom, SceneEntry* entry_table, List* title_list,
 		use_same:
 		Image_Free(texel);
 		delete(texel);
+		}
 	}
 	
 	delete(title_card_scene_index, hash_list);
@@ -1624,6 +1637,7 @@ static void Build_SceneThread(SceneBuildInstance* this) {
 		entry->config = 4;
 	
 	const char* ftitle = fs_item("title.png");
+	if (!sys_stat(ftitle)) ftitle = fs_item("title.bin");
 	if (sys_stat(ftitle)) {
 		mutex_scope(sTitleMutex,
 			title_card_scene_index[title_list->num] = this->scene_id;
