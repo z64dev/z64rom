@@ -975,7 +975,8 @@ s32 Transition_GetType(const char* str) {
 static void Dump_Actor(Rom* rom, Memfile* data, Memfile* config) {
 	RomFile rf;
 	
-	for (int i = 0; i < rom->table.num.actor; i++) {
+	// starts at index 1 b/c index 0 is reserved for player
+	for (int i = 1; i < rom->table.num.actor; i++) {
 		rf = Dma_RomFile_Actor(rom, i);
 		
 		if (rf.size == 0)
@@ -1341,7 +1342,12 @@ static void Build_Actor(Rom* rom, Memfile* memData, Memfile* memCfg) {
 	Rom_ItemList(&list, "rom/actor/", SORT_NUMERICAL, LIST_FOLDERS);
 	ActorBuildInstance* inst = new(ActorBuildInstance[list.num]);
 	
-	for (int i = 0; i < list.num; i++) {
+	// warn user if they attempt to overwrite player actor id
+	if (list.item[0])
+		errr("actor id 0 is reserved and should not be used (please move %s)", list.item[0]);
+	
+	// starts at index 1 b/c index 0 is reserved for player
+	for (int i = 1; i < list.num; i++) {
 		inst[i] = (ActorBuildInstance) {
 			.rom = rom,
 			.item = list.item[i],
