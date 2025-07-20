@@ -4905,7 +4905,7 @@ void Player_LoadGetItemObject(Player* this, s16 objectId) {
         size = gObjectTable[objectId].vromEnd - gObjectTable[objectId].vromStart;
         
         LOG_HEX("size", size, "../z_player.c", 9090);
-        ASSERT(size <= Pathch_GetItem_SegmentSize, "GetItem model filesize is too big!", "../z_player.c", 9091);
+        ASSERT(size <= Patch_GetItem_SegmentSize, "GetItem model filesize is too big!", "../z_player.c", 9091);
         
         DmaMgr_SendRequest2(
             &this->giObjectDmaRequest,
@@ -9780,7 +9780,7 @@ void Player_Init(Actor* thisx, PlayState* play2) {
     Player_SetEquipmentData(play, this);
     this->prevBoots = this->currentBoots;
     Player_InitCommon(this, play, gPlayerSkelHeaders[((void)0, gSaveContext.linkAge)]);
-    Assert(this->giObjectSegment = (void*)(((u32)ZeldaArena_MallocDebug(Pathch_GetItem_SegmentSize, "../z_player.c", 17175) + 8) & ~0xF));
+    Assert(this->giObjectSegment = (void*)(((u32)ZeldaArena_MallocDebug(Patch_GetItem_SegmentSize, "../z_player.c", 17175) + 8) & ~0xF));
     
     respawnFlag = gSaveContext.respawnFlag;
     
