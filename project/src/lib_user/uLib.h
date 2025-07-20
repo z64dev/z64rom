@@ -11,7 +11,11 @@
 #define Patch_SaveStartTime     0x6AAB
 #define Patch_SaveStartCsIndex  0xFFF1
 
-// Wield Hylian shield like Kokiri shield
+#define OOT 0
+#define MM  1
+#define GC  2
+
+// Wield Hylian shield like Deku shield
 #define Patch_WieldHylianShieldLikeKokiriShield true
 
 // Play cutscene after obtaining Silver Gauntlets
@@ -20,8 +24,39 @@
 // Flush current textbox by pressing B
 #define Patch_QuickText true
 
+// MM Timer (faked)
+#define Patch_MM_TIMER false
+
+// When Bunny Hood is equipped, you run fast like in MM
+#define MM_BUNNYHOOD true
+
+// Save anywhere but a grotto
+#define SAVE_ANYWHERE true
+
+// Use MM style titlecards
+#define MM_TITLECARD false
+
+// Interface Stuff
+// MM-Styled Interface (Corrdinates)
+#define Patch_MM_INTERFACE_BUTTONS_CORDS true
+
+// MM-Styled Interface (Shadows)
+#define Patch_MM_INTERFACE_SHADOWS true
+
+// Interface Colors for A and B buttons (OOT/MM/GC)
+#define Patch_INTERFACE_BUTTON_COLORS MM
+
+// Interface Colors for C buttons (OOT/MM)
+#define Patch_INTERFACE_C_BUTTON_COLORS_MM true
+
+// Interface TATL height (c-up, requires texture patch)
+#define Patch_INTERFACE_C_UP_TATL true
+
+// Interface Colors for the Rupee counter, according to wallet upgrades 
+#define Patch_MM_INTERFACE_RUPEE_UPGRADES true
+
 // Space allocated for GI models, expand if needed
-#define Pathch_GetItem_SegmentSize 0x3008
+#define Patch_GetItem_SegmentSize 0x3008
 
 // Extension, these can be adjusted if necessary
 #define EXT_DMA_MAX    3800
@@ -69,7 +104,6 @@ asm ("osMemSize = 0x80000318");
 
 void uLib_Update(GameState* gameState);
 void* memset(void* m, int v, unsigned int s);
-void* memmove(void* dest, const void* src, size_t len);
 f32 fmodf(f32, f32);
 
 #define DEFAULT_REVERB 0.35f
@@ -107,7 +141,7 @@ void osLibHex(const char* txt, const void* data, u32 size, u32 dispOffset);
 #define DebugMenu_CineCamera(...) do {} while (0)
 #define Profiler_Start(...)       do {} while (0)
 #define Profiler_End(...)         do {} while (0)
-#define Assert(cond)              if (cond) (void)0;
+#define Assert(cond)              do {} while (0)
 #define osInfo(title)             do {} while (0)
 #define osLibPrintf(...)          do {} while (0)
 #define osLibHex(...)             do {} while (0)
