@@ -1545,7 +1545,7 @@ static void Build_TitleCard(Rom* rom, SceneEntry* entry_table, List* title_list,
 	Hash* hash_list = new(Hash[title_list->num]);
 	
 	for (int i = 0; i < title_list->num; i++) {
-		if (striend(title_list->item[i], ".bin"))
+		if (striend(title_list->item[i], ".txt"))
 		{
 			Memfile mem = Memfile_New();
 			Memfile_LoadBin(&mem, title_list->item[i]);
@@ -1637,7 +1637,7 @@ static void Build_SceneThread(SceneBuildInstance* this) {
 		entry->config = 4;
 	
 	const char* ftitle = fs_item("title.png");
-	if (!sys_stat(ftitle)) ftitle = fs_item("title.bin");
+	if (!sys_stat(ftitle)) ftitle = fs_item("title.txt");
 	if (sys_stat(ftitle)) {
 		mutex_scope(sTitleMutex,
 			title_card_scene_index[title_list->num] = this->scene_id;
