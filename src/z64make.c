@@ -393,7 +393,7 @@ static ThreadFunc Object_Convert(const char* path) {
 		"--out %s "
 		"--address 0x%08X "
 		"--scale %g "
-		"--prefixes %s "
+		"%s"
 		"--header %s "
 		"--linker %s"
 		,
@@ -402,7 +402,7 @@ static ThreadFunc Object_Convert(const char* path) {
 		out,
 		(Ini_GetInt(&mem, "segment") << 24),
 		Ini_GetFloat(&mem, "scale"),
-		prefixes,
+		!prefixes ? "--noprefixes " : "",
 		header,
 		linker
 	);
