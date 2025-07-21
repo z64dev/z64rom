@@ -184,24 +184,6 @@ void TitleCard_Draw(PlayState* play, TitleCardContext* titleCtx, Gfx** gfxp) {
                     {
 
                         
-                        // TODO find a condition that works when (re)loading scenes etc
-                        
-                        if (printer == 0) // temporary for testing
-                        {
-                            // this block should only run once, to prepare titlecard vars
-                            printer = 0;
-                            oldIndex = 0;
-                            oldChar = tex[0];
-                            
-                            // get byte size of string (exluding zero terminator)
-                            for (length = 0; tex[length]; ++length)
-                            {
-                                switch (tex[length])
-                                {
-                                    case '\x05': length += 4; break; // 05 rr gg bb aa
-                                }
-                            }
-                        }
                         
                         // curIndex indicates the temporary end-of-string marker
                         curIndex = ++printer;
