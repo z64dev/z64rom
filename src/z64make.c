@@ -337,6 +337,7 @@ static ThreadFunc Object_Convert(const char* path) {
 		
 		fprintf(m, "%-15s = %d\n", "segment", 6);
 		fprintf(m, "%-15s = %d\n", "scale", 100);
+		fprintf(m, "%-15s = true\n", "prefixes");
 		fclose(m);
 	}
 	
@@ -366,11 +367,16 @@ static ThreadFunc Object_Convert(const char* path) {
 	sys_mkdir(x_path(out));
 	
 	Memfile_LoadStr(&mem, cfg);
+
+	bool prefixes = true;
 	
 	if (!Ini_Var(mem.str, "segment"))
 		errr(gLang.make.err_missing_item, "segment", path);
 	if (!Ini_Var(mem.str, "scale"))
 		errr(gLang.make.err_missing_item, "scale", path);
+	if (Ini_Var(mem.str, "prefixes"))
+		prefixes = Ini_GetBool(&mem, "prefixes");
+
 	
 	Hash hashNew = HashNew();
 	Hash hashOld = HashNew();
@@ -387,6 +393,7 @@ static ThreadFunc Object_Convert(const char* path) {
 		"--out %s "
 		"--address 0x%08X "
 		"--scale %g "
+		"--prefixes %s "
 		"--header %s "
 		"--linker %s"
 		,
@@ -395,6 +402,7 @@ static ThreadFunc Object_Convert(const char* path) {
 		out,
 		(Ini_GetInt(&mem, "segment") << 24),
 		Ini_GetFloat(&mem, "scale"),
+		prefixes,
 		header,
 		linker
 	);
