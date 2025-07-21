@@ -10,9 +10,7 @@
 
  */
  
-u64 gSceneTitleCardGradientTex[] = {
-    0xfcfbf9f8f6f5f3f1, 0xefedebe9e7e5e3e0, 0xdedbd9d6d4d1cfcc, 0xc9c7c4c1bebbb9b6, 0xb3b0adaaa7a4a29f, 0x9c999694918e8b89, 0x8684817f766b6055, 0x493e33281e150d06, 
-};
+
 
 // (MM starts displaying letters only after there are at least 10 to display)
 // (change from 0 to 10 if you want your titlecard to behave like MM)
@@ -23,6 +21,54 @@ typedef struct {
 } Entity;
 
 #if MM_TITLECARD
+
+
+u64 gSceneTitleCardGradientTex[] = {
+    0xfcfbf9f8f6f5f3f1, 0xefedebe9e7e5e3e0, 0xdedbd9d6d4d1cfcc, 0xc9c7c4c1bebbb9b6, 0xb3b0adaaa7a4a29f, 0x9c999694918e8b89, 0x8684817f766b6055, 0x493e33281e150d06, 
+};
+static u8 length; // length of source string
+static u8 printer;
+static u8 oldIndex;
+static u8 oldChar;
+
+
+Asm_VanillaHook(TitleCard_InitPlaceName);
+void TitleCard_InitPlaceName(PlayState* play, TitleCardContext* titleCtx, void* texture, s32 x, s32 y, s32 width,
+                             s32 height, s32 delay) {
+    SceneTableEntry* loadedScene = play->loadedScene;
+    u32 size = loadedScene->titleFile.vromEnd - loadedScene->titleFile.vromStart;
+
+    if ((size != 0) && (size <= 0x3000)) {
+        DmaMgr_SendRequest1(texture, loadedScene->titleFile.vromStart, size, "../z_actor.c", 2765);
+    }
+
+    titleCtx->texture = texture;
+    titleCtx->x = x;
+    titleCtx->y = y;
+    titleCtx->width = width;
+    titleCtx->height = height;
+    titleCtx->durationTimer = 80;
+    titleCtx->delayTimer = delay;
+
+    if (titleCtx->texture != NULL)
+    {
+	//prepare titlecard vars
+    u8 *tex = titleCtx->texture;
+	printer = 0;
+	oldIndex = 0;
+	oldChar = tex[0];
+	tex = titleCtx->texture;
+	// get byte size of string (exluding zero terminator)
+	for (length = 0; tex[length]; ++length)
+	{
+	    switch (tex[length])
+	    {
+	        case '\x05': length += 4; break; // 05 rr gg bb aa
+	    }
+	}
+	}
+}
+
 
 Asm_VanillaHook(TitleCard_Draw);
 void TitleCard_Draw(PlayState* play, TitleCardContext* titleCtx, Gfx** gfxp) {
@@ -129,19 +175,17 @@ void TitleCard_Draw(PlayState* play, TitleCardContext* titleCtx, Gfx** gfxp) {
                 if (titleCtx->texture != NULL)
                 {
                     u8 *tex = titleCtx->texture;
-                    static u8 length; // length of source string
+
                     u8 curIndex = -1;
                     
                     // typewriter effect (the text gets 'printed' to the screen letter by letter)
                     // (done in-place by modifying a single string on the fly)
                     if (true)
                     {
-                        static u8 printer;
-                        static u8 oldIndex;
-                        static u8 oldChar;
+
                         
                         // TODO find a condition that works when (re)loading scenes etc
-                        //if (titleCtx->delayTimer == 0 && titleCtx->alpha == 0)
+                        
                         if (printer == 0) // temporary for testing
                         {
                             // this block should only run once, to prepare titlecard vars
