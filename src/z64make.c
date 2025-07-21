@@ -402,7 +402,7 @@ static ThreadFunc Object_Convert(const char* path) {
 		out,
 		(Ini_GetInt(&mem, "segment") << 24),
 		Ini_GetFloat(&mem, "scale"),
-		!prefixes ? "--noprefixes " : "",
+		!prefixes ? "--no-prefixes " : "",
 		header,
 		linker
 	);
