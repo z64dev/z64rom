@@ -298,5 +298,7 @@ s8 OvlMessage_GetBoxNum(void);
 #define DRAW_ANCHOR_DR DRAW_ANCHOR_D | DRAW_ANCHOR_R
 #define DRAW_ANCHOR_DL DRAW_ANCHOR_D | DRAW_ANCHOR_L
 #define DRAW_ANCHOR_UL DRAW_ANCHOR_U | DRAW_ANCHOR_L
+void Text_DrawShadowColor(Gfx** glistp, char const* fmt, f32 fontSize, f32 x, f32 y, u8 anchor, Font* fontBuf, Color_RGBA8* color);
+void Text_Finish(Gfx* gfx);
 
 #endif
