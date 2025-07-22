@@ -37,7 +37,7 @@ u64 gSceneTitleCardGradientTex[] = {
 static u32 presetGradientColors[] = {
     0x8c28a0ff, // 00 = mm titlecard color, default
     0x3250e6ff, // 01 = blue titlecard color, in the spirit of oot
-    0xffcc88ff, // 02 = orange, as an example and b/c orange is nice
+    0xff821eff, // 02 = orange, as an example and b/c orange is nice
     // z64rom users can add extra colors here
 };
 // select a text color by adding \x03\xYY to your titlecard.txt prefix,
@@ -45,6 +45,7 @@ static u32 presetGradientColors[] = {
 static u32 presetTextColors[] = {
     0xffffffff, // 00 = white, default
     0x000000ff, // 01 = black
+    0xff821eff, // 02 = orange, as an example and b/c orange is nice
     // z64rom users can add extra colors here
 };
 
@@ -58,11 +59,17 @@ static u32 presetTextColors[] = {
 // RR GG BB AA represent the RGBA of the text color you want
 // e.g. \x04\xff\x00\x00\xff for a very bright red text color
 
-// lastly, these prefix commands can be combined
-// for example: if you want to use the preset orange gradient with
-// red text that reads 'Hello World', you can combine the preset
-// orange gradient with the present black text color, like so:
-// \\\x01\x02\x04\xff\x00\x00\xff\\Hello World
+/*
+ * lastly, these prefix commands can be combined
+ * for example:
+ *  - prefix start          \\
+//  - builtin orange text   \x03\x02
+//  - custom red gradient   \x02\xff\x00\x00\xff
+//  - mooing cow sound      \x05\x28\xdf
+//  - prefix end            \\
+//  - text to display       Hello World
+// result: \\\x03\x02\x02\xff\x00\x00\xff\x05\x28\xdf\\Hello World
+*/
 
 //
 //
@@ -72,8 +79,9 @@ static struct
 {
 	u32 gradientColor;
 	u32 textColor;
+	u16 printer; // frames elapsed since init
+	u16 sfxId;
 	u8 length; // length of source string
-	u8 printer;
 	u8 oldIndex;
 	u8 oldChar;
 	bool isText;
@@ -107,6 +115,7 @@ void TitleCard_InitPlaceName(PlayState* play, TitleCardContext* titleCtx, void* 
         
         titleCardText.gradientColor = presetGradientColors[0];
         titleCardText.textColor = presetTextColors[0];
+        titleCardText.sfxId = 0xffff;
         
         /* handle prefixes for extended features like colors, sounds, etc
            - starts and ends with a backslash (\), allowing any value between
@@ -149,8 +158,10 @@ void TitleCard_InitPlaceName(PlayState* play, TitleCardContext* titleCtx, void* 
                         break;
                     
                     case 0x05: // play sound
-                        // FIXME this is WIP, need a sound function that plays nice
-                        func_80078884((tex[i + 1] << 8) | tex[i + 2]);
+                        // sfxId is stored and played later, b/c playing
+                        // during titlecard setup is not ideal (the game
+                        // silences sound effects played on this frame)
+                        titleCardText.sfxId = (tex[i + 1] << 8) | tex[i + 2];
                         i += 2;
                         break;
                 }
@@ -162,6 +173,7 @@ void TitleCard_InitPlaceName(PlayState* play, TitleCardContext* titleCtx, void* 
             titleCtx->texture = tex;
         }
         
+        // oldChar gets read *after* reading prefix b/c tex pointer may have moved
         titleCardText.printer = 0;
         titleCardText.oldIndex = 0;
         titleCardText.oldChar = tex[0];
@@ -243,13 +255,17 @@ void TitleCard_Draw(PlayState* play, TitleCardContext* titleCtx, Gfx** gfxp) {
                                     G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
             }
             
+            // frames elapsed since init
+            // (this is used for timings besides printing, such as playing sfx)
+            titleCardText.printer += 1;
+            
             // typewriter effect (the text gets 'printed' to the screen letter by letter)
             // (done in-place by modifying a single string on the fly)
             // (change to if (false) if you don't want the typewriter effect)
             if (true)
             {
                 // curIndex indicates the temporary end-of-string marker
-                curIndex = (++titleCardText.printer) / 1; // divide by 2 or 3 etc for slower printing if you want
+                curIndex = titleCardText.printer / 1; // divide by 2 or 3 etc for slower printing if you want
                 
                 // restore the old string before the current frame
                 tex[titleCardText.oldIndex] = titleCardText.oldChar;
@@ -261,6 +277,13 @@ void TitleCard_Draw(PlayState* play, TitleCardContext* titleCtx, Gfx** gfxp) {
                 // prematurely terminate the string here for one frame
                 if (curIndex < titleCardText.length)
                     tex[curIndex] = '\0';
+            }
+            
+            // play deferred sfx
+            if (titleCardText.sfxId != 0xffff && titleCardText.printer == titleCardText.length)
+            {
+                func_80078884(titleCardText.sfxId);
+                titleCardText.sfxId = 0xffff;
             }
             
             Gfx *gfx = Text_Begin();
