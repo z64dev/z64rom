@@ -288,4 +288,15 @@ s8 OvlMessage_SetBranch(OvlMessage* branch);
 s8 OvlMessage_GetChoice(Actor* actor);
 s8 OvlMessage_GetBoxNum(void);
 
+//Draw helpers
+#define DRAW_ANCHOR_C 0
+#define DRAW_ANCHOR_U (1 << 0)
+#define DRAW_ANCHOR_R (1 << 1)
+#define DRAW_ANCHOR_D (1 << 2)
+#define DRAW_ANCHOR_L (1 << 3)
+#define DRAW_ANCHOR_UR DRAW_ANCHOR_U | DRAW_ANCHOR_R
+#define DRAW_ANCHOR_DR DRAW_ANCHOR_D | DRAW_ANCHOR_R
+#define DRAW_ANCHOR_DL DRAW_ANCHOR_D | DRAW_ANCHOR_L
+#define DRAW_ANCHOR_UL DRAW_ANCHOR_U | DRAW_ANCHOR_L
+
 #endif

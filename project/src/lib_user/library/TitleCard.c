@@ -1,6 +1,5 @@
 #include <uLib.h>
 #include <code/game.h>
-#include "DrawString.c"
 //#include "scene_names.h"
 
 /*
@@ -21,6 +20,9 @@ typedef struct {
 
 #if MM_TITLECARD
 
+extern void Text_DrawShadowColor(Gfx** glistp, char const* fmt, f32 fontSize, f32 x, f32 y, u8 anchor, Font* fontBuf,
+                          Color_RGBA8* color);
+extern void Text_Finish(Gfx* gfx);
 
 u64 gSceneTitleCardGradientTex[] = {
     0xfcfbf9f8f6f5f3f1, 0xefedebe9e7e5e3e0, 0xdedbd9d6d4d1cfcc, 0xc9c7c4c1bebbb9b6, 0xb3b0adaaa7a4a29f, 0x9c999694918e8b89, 0x8684817f766b6055, 0x493e33281e150d06, 
