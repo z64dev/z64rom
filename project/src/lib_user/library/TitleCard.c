@@ -1,6 +1,5 @@
 #include <uLib.h>
 #include <code/game.h>
-#define SCANLINE_HEIGHT 1
 #include "DrawString.c"
 //#include "scene_names.h"
 
@@ -27,8 +26,54 @@ u64 gSceneTitleCardGradientTex[] = {
     0xfcfbf9f8f6f5f3f1, 0xefedebe9e7e5e3e0, 0xdedbd9d6d4d1cfcc, 0xc9c7c4c1bebbb9b6, 0xb3b0adaaa7a4a29f, 0x9c999694918e8b89, 0x8684817f766b6055, 0x493e33281e150d06, 
 };
 
+////////////////////////////////////////////////////////////////////////////
+//
+// prefix data and general how-to
+//
+//
+
+// select a gradient color by adding \x01\xYY to your titlecard.txt prefix,
+// where YY represents a value like 00 for mm, 01 for oot, 02 for orange, etc
+// e.g. if your titlecard.txt contains \\\x01\x02\\Hello World, you get
+// the text 'Hello World' on an orange gradient
+static u32 presetGradientColors[] = {
+    0x8c28a0ff, // 00 = mm titlecard color, default
+    0x3250e6ff, // 01 = blue titlecard color, in the spirit of oot
+    0xffcc88ff, // 02 = orange, as an example and b/c orange is nice
+    // z64rom users can add extra colors here
+};
+// select a text color by adding \x03\xYY to your titlecard.txt prefix,
+// where YY represents a value like 00 for white, 01 for black, etc
+static u32 presetTextColors[] = {
+    0xffffffff, // 00 = white, default
+    0x000000ff, // 01 = black
+    // z64rom users can add extra colors here
+};
+
+// totally custom gradient colors can be used by adding
+// \x02\xRR\xGG\xBB\xAA to your titlecard.txt prefix, where
+// RR GG BB AA represent the RGBA of the gradient color you want
+// e.g. \x02\xff\x00\x00\xff for a very bright red gradient
+
+// similarly, totally custom text colors can be used by adding
+// \x04\xRR\xGG\xBB\xAA to your titlecard.txt prefix, where
+// RR GG BB AA represent the RGBA of the text color you want
+// e.g. \x04\xff\x00\x00\xff for a very bright red text color
+
+// lastly, these prefix commands can be combined
+// for example: if you want to use the preset orange gradient with
+// red text that reads 'Hello World', you can combine the preset
+// orange gradient with the present black text color, like so:
+// \\\x01\x02\x04\xff\x00\x00\xff\\Hello World
+
+//
+//
+////////////////////////////////////////////////////////////////////////////
+
 static struct
 {
+	u32 gradientColor;
+	u32 textColor;
 	u8 length; // length of source string
 	u8 printer;
 	u8 oldIndex;
@@ -61,6 +106,63 @@ void TitleCard_InitPlaceName(PlayState* play, TitleCardContext* titleCtx, void* 
         // prepare titlecard vars
         u8 *tex = texture;
         int length;
+        
+        titleCardText.gradientColor = presetGradientColors[0];
+        titleCardText.textColor = presetTextColors[0];
+        
+        /* handle prefixes for extended features like colors, sounds, etc
+           - starts and ends with a backslash (\), allowing any value between
+           - in the titlecard.txt, that could look like this: \\\x01\x00\\
+        */
+        if (tex[0] == '\\')
+        {
+            int prefixBytes = 1;
+            
+            for (int i = 1; tex[i] != '\\'; prefixBytes = ++i)
+            {
+                switch (tex[i])
+                {
+                    case 0x01: // use preset gradient color from array
+                        titleCardText.gradientColor = presetGradientColors[tex[i + 1]];
+                        i += 1;
+                        break;
+                    
+                    case 0x02: // custom gradient color
+                        titleCardText.gradientColor =
+                            (tex[i + 1] << 24)
+                            | (tex[i + 2] << 16)
+                            | (tex[i + 3] << 8)
+                            | (tex[i + 4] << 0);
+                        i += 4;
+                        break;
+                    
+                    case 0x03: // use preset text color from array
+                        titleCardText.textColor = presetTextColors[tex[i + 1]];
+                        i += 1;
+                        break;
+                    
+                    case 0x04: // custom text color
+                        titleCardText.textColor =
+                            (tex[i + 1] << 24)
+                            | (tex[i + 2] << 16)
+                            | (tex[i + 3] << 8)
+                            | (tex[i + 4] << 0);
+                        i += 4;
+                        break;
+                    
+                    case 0x05: // play sound
+                        // FIXME this is WIP, need a sound function that plays nice
+                        func_80078884((tex[i + 1] << 8) | tex[i + 2]);
+                        i += 2;
+                        break;
+                }
+            }
+            
+            // now erase the prefix
+            // (this is safe; titleCtx->texture is not used for freeing the block it points to)
+            tex += prefixBytes + 1;
+            titleCtx->texture = tex;
+        }
         
         titleCardText.printer = 0;
         titleCardText.oldIndex = 0;
@@ -101,7 +203,7 @@ void TitleCard_Draw(PlayState* play, TitleCardContext* titleCtx, Gfx** gfxp) {
         if (titleCardText.isText)
         {
             u8 *tex = titleCtx->texture;
-            Color_RGBA8 col = {255,255,255,(u8)titleCtx->alpha};
+            Color_RGBA8 col = {titleCardText.textColor >> 24, titleCardText.textColor >> 16, titleCardText.textColor >> 8,(u8)titleCtx->alpha};
             u8 curIndex = -1;
             
             // draw the MM banner gradient across the screen
@@ -127,11 +229,7 @@ void TitleCard_Draw(PlayState* play, TitleCardContext* titleCtx, Gfx** gfxp) {
                 
                               
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 0, 0, 0, (u8)titleCtx->alpha);
-            #if USE_MM_GRADCOLOR == true
-                gDPSetEnvColor(OVERLAY_DISP++, 140, 40, 160, 255);
-            #else
-                gDPSetEnvColor(OVERLAY_DISP++, 50, 80, 230, 255);
-            #endif
+                gDPSetEnvColor(OVERLAY_DISP++, titleCardText.gradientColor >> 24, titleCardText.gradientColor >> 16, titleCardText.gradientColor >> 8, titleCardText.gradientColor);
                 
                 gDPLoadTextureBlock(OVERLAY_DISP++, gSceneTitleCardGradientTex, G_IM_FMT_I, G_IM_SIZ_8b, 64, 1, 0, G_TX_NOMIRROR | G_TX_WRAP, 
                                     G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
