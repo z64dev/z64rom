@@ -60,6 +60,16 @@ static u32 presetTextColors[] = {
 // e.g. \x04\xff\x00\x00\xff for a very bright red text color
 
 /*
+ * quick titlecard prefix command reference
+ *
+ *  \x01 - preset gradient color
+ *  \x02 - custom gradient color
+ *  \x03 - preset text color
+ *  \x04 - custom text color
+ *  \x05 - play a sound
+ */
+
+/*
  * lastly, these prefix commands can be combined
  * for example:
  *  - prefix start          \\
