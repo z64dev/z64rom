@@ -1468,6 +1468,11 @@ void Audio_BuildSequence(Rom* rom, Memfile* dataFile, Memfile* config) {
 		
 		fseq = fs_find(".aseq");
 		
+		// check for legacy zseq extension, if an aseq is not present
+		// (they're the same format, just different file extensions)
+		if (!fseq)
+			fseq = fs_find(".zseq");
+		
 		if (!g64.audioOnly) {
 			seqFlag[i] = 0;
 			for (int k = 0; k < flagList.num; k++) {
