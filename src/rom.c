@@ -364,6 +364,13 @@ Patch gPatch;
 static void Patch_Init() {
 	List list = List_New();
 	
+	// z64font support: create blank font data files if they don't exist yet
+	{
+		char *tmp;
+		if (!sys_stat((tmp = "patch/z64font.width_table"))) sys_touch(tmp);
+		if (!sys_stat((tmp = "patch/z64font.font_static"))) sys_touch(tmp);
+	}
+	
 	List_SetFilters(&list, CONTAIN_END, ".cfg");
 	List_Walk(&list, "patch/", -1, LIST_FILES | LIST_NO_DOT);
 	gPatch.config.file = calloc(sizeof(struct Memfile) * list.num);
