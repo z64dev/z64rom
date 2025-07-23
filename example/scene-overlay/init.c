@@ -65,4 +65,3 @@ void Init(PlayState* play)
 
     CLOSE_DISPS(play->state.gfxCtx, "../z_scene_table.c", 7044);
 }
-#endif
