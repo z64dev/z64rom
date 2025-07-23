@@ -2240,8 +2240,22 @@ void Make_Code(void) {
 			.callback = Callback_Code,
 			.multiFileProcess = false,
 		},{
+			.src = "src/actor/.vanilla/",
+			.rom = "rom/actor/.vanilla/",
+			.gccFlag = g64.gccFlags.actor,
+			.ldFlag = g64.linkerFlags.code,
+			.callback = Callback_Overlay,
+			.multiFileProcess = true,
+		},{
 			.src = "src/actor/",
 			.rom = "rom/actor/",
+			.gccFlag = g64.gccFlags.actor,
+			.ldFlag = g64.linkerFlags.code,
+			.callback = Callback_Overlay,
+			.multiFileProcess = true,
+		},{
+			.src = "src/effect/.vanilla/",
+			.rom = "rom/effect/.vanilla/",
 			.gccFlag = g64.gccFlags.actor,
 			.ldFlag = g64.linkerFlags.code,
 			.callback = Callback_Overlay,
