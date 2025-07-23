@@ -1,6 +1,6 @@
 #include "uLib.h"
 #include "SceneRender.h"
-//Version: 1.2
+//Version: 1.3
 /*This version value is used by SharpOcarina to determine if it needs to update the SceneRender.c of an old project
 to use newly added features. Put a high value like 99 if you want SharpOcarina to stop asking if you want to update.
 */
@@ -491,6 +491,33 @@ static AnimInfo* SceneAnim_GetSceneAnimCommand(void* _scene) {
     return NULL;
 }
 
+static inline void SceneAnim_Overlay(PlayState *play, struct SceneOvl *sovl)
+{
+    // not yet relocated (not a ram address)
+    if (!(sovl->u.main & 0x80000000))
+    {
+        u8 *scene  = (u8*)play->sceneSegment;
+        u8 *start  = scene + sovl->start;
+        u8 *end    = scene + sovl->end;
+        u8 *header = end - ((u32*)(end))[-1];
+        u32 main   = sovl->u.main;
+        u32 size   = end - start;
+        
+        // relocate overlay from virtual ram to physical ram
+        Overlay_Relocate(start, (void*)header, (void*)0x80800000);
+        
+        // clear instruction cache for memory region occupied by overlay
+        osWritebackDCache(start, size);
+        osInvalICache(start, size);
+        
+        // update exec to point to main routine
+        sovl->u.exec = (void (*)(void*))(scene + main);
+    }
+    
+    // run main routine
+    sovl->u.exec(play);
+}
+
 static void SceneAnim_UnusedDL(Gfx** disp) {
     gDPNoOp((*disp)++);
     gSPEndDisplayList((*disp)++);
@@ -524,6 +551,11 @@ void SceneAnim_Update(PlayState* play) {
             SegmentData(i, head);
         }
         
+        return;
+    }
+    // scene overlay format: first (and only) item in list should be type 0xffff
+    else if (gSceneAnimCtx.animInfoList->type == 0xffff) {
+        SceneAnim_Overlay(play, SEGMENTED_TO_VIRTUAL(gSceneAnimCtx.animInfoList->data));
         return;
     }
     

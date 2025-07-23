@@ -3,6 +3,7 @@ compile_flags.txt
 rom/*
 *.z64
 *.sh
+!example/**/*.sh
 prvFileList
 *.lnk
 *.wav
