@@ -3,7 +3,7 @@ mips64-ultra-elf-gcc -G 0 -nostdinc -DNDEBUG -Iinclude/z64hdr/include -Iinclude/
 
 # link
 touch entry.ld
-mips64-ultra-elf-ld --emit-relocs -o tmp.elf tmp.o -defsym ENTRY_POINT=0x80800000 -Linclude/z64hdr/oot_mq_debug -L include/z64hdr/common/ -T z64hdr.ld
+mips64-ultra-elf-ld --emit-relocs -o tmp.elf tmp.o -defsym ENTRY_POINT=0x80800000 -Linclude/z64hdr/oot_mq_debug -L include/z64hdr/common/ -T z64hdr_no_bss.ld
 
 # generate overlay
 ./novl -v -c -A 0x80800000 -o init.zovl tmp.elf
