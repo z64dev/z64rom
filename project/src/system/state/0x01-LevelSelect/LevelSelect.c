@@ -82,6 +82,8 @@ void Select_LoadGame(MapSelectState* this, u8 sceneIndex) {
 
 void Select_UpdateMenu(MapSelectState* this) {
     Input* input = &this->state.input[0];
+    s32 stickY;
+    s32 updateRate;
     
     if (this->verticalInputAccumulator == 0) {
         if (CHECK_BTN_ALL(input->press.button, BTN_A) || CHECK_BTN_ALL(input->press.button, BTN_START)) {
@@ -155,22 +157,28 @@ void Select_UpdateMenu(MapSelectState* this) {
             gSaveContext.nightFlag = 1;
         }
         
-        if (CHECK_BTN_ALL(input->press.button, BTN_DUP)) {
-            if (this->lockUp == true) {
-                this->timerUp = 0;
-            }
-            if (this->timerUp == 0) {
-                this->timerUp = 20;
-                this->lockUp = true;
-                Audio_PlaySfxGeneral(
-                    NA_SE_IT_SWORD_IMPACT,
-                    &gSfxDefaultPos,
-                    4,
-                    &gSfxDefaultFreqAndVolScale,
-                    &gSfxDefaultFreqAndVolScale,
-                    &gSfxDefaultReverb
-                );
-                this->verticalInput = R_UPDATE_RATE;
+        updateRate = R_UPDATE_RATE;
+        stickY = input->rel.stick_y;
+        if (stickY != 0) {
+            this->verticalInput = (updateRate * stickY) / 7;
+        } else { 
+            if (CHECK_BTN_ALL(input->press.button, BTN_DUP)) {
+                if (this->lockUp == true) {
+                    this->timerUp = 0;
+                }
+                if (this->timerUp == 0) {
+                    this->timerUp = 20;
+                    this->lockUp = true;
+                    Audio_PlaySfxGeneral(
+                        NA_SE_IT_SWORD_IMPACT,
+                        &gSfxDefaultPos,
+                        4,
+                        &gSfxDefaultFreqAndVolScale,
+                        &gSfxDefaultFreqAndVolScale,
+                        &gSfxDefaultReverb
+                    );
+                    this->verticalInput = R_UPDATE_RATE;
+                }
             }
         }
         
