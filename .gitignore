@@ -39,3 +39,5 @@ project/tools/n64log.js
 !project/.vscode
 !project/compile_flags.txt
 test_package
+!project/src/actor/.vanilla
+!project/src/effect/.vanilla
