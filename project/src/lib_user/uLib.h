@@ -36,6 +36,9 @@
 // Use MM style titlecards
 #define MM_TITLECARD false
 
+// Enable motion blur + motion blur cutscene command
+#define MOTION_BLUR true
+
 // Interface Stuff
 // MM-Styled Interface (Corrdinates)
 #define Patch_MM_INTERFACE_BUTTONS_CORDS true
@@ -300,5 +303,9 @@ s8 OvlMessage_GetBoxNum(void);
 #define DRAW_ANCHOR_UL DRAW_ANCHOR_U | DRAW_ANCHOR_L
 void Text_DrawShadowColor(Gfx** glistp, char const* fmt, f32 fontSize, f32 x, f32 y, u8 anchor, Font* fontBuf, Color_RGBA8* color);
 void Text_Finish(Gfx* gfx);
+
+#if MOTION_BLUR
+    #define motionBlurAlpha unk_12428[0]
+#endif
 
 #endif
