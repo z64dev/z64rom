@@ -9,7 +9,7 @@ void Actor_Draw(PlayState* play, Actor* actor) {
     FaultClient faultClient;
     Lights* lights;
 
-    Fault_AddClient(&faultClient, Actor_FaultPrint, actor, gBlankString/*"Actor_draw"*/);
+    //Fault_AddClient(&faultClient, gBlankString /*Actor_FaultPrint*/, actor, gBlankString/*"Actor_draw"*/);
 
     OPEN_DISPS(play->state.gfxCtx, gBlankString, 0);
 

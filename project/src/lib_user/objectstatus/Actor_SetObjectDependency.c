@@ -5,6 +5,7 @@
    z64rom = 0xAA47E4
  */
 
+Asm_VanillaHook(Actor_SetObjectDependency);
 void Actor_SetObjectDependency(PlayState* play, Actor* actor) {
     gSegments[6] = VIRTUAL_TO_PHYSICAL(play->objectCtx.status[actor->objBankIndex].segment);
 }

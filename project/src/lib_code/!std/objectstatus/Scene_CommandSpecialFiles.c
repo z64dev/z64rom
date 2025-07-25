@@ -1,4 +1,5 @@
 #include <uLib.h>
+#include <code/z_scene.h>
 
 /*
    z64ram = 0x8009883C

@@ -1,4 +1,5 @@
 #include <uLib.h>
+#include <assets/objects/object_link_boy/object_link_boy.h>
 
 /*
    z64ram = 0x80090AFC
