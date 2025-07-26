@@ -2398,7 +2398,7 @@ void Make(Rom* rom, s32 message) {
 	}
 	
 	flag = g64.gccFlags.main;
-	g64.gccFlags.main = fmt("%s -D__z64rom__=1", flag);
+	g64.gccFlags.main = fmt("%s -D__z64rom__=1 -DZ64ROM_VERSION=%d", flag, Z64ROM_VERSION_NUMBER);
 	delete(flag);
 	
 	Make_Enum();
