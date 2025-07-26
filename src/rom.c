@@ -1885,12 +1885,12 @@ static void Build_SizeofPlayer(Rom* rom)
 #endif
 	
 	sys_exes(x_fmt(
-		"%s -G 0 -nostdinc -DNDEBUG -Iinclude/z64hdr/include -Iinclude/z64hdr/oot_mq_debug"
+		"%s -G 0 -nostdinc -DNDEBUG -I. -Iinclude/z64hdr/include -Iinclude/z64hdr/oot_mq_debug"
 		" -Os -s --std=gnu99 -march=vr4300 -mfix4300 -mabi=32 -mno-abicalls -mdivide-breaks"
 		" -fno-zero-initialized-in-bss -fno-toplevel-reorder -ffreestanding -fno-common"
 		" -fno-merge-constants -mno-explicit-relocs -mno-split-addresses -funsigned-char"
-		" -mno-memcpy -c %s.c -o %s.o",
-		Tools_Get(mips64_gcc), fn, fn));
+		" -mno-memcpy -DZ64ROM_VERSION=%d -c %s.c -o %s.o",
+		Tools_Get(mips64_gcc), Z64ROM_VERSION_NUMBER, fn, fn));
 	dump = sys_exes(x_fmt("%s -s %s.o", Tools_Get(mips64_objdump), fn));
 	
 	match = strstr(dump, STR_DEADBEEF);

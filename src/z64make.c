@@ -2377,6 +2377,39 @@ void Make(Rom* rom, s32 message) {
 		delete(flag);
 	}
 	
+	// create this file if it doesn't exist
+	if (!sys_stat("player_extras.h")) {
+		FILE* m = FOPEN("player_extras.h", "w");
+		
+		fputs(
+R"(//
+// player_extras.h
+//
+// any variables declared here will be added
+// as Player struct members during compilation
+//
+// this file exists as a portable alternative
+// to modifying your z64hdr installation directly
+//
+// also do not #include here, as this file is
+// strictly for defining variables
+//
+// if you need to access custom data types that
+// are not in z64hdr, declare them in uLib.h
+// anywhere above #include <z64hdr.h>, and then
+// simply #include <uLib.h> in actors that use them
+//
+
+/* -------- example --------
+
+void *somethingUseful; // add variables and
+int someCounter; // comments as you normally would
+
+ -------- example -------- */
+)", m);
+		fclose(m);
+	}
+	
 	const char* flag = g64.gccFlags.main;
 	g64.gccFlags.main = fmt("%s -I.", flag);
 	delete(flag);
