@@ -109,6 +109,9 @@ void uLib_Update(GameState* gameState);
 void* memset(void* m, int v, unsigned int s);
 f32 fmodf(f32, f32);
 
+extern char gBlankString[1];
+asm("gBlankString = 0x8012602C;");
+
 #define DEFAULT_REVERB 0.35f
 #define DEFAULT_RANGE  800.0f
 

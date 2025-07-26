@@ -1,6 +1,9 @@
 #ifndef __Z64ROM_H__
 #define __Z64ROM_H__
 
+#define Z64ROM_VERSION_STRING "1.7.0"
+#define Z64ROM_VERSION_NUMBER 1007000 // x,yyy,zzz (major, minor, patch)
+
 #include <ext_lib.h>
 #include "rom.h"
 #include "dma.h"

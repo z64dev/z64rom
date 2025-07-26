@@ -2240,8 +2240,22 @@ void Make_Code(void) {
 			.callback = Callback_Code,
 			.multiFileProcess = false,
 		},{
+			.src = "src/actor/.vanilla/",
+			.rom = "rom/actor/.vanilla/",
+			.gccFlag = g64.gccFlags.actor,
+			.ldFlag = g64.linkerFlags.code,
+			.callback = Callback_Overlay,
+			.multiFileProcess = true,
+		},{
 			.src = "src/actor/",
 			.rom = "rom/actor/",
+			.gccFlag = g64.gccFlags.actor,
+			.ldFlag = g64.linkerFlags.code,
+			.callback = Callback_Overlay,
+			.multiFileProcess = true,
+		},{
+			.src = "src/effect/.vanilla/",
+			.rom = "rom/effect/.vanilla/",
 			.gccFlag = g64.gccFlags.actor,
 			.ldFlag = g64.linkerFlags.code,
 			.callback = Callback_Overlay,
@@ -2384,7 +2398,7 @@ void Make(Rom* rom, s32 message) {
 	}
 	
 	flag = g64.gccFlags.main;
-	g64.gccFlags.main = fmt("%s -D__z64rom__=1", flag);
+	g64.gccFlags.main = fmt("%s -D__z64rom__=1 -DZ64ROM_VERSION=%d", flag, Z64ROM_VERSION_NUMBER);
 	delete(flag);
 	
 	Make_Enum();

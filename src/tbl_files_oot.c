@@ -2,11 +2,11 @@
 
 const char* gOoT_Object[] = {
 	"Empty",
-	"GamePlay_Global",
-	"GamePlay_Field",
-	"GamePlay_Dungeon",
-	"Empty",
-	"Empty",
+	"Gameplay_Keep",
+	"Gameplay_Field",
+	"Gameplay_Dungeon",
+	"Empty", // (Big) Stalfos. Shifted to new slot in around September 1997
+	"Empty", // Iron Knuckle, Nulled January, 1997
 	"Aria",
 	"Octorok",
 	"Guay",
@@ -17,8 +17,8 @@ const char* gOoT_Object[] = {
 	"Keese",
 	"Treasure_Chest",
 	"Dancing_Flame",
-	"Empty",
-	"Empty",
+	"Empty", // Slimes. Nulled post summer 1997 (past Spaceworld 97)
+	"Empty", // Baby Stalfos. May be early concept for Stalchildren. Nulled early 1997
 	"Shabom",
 	"Cucco",
 	"Adult_Link",
@@ -121,19 +121,19 @@ const char* gOoT_Object[] = {
 	"Empty",
 	"Flagpole",
 	"Brown_Bird",
-	"Empty",
-	"Empty",
-	"Empty",
-	"Empty",
+	"Empty", // A tree. Nulled early 1997(?)
+	"Empty", // Stump. Nulled early 1997(?)
+	"Empty", // Its LOG! Nulled early 1997(?)
+	"Empty", // Fencepost. Nulled early 1997(?)
 	"Bushes_&_Trees",
-	"Empty",
-	"Empty",
-	"Empty",
-	"Empty",
+	"Empty", // Old Kokiri Forest Log. Nulled presumably late 1997 (post-spaceworld 97)
+	"Empty", // Another Stump. Nulled same time as the log above (late 1997, post-spaceworld 97)
+	"Empty", // A board. Present in OOT3D, but unused. Nulled early 1997(?)
+	"Empty", // Floater. No idea. Collision is present in OOT3D, but unused. Nulled early 1997(?)
 	"Rectangular_Stone_Blocks_Light_Grey",
 	"Rectangular_Stone_Blocks_Dark_Grey",
-	"Empty",
-	"Empty",
+	"Empty", // Rolling Sphere. Present in OOT3D, but unused. 3D version of the spikes from LTTP. Nulled early 1997(?)
+	"Empty", // Stone Bridge. Present in OOT3d, but unused. Nulled early 1997(?)
 	"Blade_Trap",
 	"Orange_Pot",
 	"Impa",
@@ -406,13 +406,13 @@ const char* gOoT_Object[] = {
 };
 
 const char* gOoT_Actor[] = {
-	"Link_Spawn_point",
-	"Empty",
+	"Link_Spawn_point", // Never gets dumped. Doesn't matter. Reserved
+	"Empty", // Player
 	"Stalfos",
-	"Empty",
-	"Shops",
-	"Empty",
-	"Empty",
+	"Empty", 
+	"Shops", // Used to be White Dressed Aria
+	"Empty", 
+	"Empty", // Baby Stalfos
 	"Disintegrating_Blue_Flame",
 	"Flame",
 	"Wooden_Door",
