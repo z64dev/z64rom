@@ -5,8 +5,9 @@
 //
 // examples & tips:
 //
-//  - if you're using a custom Play_Update() implementation in your project,
-//    be sure to add EasyTalkFlush(play) immediately after Message_Update(play)
+//  - if you're updating an existing project, please open OvlMessage.c and
+//    ensure the Message_OpenText() function has EasyTalkFlush(playState);
+//    at the end of the function
 //
 // - add this line of code to your npc's update() hook for a basic textbox:
 //      EasyTalkNpcString(&this->actor, play, 100, "Hello, world!");
