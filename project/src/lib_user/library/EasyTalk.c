@@ -102,8 +102,7 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg)
 	{
 		active = actor;
 		
-		if (msg->text)
-			sEasyTalkQueuedString = msg->text;
+		sEasyTalkQueuedString = msg->text;
 		
 		// invoke callback on starting to talk
 		if (msg->onOpen)
@@ -119,7 +118,9 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg)
 		
 		if (state == TEXT_STATE_CLOSING)
 		{
-			// XXX this callback may be run more than once, need more testing
+			// ensure this block will only be entered once per close
+			active = 0;
+			
 			if (msg->onClose)
 				msg->onClose(actor, play);
 			
