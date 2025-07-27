@@ -222,7 +222,7 @@ void NewRoom_Draw(PlayState* play, Room* room, u32 flags);
 
 void EasyTalkOverrideString(PlayState *play, const char *string);
 void EasyTalkFlush(PlayState *play);
-int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg);
+int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *msg);
 int EasyTalkNpcString(Actor *actor, PlayState *play, float distance, const char *msg);
 
 typedef enum {
