@@ -175,4 +175,13 @@ typedef struct {
     f32       length;
 } Chain;
 
+typedef struct EasyTalk
+{
+    const char *text;
+    u16 id; // id only needed if you need to track which message is on-screen
+    struct EasyTalk *choices;
+    ActorFunc onOpen; // callback is fired when textbox opens
+    ActorFunc onClose; // callback is fired when textbox closes
+} EasyTalk;
+
 #endif

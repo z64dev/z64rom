@@ -213,6 +213,18 @@ void Play_SetFadeOut(PlayState* play);
 struct Time Play_GetTime(void);
 void NewRoom_Draw(PlayState* play, Room* room, u32 flags);
 
+#define EASYTALK_STARTED   100
+#define EASYTALK_CLOSING   200
+#define EASYTALK_CHOICE_1  1
+#define EASYTALK_CHOICE_2  2
+#define EASYTALK_CHOICE_3  3
+#define EASYTALK_NO_EVENT  0
+
+void EasyTalkOverrideString(PlayState *play, const char *string);
+void EasyTalkFlush(PlayState *play);
+int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg);
+int EasyTalkNpcString(Actor *actor, PlayState *play, float distance, const char *msg);
+
 typedef enum {
     OVL_MSG_TALK,
     OVL_MSG_CHECK,
@@ -261,6 +273,7 @@ typedef enum {
 #define MSG_TEXT_SPEED(x)        "\x14" x // 1
 #define MSG_HIGHSCORE(x)         "\x1E" x // 1
 
+#define MSG_END           "\x02"
 #define MSG_INSTANT_ON    "\x08"
 #define MSG_INSTANT_OFF   "\x09"
 #define MSG_PERSISTENT    "\xFA"
@@ -271,8 +284,8 @@ typedef enum {
 #define MSG_RACE_TIME     "\x17"
 #define MSG_POINTS        "\x18"
 #define MSG_TOKENS        "\x19"
-#define MSG_TWO_CHOICE    "\x02"
-#define MSG_THREE_CHOICE  "\x03"
+#define MSG_TWO_CHOICE    "\x1B"
+#define MSG_THREE_CHOICE  "\x1C"
 #define MSG_FISH_INFO     "\x1D"
 #define MSG_TIME          "\x1F"
 

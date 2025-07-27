@@ -1217,6 +1217,7 @@ void Play_Update(PlayState* play) {
                 GameOver_Update(play);
             } else {
                 Message_Update(play);
+                EasyTalkFlush(play);
             }
             
             Interface_Update(play);
