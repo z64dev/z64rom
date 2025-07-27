@@ -34,6 +34,7 @@ help = [
 	"", # ARG_MAKE_ONLY
 	"强制構建一切", # ARG_FORCE
 	"强制執行make指令", # ARG_FORCE_CODE
+	"强制執行make聲音的", # ARG_FORCE_AUDIO
 	"清除構建", # ARG_CLEAN
 	"構建指定目標\u001B[90m --target code/object/audio", # ARG_TARGET
 	"指定構建綫程數\u001B[90m --threads 16", # ARG_THREADS

@@ -34,6 +34,7 @@ help = [
 	"", # ARG_MAKE_ONLY
 	"force make all", # ARG_FORCE
 	"force make code", # ARG_FORCE_CODE
+	"force make audio", # ARG_FORCE_AUDIO
 	"clean make products", # ARG_CLEAN
 	"make target\u001B[90m code/object/audio", # ARG_TARGET
 	"num of threads\u001B[90m --threads 16", # ARG_THREADS

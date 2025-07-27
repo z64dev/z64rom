@@ -336,6 +336,7 @@ typedef struct {
 	
 	const char* makeTarget;
 	s8 makeForce;
+	s8 makeForceAudio;
 	s8 makeOnly;
 	s8 noMake;
 	

@@ -1374,6 +1374,10 @@ Exit ArgParse(Rom* rom, const s32 narg, const char** arg) {
 				gForceCodeMake = true;
 				break;
 				
+			case ARG_FORCE_AUDIO:
+				g64.makeForceAudio = true;
+				break;
+				
 			case ARG_CLEAN:
 				Clean_Make();
 				

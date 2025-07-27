@@ -583,7 +583,7 @@ static ThreadFunc Sequence_Convert(const char* file) {
 	
 	Memfile_LoadStr(mem, inCfg);
 	
-	if (strend(srcFile, ".mid")) {
+	if (strend(srcFile, ".mid") || g64.makeForceAudio )  {
 		if (strstr(mem->str, "[seq64]")) {
 			Ini_GotoTab("seq64");
 			if (Ini_Var(mem->str, "master_volume"))
@@ -746,7 +746,7 @@ static ThreadFunc Sound_Convert(const char* path) {
 		}
 	}
 	
-	if (vadpcm == NULL || (sys_stat(config) > sys_stat(vadpcm)) || (sys_stat(audio) > sys_stat(vadpcm)) || g64.makeForce) {
+	if (vadpcm == NULL || (sys_stat(config) > sys_stat(vadpcm)) || (sys_stat(audio) > sys_stat(vadpcm)) || g64.makeForceAudio) {
 		if (vadpcm == NULL)
 			vadpcm = x_fmt("%ssample.bin", x_rep(path, "src/", "rom/"));
 		else
