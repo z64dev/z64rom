@@ -182,6 +182,7 @@ typedef struct EasyTalk
     struct EasyTalk *choices;
     ActorFunc onOpen; // callback is fired when textbox opens
     ActorFunc onClose; // callback is fired when textbox closes
+                       // (doubles as onChoose, for option textboxes)
 } EasyTalk;
 
 #endif

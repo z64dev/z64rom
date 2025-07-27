@@ -137,6 +137,10 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg)
 			if (msg->id == 0)
 				msg->id = (id |= (play->msgCtx.choiceIndex + 1) << 8);
 			
+			// onClose doubles as onChoose, for option textboxes
+			if (msg->onClose)
+				msg->onClose(actor, play);
+			
 			if (msg->text)
 			{
 				actor->textId = id;
