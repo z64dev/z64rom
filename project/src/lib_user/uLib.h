@@ -232,12 +232,12 @@ typedef enum {
 
 typedef enum {
     MSGBOX_TYPE_BLACK,
-    MSGBOX_TYPE_WOODEN,
-    MSGBOX_TYPE_BLUE,
-    MSGBOX_TYPE_OCARINA,
-    MSGBOX_TYPE_NONE_BOTTOM,
-    MSGBOX_TYPE_NONE_NO_SHADOW,
-    MSGBOX_TYPE_CREDITS = 11
+    MSGBOX_TYPE_WOODEN          =  1 << 4,
+    MSGBOX_TYPE_BLUE            =  2 << 4,
+    MSGBOX_TYPE_OCARINA         =  3 << 4,
+    MSGBOX_TYPE_NONE_BOTTOM     =  4 << 4,
+    MSGBOX_TYPE_NONE_NO_SHADOW  =  5 << 4,
+    MSGBOX_TYPE_CREDITS         = 11 << 4
 } MsgBoxType;
 
 typedef enum {

@@ -98,10 +98,6 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *m
 	static Actor *active = 0;
 	u16 id = 0xfffc;//msg->id;
 	
-	// TODO styles
-	//if (id == 0)
-	//	id = 0xA000;
-	
 	// style for message 0xfffc
 	*((u8*)0x8014F532) = msg->style;
 	
