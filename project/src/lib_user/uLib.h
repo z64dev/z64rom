@@ -233,6 +233,7 @@ void EasyTalkSetNaviActorDescriptionString(Actor *actor, PlayState *play, const 
 	(EasyTalkNpc)(ACTOR, PLAY, &(EasyTalkNpcArgs) { \
 		EasyTalkNpcArgsDefaults __VA_ARGS__ \
 	})
+_Pragma("GCC diagnostic ignored \"-Woverride-init\"") // for functions w/ optional arguments
 
 typedef enum {
     OVL_MSG_TALK,

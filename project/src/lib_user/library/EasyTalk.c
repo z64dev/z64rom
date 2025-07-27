@@ -149,14 +149,11 @@ int (EasyTalkNpc)(Actor *actor, PlayState *play, const EasyTalkNpcArgs *args)
 	const EasyTalk *msg = args->robust;
 	float distance = args->distance;
 	u8 style = args->style;
-	EasyTalk msgFromString; // allocate in case we need it
+	EasyTalk msgFromString = { args->string };
 	
 	// user used string instead of robust
 	if (!msg)
-	{
-		msgFromString = (EasyTalk) { EasyTalkNpcArgsDefaults, .string = args->string };
 		msg = &msgFromString;
-	}
 	
 	// might refactor active -> play->msgCtx->talkActor
 	// eventually, if doing so doesn't break anything
