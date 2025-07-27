@@ -583,7 +583,7 @@ static ThreadFunc Sequence_Convert(const char* file) {
 	
 	Memfile_LoadStr(mem, inCfg);
 	
-	if (strend(srcFile, ".mid") || g64.makeForceAudio )  {
+	if (strend(srcFile, ".mid"))  {
 		if (strstr(mem->str, "[seq64]")) {
 			Ini_GotoTab("seq64");
 			if (Ini_Var(mem->str, "master_volume"))
