@@ -41,9 +41,9 @@
 //
 // - choices can be further nested if you want more complex dialogue trees
 //
-// - when instantiating an EasyTalk struct, the 'id' field is for your
-//   own use; if you don't need any specific textbox to inherit properties
-//   from, feel free to leave it initialized to the default 0
+// - when instantiating an EasyTalk struct, the 'style' field is optional
+//   (the default 0 will give a standard npc textbox with dynamic placement)
+//   but you can specify styles e.g. MSGBOX_TYPE_WOODEN | MSGBOX_POS_MIDDLE
 //
 // - control codes can either be hex, or use control code macros
 //   e.g. "\x05\x01" "this text is red" "\x02"
