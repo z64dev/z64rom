@@ -25,7 +25,11 @@
             case EASYTALK_CHOICE_2: gSaveContext.zTargetSetting = 0; break;
         }
 //
-// - choices can also be nested if you want complex dialogue trees
+// - choices can be further nested if you want more complex dialogue trees
+//
+// - when instantiating an EasyTalk struct, the 'id' field is for your
+//   own use; if you don't need any specific textbox to inherit properties
+//   from, feel free to leave it initialized to the default 0
 //
 // - control codes can either be hex, or use control code macros
 //   e.g. "\x05\x01" "this text is red" "\x02"
@@ -35,6 +39,7 @@
 //   https://wiki.cloudmodding.com/oot/Text_Format#Control_Codes
 //
 // - control code macros: (see uLib.h)
+//   https://github.com/z64utils/z64rom/blob/2f39822f2acc54e7626878ea6dadc694a24afdb6/project/src/lib_user/uLib.h#L250-L290
 */
 
 #include <uLib.h>
