@@ -12,6 +12,16 @@
 // - add this line of code to your npc's update() hook for a basic textbox:
 //      EasyTalkNpcString(&this->actor, play, 100, "Hello, world!");
 //
+// - you can have text be triggered instantly (aka the player does not have
+//   to interact with the actor or press A in order to show the textbox) by
+//   using EASYTALK_DISTANCE_ACTIVATE_INSTANTLY for distance:
+//      EasyTalkNpcString(&this->actor, play,
+//                        EASYTALK_DISTANCE_ACTIVATE_INSTANTLY,
+//                        "Hello, world!");
+//  you would want to manage states in your actor and only use this feature
+//  conditionally, otherwise it will be continually reactivated (callbacks
+//  are a good way to facilitate state changes for things like this)
+//
 // - you can also assign any actor you can z-target a navi description like so:
 //      EasyTalkSetNaviActorDescriptionString(&this->actor, play, "Hello!");
 //
@@ -44,6 +54,14 @@
 //
 // - control code macros: (see uLib.h)
 //   https://github.com/z64utils/z64rom/blob/2f39822f2acc54e7626878ea6dadc694a24afdb6/project/src/lib_user/uLib.h#L250-L290
+//
+// - one benefit to using hex control codes is Zelda64-Text-Editor can
+//   easily generate them for you; it's a WYSIWYG text editor for oot/mm
+//   that does a great job showing you how your text will look in-game,
+//   and editing compatible strings is as easy as:
+//      copy: right-click -> copy C code
+//      paste: right-click -> paste C code
+//   download it here: https://github.com/skawo/Zelda64-Text-Editor
 */
 
 #include <uLib.h>
@@ -177,15 +195,15 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *m
 		// this runs once, upon talking
 		if (Actor_ProcessTalkRequest(actor, play)
 			// or instantly, if this constant was passed in
-			|| distance == EASYTALK_DISTANCE_ACTIVATE_AUTOMATICALLY
+			|| distance == EASYTALK_DISTANCE_ACTIVATE_INSTANTLY
 		)
 		{
 			active = actor;
 			
 			EasyTalkQueueOverrideString(msg->text);
 			
-			// activated automatically
-			if (distance == EASYTALK_DISTANCE_ACTIVATE_AUTOMATICALLY)
+			// activated instantly, aka input from player is required
+			if (distance == EASYTALK_DISTANCE_ACTIVATE_INSTANTLY)
 				Message_StartTextbox(play, id, actor);
 			
 			// invoke callback on starting to talk

@@ -220,8 +220,8 @@ void NewRoom_Draw(PlayState* play, Room* room, u32 flags);
 #define EASYTALK_CHOICE_3    3
 #define EASYTALK_NO_EVENT    0     // no event has taken place
 
-// feed this distance into EasyTalkNpc() to activate the textbox automatically
-#define EASYTALK_DISTANCE_ACTIVATE_AUTOMATICALLY -123456.0f
+// feed this distance into EasyTalkNpc() to activate the textbox instantly
+#define EASYTALK_DISTANCE_ACTIVATE_INSTANTLY -123456.0f
 
 void EasyTalkOverrideString(PlayState *play, const char *string);
 void EasyTalkFlush(PlayState *play);
