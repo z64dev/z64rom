@@ -12,7 +12,7 @@
 //      EasyTalkNpcString(&this->actor, play, 100, "Hello, world!");
 //
 // - here's an example of asking the player to make a choice and processing it:
-        switch (EasyNpcTalk(&en->actor, globalCtx, 100, &(EasyTalk) {
+        switch (EasyTalkNpc(&en->actor, globalCtx, 100, &(EasyTalk) {
             "So, how do you like your Z-Targeting?\x01\x01\x1B\x05\x42"
             "Hold\x01"
             "Switch\x05\x40\x02",
