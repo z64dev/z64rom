@@ -121,25 +121,13 @@ void EasyTalkSetNaviActorDescriptionString(Actor *actor, PlayState *play, const 
 
 int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *msg)
 {
+	// might refactor active -> play->msgCtx->talkActor
+	// eventually, if doing so doesn't break anything
 	static Actor *active = 0;
 	u16 id = 0xfffc;//msg->id;
 	
 	// style for message 0xfffc
 	*((u8*)0x8014F532) = msg->style;
-	
-	// this runs once, upon talking
-	if (Actor_ProcessTalkRequest(actor, play))
-	{
-		active = actor;
-		
-		EasyTalkQueueOverrideString(msg->text);
-		
-		// invoke callback on starting to talk
-		if (msg->onOpen)
-			msg->onOpen(actor, play);
-		
-		return EASYTALK_OPENED;
-	}
 	
 	// only allow active npc to capture these events
 	if (active == actor)
@@ -182,6 +170,29 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *m
 			}
 			
 			return play->msgCtx.choiceIndex + EASYTALK_CHOICE_1;
+		}
+	}
+	else
+	{
+		// this runs once, upon talking
+		if (Actor_ProcessTalkRequest(actor, play)
+			// or instantly, if this constant was passed in
+			|| distance == EASYTALK_DISTANCE_ACTIVATE_AUTOMATICALLY
+		)
+		{
+			active = actor;
+			
+			EasyTalkQueueOverrideString(msg->text);
+			
+			// activated automatically
+			if (distance == EASYTALK_DISTANCE_ACTIVATE_AUTOMATICALLY)
+				Message_StartTextbox(play, id, actor);
+			
+			// invoke callback on starting to talk
+			if (msg->onOpen)
+				msg->onOpen(actor, play);
+			
+			return EASYTALK_OPENED;
 		}
 	}
 	
