@@ -93,9 +93,14 @@ void EasyTalkFlush(PlayState *play)
 	}
 }
 
-int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg)
+int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *msg)
 {
 	static Actor *active = 0;
+	u16 id = msg->id;
+	
+	// TODO styles
+	if (id == 0)
+		id = 0xA000;
 	
 	// this runs once, upon talking
 	if (Actor_ProcessTalkRequest(actor, play))
@@ -128,14 +133,12 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg)
 		}
 		else if (state == TEXT_STATE_CHOICE && Message_ShouldAdvance(play))
 		{
-			u16 id = msg->id;
-			
 			// select choice
 			msg = msg->choices + play->msgCtx.choiceIndex;
 			
 			// if choice has no id, create one from parent id
-			if (msg->id == 0)
-				msg->id = (id |= (play->msgCtx.choiceIndex + 1) << 8);
+			if (msg->id) id = msg->id;
+			else id |= (play->msgCtx.choiceIndex + 1) << 8;
 			
 			// onClose doubles as onChoose, for option textboxes
 			if (msg->onClose)
@@ -157,11 +160,8 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg)
 		}
 	}
 	
-	if (msg->id == 0)
-		msg->id = 0xA000;
-	
 	// set 'A' talk near NPC and interaction distance
-	actor->textId = msg->id;
+	actor->textId = id;
 	func_8002F2CC(actor, play, distance);
 	
 	return EASYTALK_NO_EVENT;
