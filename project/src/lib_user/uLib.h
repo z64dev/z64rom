@@ -224,6 +224,9 @@ void EasyTalkOverrideString(PlayState *play, const char *string);
 void EasyTalkFlush(PlayState *play);
 int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *msg);
 int EasyTalkNpcString(Actor *actor, PlayState *play, float distance, const char *msg);
+void EasyTalkQueueOverrideString(const char *text);
+void EasyTalkApplyQueuedNaviActorDescription(void);
+void EasyTalkSetNaviActorDescriptionString(Actor *actor, PlayState *play, const char *text);
 
 typedef enum {
     OVL_MSG_TALK,

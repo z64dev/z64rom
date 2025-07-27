@@ -46,6 +46,7 @@
 #include <uLib.h>
 
 static const char *sEasyTalkQueuedString = 0;
+static const char *sEasyTalkQueuedNaviDescriptionString = 0;
 
 void EasyTalkOverrideString(PlayState *play, const char *string)
 {
@@ -93,6 +94,28 @@ void EasyTalkFlush(PlayState *play)
 	}
 }
 
+void EasyTalkQueueOverrideString(const char *text)
+{
+	sEasyTalkQueuedString = text;
+}
+
+void EasyTalkApplyQueuedNaviActorDescription(void)
+{
+	EasyTalkQueueOverrideString(sEasyTalkQueuedNaviDescriptionString);
+}
+
+void EasyTalkSetNaviActorDescriptionString(Actor *actor, PlayState *play, const char *text)
+{
+	Player *player = GET_PLAYER(play);
+	
+	// if this actor is being z-targeted
+	if (actor == player->naviActor)
+	{
+		actor->naviEnemyId = NAVI_ENEMY_NONE - 1; // signal
+		sEasyTalkQueuedNaviDescriptionString = text;
+	}
+}
+
 int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *msg)
 {
 	static Actor *active = 0;
@@ -106,7 +129,7 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *m
 	{
 		active = actor;
 		
-		sEasyTalkQueuedString = msg->text;
+		EasyTalkQueueOverrideString(msg->text);
 		
 		// invoke callback on starting to talk
 		if (msg->onOpen)

@@ -5174,6 +5174,8 @@ s32 Player_SetupSpeakOrCheck(Player* this, PlayState* play) {
                         } else {
                             if (sp2C->naviEnemyId != NAVI_ENEMY_NONE) {
                                 sp2C->textId = sp2C->naviEnemyId + 0x600;
+                                if (sp2C->naviEnemyId == NAVI_ENEMY_NONE - 1)
+                                    EasyTalkApplyQueuedNaviActorDescription();
                             }
                         }
                     }
