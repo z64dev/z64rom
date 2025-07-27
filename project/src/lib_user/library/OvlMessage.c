@@ -377,6 +377,7 @@ void Message_OpenText(PlayState* playState, u16 textId) {
 	}
 	msgCtx->choiceNum = msgCtx->textUnskippable = msgCtx->textboxEndType = 0;
 	msgCtx->msgBufPos = msgCtx->unk_E3D0 = msgCtx->textDrawPos = 0;
+    EasyTalkFlush(playState);
 }
 
 Asm_VanillaHook(Message_SetTextColor);

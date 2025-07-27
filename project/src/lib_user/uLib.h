@@ -213,6 +213,28 @@ void Play_SetFadeOut(PlayState* play);
 struct Time Play_GetTime(void);
 void NewRoom_Draw(PlayState* play, Room* room, u32 flags);
 
+#define EASYTALK_OPENED      100   // opened textbox
+#define EASYTALK_CLOSED      200   // closed textbox
+#define EASYTALK_CHOICE_1    1     // made choice 1, 2, or 3
+#define EASYTALK_CHOICE_2    2
+#define EASYTALK_CHOICE_3    3
+#define EASYTALK_NO_EVENT    0     // no event has taken place
+
+// feed this distance into EasyTalkNpc() to activate the textbox instantly
+#define EASYTALK_DISTANCE_ACTIVATE_INSTANTLY -123456.0f
+
+void EasyTalkOverrideString(PlayState *play, const char *string);
+void EasyTalkFlush(PlayState *play);
+int (EasyTalkNpc)(Actor *actor, PlayState *play, const EasyTalkNpcArgs *args);
+void EasyTalkQueueOverrideString(const char *text);
+void EasyTalkApplyQueuedNaviActorDescription(void);
+void EasyTalkSetNaviActorDescriptionString(Actor *actor, PlayState *play, const char *text);
+#define EasyTalkNpc(ACTOR, PLAY, ...) \
+	(EasyTalkNpc)(ACTOR, PLAY, &(EasyTalkNpcArgs) { \
+		EasyTalkNpcArgsDefaults __VA_ARGS__ \
+	})
+_Pragma("GCC diagnostic ignored \"-Woverride-init\"") // for functions w/ optional arguments
+
 typedef enum {
     OVL_MSG_TALK,
     OVL_MSG_CHECK,
@@ -220,12 +242,12 @@ typedef enum {
 
 typedef enum {
     MSGBOX_TYPE_BLACK,
-    MSGBOX_TYPE_WOODEN,
-    MSGBOX_TYPE_BLUE,
-    MSGBOX_TYPE_OCARINA,
-    MSGBOX_TYPE_NONE_BOTTOM,
-    MSGBOX_TYPE_NONE_NO_SHADOW,
-    MSGBOX_TYPE_CREDITS = 11
+    MSGBOX_TYPE_WOODEN          =  1 << 4,
+    MSGBOX_TYPE_BLUE            =  2 << 4,
+    MSGBOX_TYPE_OCARINA         =  3 << 4,
+    MSGBOX_TYPE_NONE_BOTTOM     =  4 << 4,
+    MSGBOX_TYPE_NONE_NO_SHADOW  =  5 << 4,
+    MSGBOX_TYPE_CREDITS         = 11 << 4
 } MsgBoxType;
 
 typedef enum {
@@ -261,6 +283,7 @@ typedef enum {
 #define MSG_TEXT_SPEED(x)        "\x14" x // 1
 #define MSG_HIGHSCORE(x)         "\x1E" x // 1
 
+#define MSG_END           "\x02"
 #define MSG_INSTANT_ON    "\x08"
 #define MSG_INSTANT_OFF   "\x09"
 #define MSG_PERSISTENT    "\xFA"
@@ -271,8 +294,8 @@ typedef enum {
 #define MSG_RACE_TIME     "\x17"
 #define MSG_POINTS        "\x18"
 #define MSG_TOKENS        "\x19"
-#define MSG_TWO_CHOICE    "\x02"
-#define MSG_THREE_CHOICE  "\x03"
+#define MSG_TWO_CHOICE    "\x1B"
+#define MSG_THREE_CHOICE  "\x1C"
 #define MSG_FISH_INFO     "\x1D"
 #define MSG_TIME          "\x1F"
 
