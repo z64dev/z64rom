@@ -12,6 +12,9 @@
 // - add this line of code to your npc's update() hook for a basic textbox:
 //      EasyTalkNpcString(&this->actor, play, 100, "Hello, world!");
 //
+// - you can also assign any actor you can z-target a navi description like so:
+//      EasyTalkSetNaviActorDescriptionString(&this->actor, play, "Hello!");
+//
 // - here's an example of asking the player to make a choice and processing it:
         switch (EasyTalkNpc(&en->actor, globalCtx, 100, &(EasyTalk) {
             "So, how do you like your Z-Targeting?\x01\x01\x1B\x05\x42"
