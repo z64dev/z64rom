@@ -108,7 +108,7 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg)
 		if (msg->onOpen)
 			msg->onOpen(actor, play);
 		
-		return EASYTALK_STARTED;
+		return EASYTALK_OPENED;
 	}
 	
 	// only allow active npc to capture these events
@@ -124,7 +124,7 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg)
 			if (msg->onClose)
 				msg->onClose(actor, play);
 			
-			return EASYTALK_CLOSING;
+			return EASYTALK_CLOSED;
 		}
 		else if (state == TEXT_STATE_CHOICE && Message_ShouldAdvance(play))
 		{
@@ -148,6 +148,7 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg)
 				actor->textId = 0xffff;
 				Message_CloseTextbox(play);
 			}
+			
 			return play->msgCtx.choiceIndex + EASYTALK_CHOICE_1;
 		}
 	}

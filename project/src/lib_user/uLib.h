@@ -213,12 +213,12 @@ void Play_SetFadeOut(PlayState* play);
 struct Time Play_GetTime(void);
 void NewRoom_Draw(PlayState* play, Room* room, u32 flags);
 
-#define EASYTALK_STARTED   100
-#define EASYTALK_CLOSING   200
-#define EASYTALK_CHOICE_1  1
-#define EASYTALK_CHOICE_2  2
-#define EASYTALK_CHOICE_3  3
-#define EASYTALK_NO_EVENT  0
+#define EASYTALK_OPENED      100   // opened textbox
+#define EASYTALK_CLOSED      200   // closed textbox
+#define EASYTALK_CHOICE_1    1     // made choice 1, 2, or 3
+#define EASYTALK_CHOICE_2    2
+#define EASYTALK_CHOICE_3    3
+#define EASYTALK_NO_EVENT    0     // no event has taken place
 
 void EasyTalkOverrideString(PlayState *play, const char *string);
 void EasyTalkFlush(PlayState *play);
