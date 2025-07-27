@@ -5,6 +5,7 @@
  */
 
 #include <asm_macros.h>
+#include <uLib.h>
 #include "Player.h"
 
 Asm_SymbolAlias("__z64_init", Player_Init);

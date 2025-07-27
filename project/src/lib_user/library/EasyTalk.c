@@ -109,7 +109,7 @@ void EasyTalkSetNaviActorDescriptionString(Actor *actor, PlayState *play, const 
 	Player *player = GET_PLAYER(play);
 	
 	// if this actor is being z-targeted
-	if (actor == player->naviActor)
+	if (actor == player->targetActor)
 	{
 		actor->naviEnemyId = NAVI_ENEMY_NONE - 1; // signal
 		sEasyTalkQueuedNaviDescriptionString = text;
