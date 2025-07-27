@@ -213,6 +213,8 @@ void Play_SetFadeOut(PlayState* play);
 struct Time Play_GetTime(void);
 void NewRoom_Draw(PlayState* play, Room* room, u32 flags);
 
+void *Actor_GetPayload(Actor *actor, PlayState *play);
+
 #define EASYTALK_OPENED      100   // opened textbox
 #define EASYTALK_CLOSED      200   // closed textbox
 #define EASYTALK_CHOICE_1    1     // made choice 1, 2, or 3
