@@ -94,9 +94,13 @@ void EasyTalkFlush(PlayState *play)
 
 int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg)
 {
+	static Actor *active = 0;
+	
 	// this runs once, upon talking
 	if (Actor_ProcessTalkRequest(actor, play))
 	{
+		active = actor;
+		
 		if (msg->text)
 			sEasyTalkQueuedString = msg->text;
 		
@@ -107,38 +111,43 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, EasyTalk *msg)
 		return EASYTALK_STARTED;
 	}
 	
-	u8 state = Message_GetState(&play->msgCtx);
-	if (state == TEXT_STATE_CLOSING)
+	// only allow active npc to capture these events
+	if (active == actor)
 	{
-		// XXX this callback may be run more than once, need more testing
-		if (msg->onClose)
-			msg->onClose(actor, play);
+		u8 state = Message_GetState(&play->msgCtx);
 		
-		return EASYTALK_CLOSING;
-	}
-	else if (state == TEXT_STATE_CHOICE && Message_ShouldAdvance(play))
-	{
-		u16 id = msg->id;
-		
-		// select choice
-		msg = msg->choices + play->msgCtx.choiceIndex;
-		
-		// if choice has no id, create one from parent id
-		if (msg->id == 0)
-			msg->id = (id |= (play->msgCtx.choiceIndex + 1) << 8);
-		
-		if (msg->text)
+		if (state == TEXT_STATE_CLOSING)
 		{
-			actor->textId = id;
-			Message_ContinueTextbox(play, id);
-			EasyTalkOverrideString(play, msg->text);
+			// XXX this callback may be run more than once, need more testing
+			if (msg->onClose)
+				msg->onClose(actor, play);
+			
+			return EASYTALK_CLOSING;
 		}
-		else
+		else if (state == TEXT_STATE_CHOICE && Message_ShouldAdvance(play))
 		{
-			actor->textId = 0xffff;
-			Message_CloseTextbox(play);
+			u16 id = msg->id;
+			
+			// select choice
+			msg = msg->choices + play->msgCtx.choiceIndex;
+			
+			// if choice has no id, create one from parent id
+			if (msg->id == 0)
+				msg->id = (id |= (play->msgCtx.choiceIndex + 1) << 8);
+			
+			if (msg->text)
+			{
+				actor->textId = id;
+				Message_ContinueTextbox(play, id);
+				EasyTalkOverrideString(play, msg->text);
+			}
+			else
+			{
+				actor->textId = 0xffff;
+				Message_CloseTextbox(play);
+			}
+			return play->msgCtx.choiceIndex + EASYTALK_CHOICE_1;
 		}
-		return play->msgCtx.choiceIndex + EASYTALK_CHOICE_1;
 	}
 	
 	if (msg->id == 0)
