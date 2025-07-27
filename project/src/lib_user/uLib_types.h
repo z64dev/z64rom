@@ -178,12 +178,23 @@ typedef struct {
 typedef struct EasyTalk
 {
     const char *text;
-    u8 style; // e.g. (MSGBOX_TYPE_WOODEN | MSGBOX_POS_BOTTOM)
-              // (default style is standard npc textbox if you leave unset)
     struct EasyTalk *choices;
-    ActorFunc onOpen; // callback is fired when textbox opens
-    ActorFunc onClose; // callback is fired when textbox closes
+    ActorFunc onOpen;  // this callback is fired when textbox opens
+    ActorFunc onClose; // this callback is fired when textbox closes
                        // (doubles as onChoose, for option textboxes)
 } EasyTalk;
+
+
+
+typedef struct EasyTalkNpcArgs
+{
+    float       distance; // default: 100
+    u8          style;    // default: MSGBOX_TYPE_BLACK | MSGBOX_POS_VARIABLE
+                          //          (aka 0)
+    EasyTalk   *robust;   // populate only if you're using callbacks/choices
+    const char *string;   // populate only if you want to use simple strings
+} EasyTalkNpcArgs;
+#define EasyTalkNpcArgsDefaults \
+    .distance = 100, \
 
 #endif

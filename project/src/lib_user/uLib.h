@@ -225,11 +225,14 @@ void NewRoom_Draw(PlayState* play, Room* room, u32 flags);
 
 void EasyTalkOverrideString(PlayState *play, const char *string);
 void EasyTalkFlush(PlayState *play);
-int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *msg);
-int EasyTalkNpcString(Actor *actor, PlayState *play, float distance, const char *msg);
+int (EasyTalkNpc)(Actor *actor, PlayState *play, const EasyTalkNpcArgs *args);
 void EasyTalkQueueOverrideString(const char *text);
 void EasyTalkApplyQueuedNaviActorDescription(void);
 void EasyTalkSetNaviActorDescriptionString(Actor *actor, PlayState *play, const char *text);
+#define EasyTalkNpc(ACTOR, PLAY, ...) \
+	(EasyTalkNpc)(ACTOR, PLAY, &(EasyTalkNpcArgs) { \
+		EasyTalkNpcArgsDefaults __VA_ARGS__ \
+	})
 
 typedef enum {
     OVL_MSG_TALK,

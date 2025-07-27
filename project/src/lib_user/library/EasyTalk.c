@@ -10,14 +10,14 @@
 //    at the end of the function
 //
 // - add this line of code to your npc's update() hook for a basic textbox:
-//      EasyTalkNpcString(&this->actor, play, 100, "Hello, world!");
+//      EasyTalkNpc(&this->actor, play, .string = "Hello, world!");
 //
 // - you can have text be triggered instantly (aka the player does not have
 //   to interact with the actor or press A in order to show the textbox) by
 //   using EASYTALK_DISTANCE_ACTIVATE_INSTANTLY for distance:
-//      EasyTalkNpcString(&this->actor, play,
-//                        EASYTALK_DISTANCE_ACTIVATE_INSTANTLY,
-//                        "Hello, world!");
+//      EasyTalkNpc(&this->actor, play,
+//                  .distance = EASYTALK_DISTANCE_ACTIVATE_INSTANTLY,
+//                  .string = "Hello, world!");
 //  you would want to manage states in your actor and only use this feature
 //  conditionally, otherwise it will be continually reactivated (callbacks
 //  are a good way to facilitate state changes for things like this)
@@ -26,7 +26,7 @@
 //      EasyTalkSetNaviActorDescriptionString(&this->actor, play, "Hello!");
 //
 // - here's an example of asking the player to make a choice and processing it:
-        switch (EasyTalkNpc(&en->actor, globalCtx, 100, &(EasyTalk) {
+        switch (EasyTalkNpc(&this->actor, play, .robust = &(EasyTalk) {
             "So, how do you like your Z-Targeting?\x01\x01\x1B\x05\x42"
             "Hold\x01"
             "Switch\x05\x40\x02",
@@ -137,15 +137,34 @@ void EasyTalkSetNaviActorDescriptionString(Actor *actor, PlayState *play, const 
 	}
 }
 
-int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *msg)
+// when invoking this function, do it like so:
+// EasyTalkNpc(&this->actor, play, .string = "Hello world");
+//  1. notice how one of the arguments passed in was .string = "Hello world"
+//  2. that is how different settings are handled; for example, you can also
+//     inject an optional detection range, optional style, etc, like so:
+//     .string = "Hello world", .distance = 123, .style = MSGBOX_TYPE_WOODEN
+//  3. please see the documentation at the top of this file for more examples
+int (EasyTalkNpc)(Actor *actor, PlayState *play, const EasyTalkNpcArgs *args)
 {
+	const EasyTalk *msg = args->robust;
+	float distance = args->distance;
+	u8 style = args->style;
+	EasyTalk msgFromString; // allocate in case we need it
+	
+	// user used string instead of robust
+	if (!msg)
+	{
+		msgFromString = (EasyTalk) { EasyTalkNpcArgsDefaults, .string = args->string };
+		msg = &msgFromString;
+	}
+	
 	// might refactor active -> play->msgCtx->talkActor
 	// eventually, if doing so doesn't break anything
 	static Actor *active = 0;
 	u16 id = 0xfffc;//msg->id;
 	
-	// style for message 0xfffc
-	*((u8*)0x8014F532) = msg->style;
+	// overwrite style for message 0xfffc
+	*((u8*)0x8014F532) = style;
 	
 	// only allow active npc to capture these events
 	if (active == actor)
@@ -219,10 +238,5 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *m
 	func_8002F2CC(actor, play, distance);
 	
 	return EASYTALK_NO_EVENT;
-}
-
-int EasyTalkNpcString(Actor *actor, PlayState *play, float distance, const char *msg)
-{
-	return EasyTalkNpc(actor, play, distance, &(EasyTalk){ msg });
 }
 
