@@ -96,11 +96,14 @@ void EasyTalkFlush(PlayState *play)
 int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *msg)
 {
 	static Actor *active = 0;
-	u16 id = msg->id;
+	u16 id = 0xfffc;//msg->id;
 	
 	// TODO styles
-	if (id == 0)
-		id = 0xA000;
+	//if (id == 0)
+	//	id = 0xA000;
+	
+	// style for message 0xfffc
+	*((u8*)0x8014F532) = msg->style;
 	
 	// this runs once, upon talking
 	if (Actor_ProcessTalkRequest(actor, play))
@@ -137,8 +140,8 @@ int EasyTalkNpc(Actor *actor, PlayState *play, float distance, const EasyTalk *m
 			msg = msg->choices + play->msgCtx.choiceIndex;
 			
 			// if choice has no id, create one from parent id
-			if (msg->id) id = msg->id;
-			else id |= (play->msgCtx.choiceIndex + 1) << 8;
+			//if (msg->id) id = msg->id;
+			//else id |= (play->msgCtx.choiceIndex + 1) << 8;
 			
 			// onClose doubles as onChoose, for option textboxes
 			if (msg->onClose)

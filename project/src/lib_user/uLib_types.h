@@ -178,7 +178,8 @@ typedef struct {
 typedef struct EasyTalk
 {
     const char *text;
-    u16 id; // id only needed if you need to track which message is on-screen
+    u8 style; // e.g. (MSGBOX_TYPE_WOODEN | MSGBOX_POS_BOTTOM)
+              // (default style is standard npc textbox if you leave unset)
     struct EasyTalk *choices;
     ActorFunc onOpen; // callback is fired when textbox opens
     ActorFunc onClose; // callback is fired when textbox closes
