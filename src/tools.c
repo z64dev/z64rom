@@ -99,7 +99,9 @@ static s32 Tools_ValidateTools_Required(void) {
 }
 
 static void Tools_CheckUpdateImpl() {
-	char* url = "https://api.github.com/repos/z64tools/z64rom/releases/latest";
+	char* defaultUrl = "https://api.github.com/repos/z64utils/z64rom/releases/latest";
+	char* defaultZip = "https://github.com/z64utils/z64rom/releases/latest/download/z64rom.zip";
+	char* updateChannelFilename = "update-channel.txt";
 	char buffer[1024];
 	char* tag;
 	u32 sz = 0;
@@ -107,6 +109,19 @@ static void Tools_CheckUpdateImpl() {
 	u32 cnum[3] = { -1, -1, -1 };
 	u32 curVer, newVer;
 	Memfile api = Memfile_New();
+	Memfile updateChannel = Memfile_New();
+	
+	// customizable update channels, in case users ever need to change them
+	if (!sys_stat(updateChannelFilename))
+	{
+		FILE *fp = fopen(updateChannelFilename, "w");
+		fprintf(fp, "%s\n", defaultUrl);
+		fprintf(fp, "%s\n", defaultZip);
+		fclose(fp);
+	}
+	Memfile_LoadStr(&updateChannel, updateChannelFilename);
+	char *url = updateChannel.str;
+	url[strcspn(url, "\r\n")] = '\0';
 	
 	if (Memfile_Download(&api, url, NULL))
 		goto error;
@@ -141,10 +156,12 @@ static void Tools_CheckUpdateImpl() {
 	}
 	
 	Memfile_Free(&api);
+	Memfile_Free(&updateChannel);
 	return;
 	
 	error:
 	Memfile_Free(&api);
+	Memfile_Free(&updateChannel);
 	warn(gLang.setup.update_api_limit);
 }
 

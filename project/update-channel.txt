@@ -1,0 +1,2 @@
+https://api.github.com/repos/z64utils/z64rom/releases/latest
+https://github.com/z64utils/z64rom/releases/latest/download/z64rom.zip

@@ -1,7 +1,7 @@
 #include <ext_lib.h>
 #include <ext_zip.h>
 
-const char* gToolName = PRNT_BLUE "z64upgrade " PRNT_GRAY "1.0.1";
+const char* gToolName = PRNT_BLUE "z64upgrade " PRNT_GRAY "1.1.0";
 const char* gVersion;
 
 const char* gTool =
@@ -11,6 +11,22 @@ const char* gTool =
 	"wget"
 #endif
 ;
+
+/*
+How to update projects on older z64rom versions to latest:
+ - Back up your project.
+ - Copy update-channel.txt into the root of your project
+ - Copy z64upgrade v1.1.0 into the tools/ folder of your project.
+ - Delete tools/.update-check if it exists
+   (enable 'show hidden files' in your file explorer in order to see it)
+ - Open cmd.exe in the root directory of your project and run this command:
+   "tools/z64upgrade.exe --version 0.0.0"
+   (or if you know your version, e.g. 1.5.10, write that instead of 0.0.0
+ - Follow the instructions output in the command line window and
+   press the Enter key when prompted.
+ - You'll know it worked if a window appears very briefly and update.zip
+   is no longer present.
+*/
 
 static void SetWordDir(void) {
 	char* newWorkDir = x_strdup(sys_appdir());
@@ -200,6 +216,16 @@ int main(int n, const char** arg) {
 	info_title(gToolName, NULL);
 	SetWordDir();
 	
+	// update channel
+	char* updateChannelFilename = "update-channel.txt";
+	Memfile updateChannel = Memfile_New();
+	if (!sys_stat(updateChannelFilename))
+		errr("could not find %s", updateChannelFilename);
+	Memfile_LoadStr(&updateChannel, updateChannelFilename);
+	char *url = updateChannel.str;
+	url += strcspn(url, "\r\n"); url += strspn(url, "\r\n"); // skip first line
+	url[strcspn(url, "\r\n")] = '\0';
+	
 	sys_rm("tools/.wget-hsts");
 	
 	if (!(narg = strarg(arg, "version")))
@@ -211,7 +237,7 @@ int main(int n, const char** arg) {
 	if (!sys_stat("update.zip")) {
 		Memfile mem = Memfile_New();
 		
-		if (Memfile_Download(&mem, "https://github.com/z64tools/z64rom/releases/latest/download/app_win32.zip", "Downloading"))
+		if (Memfile_Download(&mem, url, "Downloading"))
 			errr("Failed to retrieve update!");
 		
 		Memfile_SaveBin(&mem, "update.zip");
@@ -346,5 +372,6 @@ int main(int n, const char** arg) {
 	info_getc("Press enter to continue update!");
 	sys_exed("z64rom.exe --post-update");
 	
+	Memfile_Free(&updateChannel);
 	return 0;
 }
