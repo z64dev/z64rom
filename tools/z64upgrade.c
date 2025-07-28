@@ -244,8 +244,16 @@ int main(int n, const char** arg) {
 		const char *findToolName = "z64rom " PRNT_GRAY "1";
 		gVersion = memmem(exe.data, exe.size, findToolName, strlen(findToolName));
 		
-		if (gVersion) gVersion += strlen(findToolName) - 1;
-		else gVersion = "0.0.0";
+		if (gVersion)
+		{
+			gVersion += strlen(findToolName) - 1;
+			info("detected z64rom version %s", gVersion);
+		}
+		else
+		{
+			gVersion = "0.0.0";
+			info("could not detect z64rom version, attempting update anyway");
+		}
 		
 		sscanf(gVersion, "%d.%d.%d", &version[0], &version[1], &version[2]);
 		
