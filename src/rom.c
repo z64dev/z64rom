@@ -1869,6 +1869,9 @@ static void Build_SizeofPlayer(Rom* rom)
 	const char code[] =
 		"#include \"global.h\"\n"
 		"#include \"z64player.h\"\n"
+		"#if !defined(Z64HDR_VERSION) || Z64HDR_VERSION < 1000000\n"
+		"#    error \"please update to the latest version of z64hdr: https://z64.tools/z64hdr\"\n"
+		"#endif\n"
 		"unsigned int tmp[] = { 0x" STR_DEADBEEF ", sizeof(Player) };\n";
 	const char* fn = "sizeofPlayer";
 	FILE* file;
