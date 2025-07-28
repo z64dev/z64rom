@@ -1,3 +1,4 @@
+
 #include <uLib.h>
 #include <uLib_math.h>
 #include <code/z_parameter.h>
@@ -6,7 +7,8 @@ u32 __mib_DebugMenuC;
 
 #ifdef DEV_BUILD
 
-typedef void (* PageFunc)(PlayState*);
+
+typedef void (* PageFunc)(PlayState*,u8);
 
 typedef enum {
     DEBUGSYS_PAGE_MAIN,
@@ -31,7 +33,10 @@ typedef struct {
     u8       playerFreeze : 2;
     u8       toggle       : 2;
     u8       state        : 2;
+    u8       setvalue     : 2;
+    s16      value
 } DebugPageInfo;
+static DebugPageInfo sDebugPageInfo[];
 
 extern Arena sZeldaArena;
 asm ("sZeldaArena = 0x8015FF80");
@@ -703,7 +708,7 @@ static void DebugMenu_HitboxViewUpdate(PlayState* playState) {
     CLOSE_DISPS(playState->state.gfxCtx, __FILE__, __LINE__);
 }
 
-static void DebugMenu_ObjectMemView(PlayState* playState) {
+static void DebugMenu_ObjectMemView(PlayState* playState, u8 state) {
     DebugState* debugSysCtx = &sDebugMenuCtx;
     static u32 selectedMem = 0;
     u32 selectedColor[] = {
@@ -780,7 +785,7 @@ static void DebugMenu_ObjectMemView(PlayState* playState) {
     }
 }
 
-static void DebugMenu_ZeldaArenaMemView(PlayState* playState) {
+static void DebugMenu_ZeldaArenaMemView(PlayState* playState, u8 state) {
     DebugState* debugSysCtx = &sDebugMenuCtx;
     static u32 selectedMem = 0;
     u32 selectedColor[] = {
@@ -867,21 +872,21 @@ static void DebugMenu_ZeldaArenaMemView(PlayState* playState) {
     }
 }
 
-static void DebugMenu_HitboxView(PlayState* playState) {
+static void DebugMenu_HitboxView(PlayState* playState, u8 state) {
     DebugState* debugSysCtx = &sDebugMenuCtx;
     
     debugSysCtx->hitViewEnabled ^= 1;
     debugSysCtx->page = DEBUGSYS_PAGE_MAIN;
 }
 
-static void DebugMenu_CollisionView(PlayState* playState) {
+static void DebugMenu_CollisionView(PlayState* playState, u8 state) {
     DebugState* debugSysCtx = &sDebugMenuCtx;
     
     debugSysCtx->colViewEnabled ^= 1;
     debugSysCtx->page = DEBUGSYS_PAGE_MAIN;
 }
 
-static void DebugMenu_CineMode(PlayState* playState) {
+static void DebugMenu_CineMode(PlayState* playState, u8 state) {
     DebugState* debugSysCtx = &sDebugMenuCtx;
     
     debugSysCtx->cineModeEnabled ^= 1;
@@ -889,7 +894,10 @@ static void DebugMenu_CineMode(PlayState* playState) {
     debugSysCtx->page = DEBUGSYS_PAGE_MAIN;
 }
 
-static void DebugMenu_Profiler(PlayState* playState) {
+
+
+
+static void DebugMenu_Profiler(PlayState* playState, u8 state) {
     DebugProfiler* prf[] = {
         &gLibCtx.profiler.actorUpdate,
         &gLibCtx.profiler.ovlDraw,
@@ -982,6 +990,29 @@ static void DebugMenu_Profiler(PlayState* playState) {
     }
 }
 
+#if MOTION_BLUR
+static void DebugMenu_MotionBlur(PlayState* playState, u8 state) {
+    DebugState* debugSysCtx = &sDebugMenuCtx;
+
+    if (state == 1)
+    {
+        sDebugPageInfo[debugSysCtx->page].value = playState->motionBlurAlpha;
+    }
+    else
+    {
+        if (sDebugPageInfo[debugSysCtx->page].value > 255)
+            sDebugPageInfo[debugSysCtx->page].value = 0;
+        else if (sDebugPageInfo[debugSysCtx->page].value < 0)
+            sDebugPageInfo[debugSysCtx->page].value = 255;
+        playState->motionBlurAlpha = sDebugPageInfo[debugSysCtx->page].value;
+    }
+
+    debugSysCtx->page = DEBUGSYS_PAGE_MAIN;
+    
+    
+}
+#endif
+
 // # # # # # # # # # # # # # # # # # # # #
 // #                                     #
 // # # # # # # # # # # # # # # # # # # # #
@@ -1018,7 +1049,14 @@ static DebugPageInfo sDebugPageInfo[] = {
     {
         .func = DebugMenu_Profiler,
         .name = "Profiler",
-    }
+    },
+    #if MOTION_BLUR
+    {
+        .func = DebugMenu_MotionBlur,
+        .name = "Motion Blur Value",
+        .setvalue = true,
+    },
+    #endif
 };
 
 static void DebugMenu_MenuUpdate(PlayState* playState) {
@@ -1036,7 +1074,9 @@ static void DebugMenu_MenuUpdate(PlayState* playState) {
         }
         
         if (debugSysCtx->state.on)
+        {
             Audio_PlaySys(NA_SE_SY_FSEL_DECIDE_S);
+        }
         
         else
             Audio_PlaySys(NA_SE_SY_FSEL_CLOSE);
@@ -1048,7 +1088,13 @@ static void DebugMenu_MenuUpdate(PlayState* playState) {
     
     if (debugSysCtx->state.on == 0)
         return;
-    
+
+    for(u8 i = 0; i < ARRAY_COUNT(sDebugPageInfo);i++)
+    {
+        if (sDebugPageInfo[i].setvalue)
+            sDebugPageInfo[i].func(playState,1);
+    }
+
     if (holdR && CHK_ALL(press, BTN_B)) {
         
         if (debugSysCtx->page == DEBUGSYS_PAGE_MAIN) {
@@ -1080,10 +1126,10 @@ static void DebugMenu_MenuUpdate(PlayState* playState) {
         
     }
     
-    if (sDebugPageInfo[debugSysCtx->page].func) {
+    if (sDebugPageInfo[debugSysCtx->page].func && !sDebugPageInfo[debugSysCtx->page].setvalue) {
         if (sDebugPageInfo[debugSysCtx->page].toggle)
             sDebugPageInfo[debugSysCtx->page].state ^= 1;
-        sDebugPageInfo[debugSysCtx->page].func(playState);
+        sDebugPageInfo[debugSysCtx->page].func(playState,0);
         
         return;
     }
@@ -1097,6 +1143,10 @@ static void DebugMenu_MenuUpdate(PlayState* playState) {
         debugSysCtx->page = debugSysCtx->setPage;
         Audio_PlaySys(NA_SE_SY_FSEL_DECIDE_S);
     }
+    else if (holdR && CHK_ANY(cur, BTN_DLEFT | BTN_DRIGHT))
+    {
+        debugSysCtx->page = debugSysCtx->setPage;
+    }
     if (holdR && CHK_ALL(press, BTN_DUP)) {
         debugSysCtx->setPage = CLAMP((debugSysCtx->setPage - 1), 1, infoMax - 1);
     }
@@ -1106,6 +1156,17 @@ static void DebugMenu_MenuUpdate(PlayState* playState) {
     debugSysCtx->setPage = CLAMP(debugSysCtx->setPage, 1, infoMax - 1);
     
     if (oldSetPage != debugSysCtx->setPage) {
+        Audio_PlaySys(NA_SE_IT_SWORD_IMPACT);
+    }
+
+    if (sDebugPageInfo[debugSysCtx->page].setvalue && holdR && CHK_ALL(cur, BTN_DLEFT)) {
+        sDebugPageInfo[debugSysCtx->page].value -= CHK_ALL(cur, BTN_A) ? 5 : 1;
+        sDebugPageInfo[debugSysCtx->page].func(playState,0);
+        Audio_PlaySys(NA_SE_IT_SWORD_IMPACT);
+    }
+    else if (sDebugPageInfo[debugSysCtx->page].setvalue && holdR && CHK_ALL(cur, BTN_DRIGHT)) {
+        sDebugPageInfo[debugSysCtx->page].value += CHK_ALL(cur, BTN_A) ? 5 : 1;
+        sDebugPageInfo[debugSysCtx->page].func(playState,0);
         Audio_PlaySys(NA_SE_IT_SWORD_IMPACT);
     }
     
@@ -1133,6 +1194,14 @@ static void DebugMenu_MenuUpdate(PlayState* playState) {
                 5 + i,
                 "%s",
                 sDebugPageInfo[i].state == 0 ? "false" : "true"
+            );
+        else if (sDebugPageInfo[i].setvalue)
+            Debug_Text(
+                U32_RGB(color),
+                1 + 26,
+                5 + i,
+                "%d",
+                sDebugPageInfo[i].value
             );
     }
 }
@@ -1167,5 +1236,7 @@ s32 DebugMenu_CineCamera(Camera* camera, Normal1* norm1, Player* player) {
     
     return 1;
 }
+
+
 
 #endif
