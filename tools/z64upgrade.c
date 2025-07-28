@@ -12,7 +12,23 @@ const char* gTool =
 #endif
 ;
 
-/*
+/* manual update using --offline (recommended)
+how to update projects on older z64rom versions to latest:
+ - back up your project
+ - download the latest version of z64rom.zip and rename it to update.zip
+ - do not extract it; instead, place update.zip in the same folder as
+   your old version of z64rom.exe, in the root directory of your project
+ - in a separate window, open update.zip and copy z64upgrade.exe from it
+   into the tools/ folder of your project
+ - open cmd.exe in the root directory of your project and run this command:
+   "tools/z64upgrade.exe" --offline
+ - follow the instructions output in the command line window and
+   press the Enter key when prompted
+ - you'll know it worked if a window appears very briefly and update.zip
+   is no longer present
+*/
+
+/* manual update using update-channel
 How to update projects on older z64rom versions to latest:
  - Back up your project.
  - Copy update-channel.txt into the root of your project
@@ -216,34 +232,57 @@ int main(int n, const char** arg) {
 	info_title(gToolName, NULL);
 	SetWordDir();
 	
+	// offline mode
+	if (strarg(arg, "offline"))
+	{
+		Memfile exe = Memfile_New();
+		
+		if (!sys_stat("z64rom.exe") || Memfile_LoadBin(&exe, "z64rom.exe"))
+			errr("could not find z64rom.exe, or unable to read its contents");
+		
+		// get program version from z64rom.exe
+		const char *findToolName = "z64rom " PRNT_GRAY "1";
+		gVersion = memmem(exe.data, exe.size, findToolName, strlen(findToolName));
+		
+		if (gVersion) gVersion += strlen(findToolName) - 1;
+		else gVersion = "0.0.0";
+		
+		sscanf(gVersion, "%d.%d.%d", &version[0], &version[1], &version[2]);
+		
+		Memfile_Free(&exe);
+	}
 	// update channel
-	char* updateChannelFilename = "update-channel.txt";
-	Memfile updateChannel = Memfile_New();
-	if (!sys_stat(updateChannelFilename))
-		errr("could not find %s", updateChannelFilename);
-	Memfile_LoadStr(&updateChannel, updateChannelFilename);
-	char *url = updateChannel.str;
-	url += strcspn(url, "\r\n"); url += strspn(url, "\r\n"); // skip first line
-	url[strcspn(url, "\r\n")] = '\0';
-	
-	sys_rm("tools/.wget-hsts");
-	
-	if (!(narg = strarg(arg, "version")))
-		errr("z64upgrade can be only called by z64rom!");
-	gVersion = x_strunq(arg[narg]);
-	
-	sscanf(gVersion, "%d.%d.%d", &version[0], &version[1], &version[2]);
-	
-	if (!sys_stat("update.zip")) {
-		Memfile mem = Memfile_New();
+	else
+	{
+		char* updateChannelFilename = "update-channel.txt";
+		Memfile updateChannel = Memfile_New();
+		if (!sys_stat(updateChannelFilename))
+			errr("could not find %s", updateChannelFilename);
+		Memfile_LoadStr(&updateChannel, updateChannelFilename);
+		char *url = strdup(updateChannel.str);
+		Memfile_Free(&updateChannel);
+		url += strcspn(url, "\r\n"); url += strspn(url, "\r\n"); // skip first line
+		url[strcspn(url, "\r\n")] = '\0';
 		
-		if (Memfile_Download(&mem, url, "Downloading"))
-			errr("Failed to retrieve update!");
+		sys_rm("tools/.wget-hsts");
 		
-		Memfile_SaveBin(&mem, "update.zip");
-		Memfile_Free(&mem);
+		if (!(narg = strarg(arg, "version")))
+			errr("z64upgrade can be only called by z64rom!");
+		gVersion = x_strunq(arg[narg]);
 		
-		cli_clearln(2);
+		sscanf(gVersion, "%d.%d.%d", &version[0], &version[1], &version[2]);
+		
+		if (!sys_stat("update.zip")) {
+			Memfile mem = Memfile_New();
+			
+			if (Memfile_Download(&mem, url, "Downloading"))
+				errr("Failed to retrieve update!");
+			
+			Memfile_SaveBin(&mem, "update.zip");
+			Memfile_Free(&mem);
+			
+			cli_clearln(2);
+		}
 	}
 	
 	if (strarg(arg, "pack")) {
@@ -372,6 +411,5 @@ int main(int n, const char** arg) {
 	info_getc("Press enter to continue update!");
 	sys_exed("z64rom.exe --post-update");
 	
-	Memfile_Free(&updateChannel);
 	return 0;
 }
