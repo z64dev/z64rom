@@ -213,7 +213,32 @@ void Play_SetFadeOut(PlayState* play);
 struct Time Play_GetTime(void);
 void NewRoom_Draw(PlayState* play, Room* room, u32 flags);
 
-void *Actor_GetPayload(Actor *actor, PlayState *play);
+void *(Actor_GetPayload)(Actor *actor, PlayState *play);
+void *Actor_GetPayloadAndDoRelocs(Actor *actor, PlayState *play, u8 *relocs);
+
+// i wish there was a better way to do this sort of thing in c
+#define Actor_GetPayload_ARRAY(...) (u8[]){__VA_ARGS__, 0xff}
+#define Actor_GetPayload_EXPAND(x) x
+#define Actor_GetPayload_DICT(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, NAME, ...) NAME
+#define Actor_GetPayload2(ACTOR, PLAY)                                                                               Actor_GetPayload(ACTOR, PLAY)
+#define Actor_GetPayload3(ACTOR, PLAY, A0)                                                                           Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4))
+#define Actor_GetPayload4(ACTOR, PLAY, A0, A1)                                                                       Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4))
+#define Actor_GetPayload5(ACTOR, PLAY, A0, A1, A2)                                                                   Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4))
+#define Actor_GetPayload6(ACTOR, PLAY, A0, A1, A2, A3)                                                               Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4))
+#define Actor_GetPayload7(ACTOR, PLAY, A0, A1, A2, A3, A4)                                                           Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4))
+#define Actor_GetPayload8(ACTOR, PLAY, A0, A1, A2, A3, A4, A5)                                                       Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4, A5/4))
+#define Actor_GetPayload9(ACTOR, PLAY, A0, A1, A2, A3, A4, A5, A6)                                                   Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4, A5/4, A6/4))
+#define Actor_GetPayload10(ACTOR, PLAY, A0, A1, A2, A3, A4, A5, A6, A7)                                              Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4, A5/4, A6/4, A7/4))
+#define Actor_GetPayload11(ACTOR, PLAY, A0, A1, A2, A3, A4, A5, A6, A7, A8)                                          Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4, A5/4, A6/4, A7/4, A8/4))
+#define Actor_GetPayload12(ACTOR, PLAY, A0, A1, A2, A3, A4, A5, A6, A7, A8, A9)                                      Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4, A5/4, A6/4, A7/4, A8/4, A9/4))
+#define Actor_GetPayload13(ACTOR, PLAY, A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10)                                 Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4, A5/4, A6/4, A7/4, A8/4, A9/4, A10/4))
+#define Actor_GetPayload14(ACTOR, PLAY, A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11)                            Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4, A5/4, A6/4, A7/4, A8/4, A9/4, A10/4, A11/4))
+#define Actor_GetPayload15(ACTOR, PLAY, A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12)                       Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4, A5/4, A6/4, A7/4, A8/4, A9/4, A10/4, A11/4, A12/4))
+#define Actor_GetPayload16(ACTOR, PLAY, A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13)                  Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4, A5/4, A6/4, A7/4, A8/4, A9/4, A10/4, A11/4, A12/4, A13/4))
+#define Actor_GetPayload17(ACTOR, PLAY, A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14)             Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4, A5/4, A6/4, A7/4, A8/4, A9/4, A10/4, A11/4, A12/4, A13/4, A14/4))
+#define Actor_GetPayload18(ACTOR, PLAY, A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15)        Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4, A5/4, A6/4, A7/4, A8/4, A9/4, A10/4, A11/4, A12/4, A13/4, A14/4, A15/4))
+#define Actor_GetPayload19(ACTOR, PLAY, A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16)   Actor_GetPayloadAndDoRelocs(ACTOR, PLAY, Actor_GetPayload_ARRAY(A0/4, A1/4, A2/4, A3/4, A4/4, A5/4, A6/4, A7/4, A8/4, A9/4, A10/4, A11/4, A12/4, A13/4, A14/4, A15/4, A16/4))
+#define Actor_GetPayload(...)    Actor_GetPayload_EXPAND( Actor_GetPayload_DICT(__VA_ARGS__, Actor_GetPayload19, Actor_GetPayload18, Actor_GetPayload17, Actor_GetPayload16, Actor_GetPayload15, Actor_GetPayload14, Actor_GetPayload13, Actor_GetPayload12, Actor_GetPayload11, Actor_GetPayload10, Actor_GetPayload9, Actor_GetPayload8, Actor_GetPayload7, Actor_GetPayload6, Actor_GetPayload5, Actor_GetPayload4, Actor_GetPayload3, Actor_GetPayload2)(__VA_ARGS__) )
 
 #define EASYTALK_OPENED      100   // opened textbox
 #define EASYTALK_CLOSED      200   // closed textbox
