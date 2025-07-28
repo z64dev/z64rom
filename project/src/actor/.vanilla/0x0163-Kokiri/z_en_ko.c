@@ -466,7 +466,7 @@ u16 func_80A97338(PlayState* play, Actor* thisx) {
 }
 
 u16 func_80A97610(PlayState* play, Actor* thisx) {
-    u16 faceReaction;
+    u16 faceReaction = 0;
     EnKo* this = (EnKo*)thisx;
 
     if (ENKO_TYPE == ENKO_TYPE_CHILD_0 || ENKO_TYPE == ENKO_TYPE_CHILD_2 || ENKO_TYPE == ENKO_TYPE_CHILD_3 ||
@@ -802,7 +802,7 @@ s32 EnKo_ChildStart(EnKo* this, PlayState* play) {
             return func_80A97E18(this, play);
         case ENKO_TYPE_CHILD_11:
             return func_80A97EB0(this, play);
-        case ENKO_TYPE_CHILD_FADO:
+        default://case ENKO_TYPE_CHILD_FADO:
             return func_80A97E18(this, play);
     }
 }
@@ -833,7 +833,7 @@ s32 EnKo_ChildStone(EnKo* this, PlayState* play) {
             return func_80A97E18(this, play);
         case ENKO_TYPE_CHILD_11:
             return func_80A97EB0(this, play);
-        case ENKO_TYPE_CHILD_FADO:
+        default://case ENKO_TYPE_CHILD_FADO:
             return func_80A97E18(this, play);
     }
 }
@@ -864,7 +864,7 @@ s32 EnKo_ChildSaria(EnKo* this, PlayState* play) {
             return func_80A97E18(this, play);
         case ENKO_TYPE_CHILD_11:
             return func_80A97EB0(this, play);
-        case ENKO_TYPE_CHILD_FADO:
+        default://case ENKO_TYPE_CHILD_FADO:
             return func_80A97E18(this, play);
     }
 }
@@ -895,7 +895,7 @@ s32 EnKo_AdultEnemy(EnKo* this, PlayState* play) {
             return func_80A97E18(this, play);
         case ENKO_TYPE_CHILD_11:
             return func_80A97EB0(this, play);
-        case ENKO_TYPE_CHILD_FADO:
+        default://case ENKO_TYPE_CHILD_FADO:
             return func_80A97E18(this, play);
     }
 }
@@ -926,7 +926,7 @@ s32 EnKo_AdultSaved(EnKo* this, PlayState* play) {
             return func_80A97E18(this, play);
         case ENKO_TYPE_CHILD_11:
             return func_80A97EB0(this, play);
-        case ENKO_TYPE_CHILD_FADO:
+        default://case ENKO_TYPE_CHILD_FADO:
             return func_80A97E18(this, play);
     }
 }
@@ -1099,7 +1099,7 @@ s32 func_80A98ECC(EnKo* this, PlayState* play) {
             return EnKo_ChildSaria(this, play);
         case ENKO_FQS_ADULT_ENEMY:
             return EnKo_AdultEnemy(this, play);
-        case ENKO_FQS_ADULT_SAVED:
+        default://case ENKO_FQS_ADULT_SAVED:
             return EnKo_AdultSaved(this, play);
     }
 }
@@ -1240,7 +1240,7 @@ void func_80A995CC(EnKo* this, PlayState* play) {
 void EnKo_Update(Actor* thisx, PlayState* play) {
     ColliderCylinder* collider;
     EnKo* this = (EnKo*)thisx;
-    s32 pad;
+    
 
     if (this->actionFunc != func_80A99048) {
         if ((s32)this->modelAlpha != 0) {
@@ -1273,7 +1273,7 @@ s32 EnKo_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
     void* eyeTexture;
     Vec3s sp40;
     u8 headId;
-    s32 pad;
+    
 
     if (limbIndex == 15) {
         gSPSegment((*gfx)++, 0x06, play->objectCtx.status[this->headObjectBankIdx].segment);

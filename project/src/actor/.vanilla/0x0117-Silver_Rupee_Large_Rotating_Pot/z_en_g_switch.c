@@ -59,11 +59,6 @@ static ColliderCylinderInit sCylinderInit = {
     { 13, 40, 0, { 0, 0, 0 } },
 };
 
-// Unused, but probably intended to be this
-static s16 sRupeeTypes[] = {
-    ITEM00_RUPEE_GREEN, ITEM00_RUPEE_BLUE, ITEM00_RUPEE_RED, ITEM00_RUPEE_ORANGE, ITEM00_RUPEE_PURPLE,
-};
-
 const ActorInit En_G_Switch_InitVars = {
     ACTOR_EN_G_SWITCH,
     ACTORCAT_PROP,
@@ -77,7 +72,7 @@ const ActorInit En_G_Switch_InitVars = {
 };
 
 void EnGSwitch_Init(Actor* thisx, PlayState* play) {
-    s32 pad;
+    
     EnGSwitch* this = (EnGSwitch*)thisx;
 
     this->type = (this->actor.params >> 0xC) & 0xF;
@@ -165,7 +160,7 @@ void EnGSwitch_Init(Actor* thisx, PlayState* play) {
 }
 
 void EnGSwitch_Destroy(Actor* thisx, PlayState* play) {
-    s32 pad;
+    
     EnGSwitch* this = (EnGSwitch*)thisx;
 
     Collider_DestroyCylinder(play, &this->collider);
@@ -371,7 +366,7 @@ void EnGSwitch_ArcheryPot(EnGSwitch* this, PlayState* play) {
             f32 rand;
             s32 phi_s0;
             s32 scale;
-            s32 pad;
+            
 
             pos.x = sn * 8.0f;
             pos.y = 10.0f + Rand_CenteredFloat(5.0f);
@@ -415,7 +410,7 @@ void EnGSwitch_Kill(EnGSwitch* this, PlayState* play) {
 }
 
 void EnGSwitch_Update(Actor* thisx, PlayState* play) {
-    s32 pad;
+    
     EnGSwitch* this = (EnGSwitch*)thisx;
 
     this->actionFunc(this, play);
@@ -451,7 +446,7 @@ void EnGSwitch_Update(Actor* thisx, PlayState* play) {
 }
 
 void EnGSwitch_DrawPot(Actor* thisx, PlayState* play) {
-    s32 pad;
+    
     EnGSwitch* this = (EnGSwitch*)thisx;
 
     if (!this->broken) {
@@ -469,7 +464,7 @@ static void* sRupeeTextures[] = {
 };
 
 void EnGSwitch_DrawRupee(Actor* thisx, PlayState* play) {
-    s32 pad;
+    
     EnGSwitch* this = (EnGSwitch*)thisx;
 
     if (1) {}
@@ -549,7 +544,7 @@ void EnGSwitch_DrawEffects(EnGSwitch* this, PlayState* play) {
     EnGSwitchEffect* effect = this->effects;
     s16 i;
     f32 scale;
-    s32 pad;
+    
 
     OPEN_DISPS(gfxCtx, "../z_en_g_switch.c", 1073);
     Gfx_SetupDL_25Opa(play->state.gfxCtx);

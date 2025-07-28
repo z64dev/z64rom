@@ -550,7 +550,6 @@ u16 func_80A6F810(PlayState* play, Actor* thisx) {
 
 s16 func_80A70058(PlayState* play, Actor* thisx) {
     EnHy* this = (EnHy*)thisx;
-    s16 beggarItems[] = { ITEM_BLUE_FIRE, ITEM_FISH, ITEM_BUG, ITEM_FAIRY };
     s16 beggarRewards[] = { 150, 100, 50, 25 };
 
     switch (Message_GetState(&play->msgCtx)) {
@@ -1092,7 +1091,7 @@ void EnHy_Update(Actor* thisx, PlayState* play) {
 
 s32 EnHy_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3s* rot, void* thisx) {
     EnHy* this = (EnHy*)thisx;
-    s32 pad;
+    
     Vec3s sp48;
     u8 i;
     void* ptr;
@@ -1141,7 +1140,7 @@ s32 EnHy_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3f* po
 
 void EnHy_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, void* thisx) {
     EnHy* this = (EnHy*)thisx;
-    s32 pad;
+    
     Vec3f sp3C = { 400.0f, 0.0f, 0.0f };
 
     OPEN_DISPS(play->state.gfxCtx, "../z_en_hy.c", 2255);
