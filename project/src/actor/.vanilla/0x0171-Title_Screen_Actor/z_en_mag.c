@@ -103,7 +103,7 @@ void EnMag_Destroy(Actor* thisx, PlayState* play) {
 }
 
 void EnMag_Update(Actor* thisx, PlayState* play) {
-    s32 pad[2];
+    
     EnMag* this = (EnMag*)thisx;
 
     if (gSaveContext.fileNum != 0xFEDC) {
@@ -307,7 +307,7 @@ void EnMag_DrawImageRGBA32(Gfx** gfxp, s16 centerX, s16 centerY, u8* source, u32
     u32 textureHeight;
     s32 remainingSize;
     s32 textureSize;
-    s32 pad;
+    
     s32 i;
 
     Gfx_SetupDL_56Ptr(&gfx);
@@ -389,7 +389,7 @@ void EnMag_DrawInner(Actor* thisx, PlayState* play, Gfx** gfxp) {
     };
     EnMag* this = (EnMag*)thisx;
     Font* font = &this->font;
-    s32 pad;
+    
     Gfx* gfx = *gfxp;
     u16 i, j, k;
     u16 rectLeft;
@@ -564,7 +564,7 @@ void EnMag_DrawInner(Actor* thisx, PlayState* play, Gfx** gfxp) {
 }
 
 void EnMag_Draw(Actor* thisx, PlayState* play) {
-    s32 pad;
+    
     Gfx* gfx;
     Gfx* gfxRef;
 

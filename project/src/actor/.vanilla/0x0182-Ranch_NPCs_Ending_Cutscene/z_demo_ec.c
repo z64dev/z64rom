@@ -193,7 +193,7 @@ void func_8096D64C(DemoEc* this, PlayState* play) {
 }
 
 void DemoEc_UpdateEyes(DemoEc* this) {
-    s32 pad[3];
+    
     s16* blinkTimer = &this->blinkTimer;
     s16* eyeTexIndex = &this->eyeTexIndex;
 
@@ -253,7 +253,7 @@ void DemoEc_DrawSkeleton(DemoEc* this, PlayState* play, void* eyeTexture, void* 
                          PostLimbDraw postLimbDraw) {
     GraphicsContext* gfxCtx = play->state.gfxCtx;
     SkelAnime* skelAnime = &this->skelAnime;
-    s32 pad;
+    
 
     OPEN_DISPS(gfxCtx, "../z_demo_ec.c", 565);
 
@@ -277,7 +277,7 @@ void DemoEc_DrawSkeleton(DemoEc* this, PlayState* play, void* eyeTexture, void* 
 
 void DemoEc_DrawSkeletonCustomColor(DemoEc* this, PlayState* play, Gfx* arg2, Gfx* arg3, u8* color1, u8* color2,
                                     OverrideLimbDraw overrideLimbDraw, PostLimbDraw postLimbDraw) {
-    s32 pad;
+    
     GraphicsContext* gfxCtx = play->state.gfxCtx;
     SkelAnime* skelAnime = &this->skelAnime;
 
@@ -313,7 +313,7 @@ void DemoEc_DrawSkeletonCustomColor(DemoEc* this, PlayState* play, Gfx* arg2, Gf
 }
 
 void DemoEc_UseDrawObject(DemoEc* this, PlayState* play) {
-    s32 pad[2];
+    
     s32 drawObjBankIndex = this->drawObjBankIndex;
     GraphicsContext* gfxCtx = play->state.gfxCtx;
 
@@ -1076,8 +1076,6 @@ void DemoEc_UpdateFishingOwner(DemoEc* this, PlayState* play) {
 }
 
 void DemoEc_FishingOwnerPostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot, void* thisx, Gfx** gfx) {
-    DemoEc* this = (DemoEc*)thisx;
-
     if ((limbIndex == 8) && !(HIGH_SCORE(HS_FISHING) & 0x1000)) {
         gSPDisplayList((*gfx)++, SEGMENTED_TO_VIRTUAL(gFishingOwnerHatDL));
     }
@@ -1123,7 +1121,7 @@ void DemoEc_DrawBombchuShopOwner(DemoEc* this, PlayState* play) {
 }
 
 void DemoEc_InitGorons(DemoEc* this, PlayState* play) {
-    s32 pad[2];
+    
     AnimationHeader* animation;
     f32 goronScale;
     Vec3f* scale = &this->actor.scale;
@@ -1251,10 +1249,10 @@ void DemoEc_InitNpc(DemoEc* this, PlayState* play) {
 }
 
 void DemoEc_InitCommon(DemoEc* this, PlayState* play) {
-    s32 pad;
+    
     s16 primary;
     s32 type;
-    s16 pad2;
+    
     s16 sp28;
     s32 primaryBankIndex;
     s32 secondaryBankIndex;
