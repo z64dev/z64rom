@@ -62,6 +62,23 @@
 //      copy: right-click -> copy C code
 //      paste: right-click -> paste C code
 //   download it here: https://github.com/skawo/Zelda64-Text-Editor
+//
+// motivation:
+//
+//   the text system in oot is not very friendly to work with
+//
+//   it involves invoking many functions in many different places,
+//   splitting what should be simple logic in one function, into
+//   complex logic spread across many functions
+//
+//   analyzing the oot decomp reveals that many actors go about
+//   handling text in very different ways from one another, meaning
+//   there is no standardization, and adding text to actors feels
+//   like writing a lot of boilerplate again and again, every time
+//
+//   easytalk aims to address these problems; using it allows you to
+//   keep your actor logic simple and code clean; don't forget to
+//   read the examples included above if you haven't already!
 */
 
 #include <uLib.h>

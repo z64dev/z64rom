@@ -213,6 +213,8 @@ void Play_SetFadeOut(PlayState* play);
 struct Time Play_GetTime(void);
 void NewRoom_Draw(PlayState* play, Room* room, u32 flags);
 
+// please read the examples and 'important things to know' sections
+// of ActorPayload.c before using Actor_GetPayload() in your actors
 void *(Actor_GetPayload)(Actor *actor, PlayState *play);
 void *Actor_GetPayloadAndDoRelocs(Actor *actor, PlayState *play, u8 *relocs);
 
