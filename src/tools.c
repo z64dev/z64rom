@@ -2,6 +2,9 @@
 #include "tools.h"
 #include <ext_zip.h>
 
+// update channels live here, in case user ever needs to change them
+static const char *updateChannelFilename = "update-channel.txt";
+
 const char* sTools[] = {
 #ifdef _WIN32
 	"tools/mips64-binutils/bin/mips64-gcc.exe",
@@ -99,9 +102,6 @@ static s32 Tools_ValidateTools_Required(void) {
 }
 
 static void Tools_CheckUpdateImpl() {
-	char* defaultUrl = "https://api.github.com/repos/z64utils/z64rom/releases/latest";
-	char* defaultZip = "https://github.com/z64utils/z64rom/releases/latest/download/z64rom.zip";
-	char* updateChannelFilename = "update-channel.txt";
 	char buffer[1024];
 	char* tag;
 	u32 sz = 0;
@@ -111,17 +111,10 @@ static void Tools_CheckUpdateImpl() {
 	Memfile api = Memfile_New();
 	Memfile updateChannel = Memfile_New();
 	
-	// customizable update channels, in case users ever need to change them
-	if (!sys_stat(updateChannelFilename))
-	{
-		FILE *fp = fopen(updateChannelFilename, "w");
-		fprintf(fp, "%s\n", defaultUrl);
-		fprintf(fp, "%s\n", defaultZip);
-		fclose(fp);
-	}
+	// load from update channel
 	Memfile_LoadStr(&updateChannel, updateChannelFilename);
 	char *url = updateChannel.str;
-	url[strcspn(url, "\r\n")] = '\0';
+	url[strcspn(url, "\r\n")] = '\0'; // want only the first line
 	
 	if (Memfile_Download(&api, url, NULL))
 		goto error;
@@ -299,6 +292,10 @@ const char* Tools_Get(ToolIndex id) {
 }
 
 void Tools_CheckUpdates() {
+	if (!sys_stat(updateChannelFilename)) {
+		info("could not find '%s', cannot check for updates", updateChannelFilename);
+		return;
+	}
 	if (!sys_stat("tools/.update-check")) {
 		sys_touch("tools/.update-check");
 		Tools_CheckUpdateImpl();
