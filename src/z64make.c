@@ -562,6 +562,7 @@ static ThreadFunc Sequence_Convert(const char* file) {
 	
 	if (
 		!g64.makeForce &&
+		!g64.makeForceAudio &&
 		sys_stat(inCfg) &&
 		sys_stat(output) > sys_stat(srcFile) &&
 		sys_stat(outCfg) > sys_stat(inCfg)
