@@ -76,6 +76,10 @@
 //   there is no standardization, and adding text to actors feels
 //   like writing a lot of boilerplate again and again, every time
 //
+//   furthermore, the game's text is stored in a way that is inconvenient
+//   to edit: messages must be referenced by id (poor for code readability),
+//   and there is a limit on the number available (albeit a high one!)
+//
 //   easytalk aims to address these problems; using it allows you to
 //   keep your actor logic simple and code clean; don't forget to
 //   read the examples included above if you haven't already!
