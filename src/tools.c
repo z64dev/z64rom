@@ -245,6 +245,11 @@ void Tools_InstallBinutils(void) {
 	Zip_Free(&zip);
 	cli_clearln(2);
 	
+	// mark tools executable on linux following installation
+#ifndef _WIN32
+	system("find tools/mips64-binutils/ -type f -exec chmod +x {} +");
+#endif
+	
 	info(gLang.success);
 }
 
