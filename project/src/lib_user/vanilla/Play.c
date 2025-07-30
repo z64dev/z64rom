@@ -17,6 +17,20 @@ extern void z64rom_PostPlayDraw(PlayState* play);
 
 static void (*sSceneFunc)(PlayState*);
 
+#if SEGMENT_0x06_FOR_SCENES
+static u16 sSceneSegmentObj0x06 = 0;
+Asm_VanillaHook(Scene_CommandSkyboxSettings);
+void Scene_CommandSkyboxSettings(PlayState *play, SceneCmd *cmd) {
+    u8 *cmd8 = (u8*)cmd;
+    sSceneSegmentObj0x06 = (cmd[1] << 8) | (cmd[2];
+    if (sSceneSegmentObj0x06)
+        sSceneSegmentObj0x06 = Object_Spawn(objectCtx, obj);
+    play->skyboxId = cmd->skyboxSettings.skyboxId;
+    play->envCtx.skyboxConfig = play->envCtx.changeSkyboxNextConfig = cmd->skyboxSettings.skyboxConfig;
+    play->envCtx.lightMode = cmd->skyboxSettings.envLightMode;
+}
+#endif
+
 static s32 Play_FrameAdvance(PlayState* play) {
 #ifdef DEV_BUILD
     static s32 holdTimer;
@@ -220,6 +234,10 @@ static void Play_Draw2(PlayState* play) {
                     // embedded scene func
                     if (sSceneFunc)
                         sSceneFunc(play);
+                    
+                #if SEGMENT_0x06_FOR_SCENES
+                    gSegments[6] = VIRTUAL_TO_PHYSICAL(play->objectCtx.status[sSceneSegmentObj0x06].segment);
+                #endif
                     
                     NewRoom_Draw(play, &play->roomCtx.curRoom, sp80 & 3);
                     NewRoom_Draw(play, &play->roomCtx.prevRoom, sp80 & 3);

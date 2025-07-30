@@ -39,6 +39,9 @@
 // Enable motion blur + motion blur cutscene command
 #define MOTION_BLUR true
 
+// Enable use of segment 0x06 for scenes, similar to MM
+#define SEGMENT_0x06_FOR_SCENES true
+
 // Interface Stuff
 // MM-Styled Interface (Corrdinates)
 #define Patch_MM_INTERFACE_BUTTONS_CORDS true
