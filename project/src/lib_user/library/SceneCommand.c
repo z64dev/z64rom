@@ -140,6 +140,9 @@ void* func_800982FC(ObjectContext* objectCtx, s32 bankIndex, s16 objectId) {
     return nextPtr;
 }
 
+/**
+ * Executes all of the commands in a scene or room header.
+ */
 Asm_VanillaHook(Scene_ExecuteCommands);
 s32 Scene_ExecuteCommands(PlayState* play, SceneCmd* sceneCmd) {
     u32 cmdCode;
@@ -165,6 +168,7 @@ s32 Scene_ExecuteCommands(PlayState* play, SceneCmd* sceneCmd) {
     return 0;
 }
 
+// SceneTableEntry Header Command 0x00: Spawn List
 Asm_VanillaHook(Scene_CommandSpawnList);
 void Scene_CommandSpawnList(PlayState* play, SceneCmd* cmd) {
     ActorEntry* linkEntry = play->linkActorEntry =
@@ -179,17 +183,21 @@ void Scene_CommandSpawnList(PlayState* play, SceneCmd* cmd) {
     Object_Spawn(&play->objectCtx, linkObjectId);
 }
 
+// SceneTableEntry Header Command 0x01: Actor List
 Asm_VanillaHook(Scene_CommandActorList);
 void Scene_CommandActorList(PlayState* play, SceneCmd* cmd) {
     play->numSetupActors = cmd->actorList.length;
     play->setupActorList = SEGMENTED_TO_VIRTUAL(cmd->actorList.data);
 }
 
+// SceneTableEntry Header Command 0x02: List of camera data for actor cutscenes
+// Unused in OOT
 Asm_VanillaHook(Scene_CommandUnused2);
 void Scene_CommandUnused2(PlayState* play, SceneCmd* cmd) {
     play->unk_11DFC = SEGMENTED_TO_VIRTUAL(cmd->unused02.segment);
 }
 
+// SceneTableEntry Header Command 0x03: Collision Header
 Asm_VanillaHook(Scene_CommandCollisionHeader);
 void Scene_CommandCollisionHeader(PlayState* play, SceneCmd* cmd) {
     CollisionHeader* colHeader = SEGMENTED_TO_VIRTUAL(cmd->colHeader.data);
@@ -203,17 +211,20 @@ void Scene_CommandCollisionHeader(PlayState* play, SceneCmd* cmd) {
     BgCheck_Allocate(&play->colCtx, play, colHeader);
 }
 
+// SceneTableEntry Header Command 0x04: Room List
 Asm_VanillaHook(Scene_CommandRoomList);
 void Scene_CommandRoomList(PlayState* play, SceneCmd* cmd) {
     play->numRooms = cmd->roomList.length;
     play->roomList = SEGMENTED_TO_VIRTUAL(cmd->roomList.data);
 }
 
+// SceneTableEntry Header Command 0x06: Entrance List
 Asm_VanillaHook(Scene_CommandEntranceList);
 void Scene_CommandEntranceList(PlayState* play, SceneCmd* cmd) {
     play->setupEntranceList = SEGMENTED_TO_VIRTUAL(cmd->entranceList.data);
 }
 
+// SceneTableEntry Header Command 0x07: Special Files
 Asm_VanillaHook(Scene_CommandSpecialFiles);
 void Scene_CommandSpecialFiles(PlayState* play, SceneCmd* cmd) {
     if (cmd->specialFiles.keepObjectId != OBJECT_INVALID) {
@@ -226,6 +237,7 @@ void Scene_CommandSpecialFiles(PlayState* play, SceneCmd* cmd) {
     }
 }
 
+// SceneTableEntry Header Command 0x08: Room Behavior
 Asm_VanillaHook(Scene_CommandRoomBehavior);
 void Scene_CommandRoomBehavior(PlayState* play, SceneCmd* cmd) {
     play->roomCtx.curRoom.behaviorType1 = cmd->roomBehavior.gpFlag1;
@@ -234,11 +246,13 @@ void Scene_CommandRoomBehavior(PlayState* play, SceneCmd* cmd) {
     play->msgCtx.disableWarpSongs = (cmd->roomBehavior.gpFlag2 >> 0xA) & 1;
 }
 
+// SceneTableEntry Header Command 0x0A: Mesh Header
 Asm_VanillaHook(Scene_CommandRoomShape);
 void Scene_CommandRoomShape(PlayState* play, SceneCmd* cmd) {
     play->roomCtx.curRoom.roomShape = SEGMENTED_TO_VIRTUAL(cmd->mesh.data);
 }
 
+// SceneTableEntry Header Command 0x0B:  Object List
 Asm_VanillaHook(Scene_CommandObjectList);
 void Scene_CommandObjectList(PlayState* play, SceneCmd* cmd) {
     s32 i;
@@ -290,6 +304,7 @@ void Scene_CommandObjectList(PlayState* play, SceneCmd* cmd) {
     play->objectCtx.num = i;
 }
 
+// SceneTableEntry Header Command 0x0C: Light List
 Asm_VanillaHook(Scene_CommandLightList);
 void Scene_CommandLightList(PlayState* play, SceneCmd* cmd) {
     s32 i;
@@ -301,28 +316,33 @@ void Scene_CommandLightList(PlayState* play, SceneCmd* cmd) {
     }
 }
 
+// SceneTableEntry Header Command 0x0D: Path List
 Asm_VanillaHook(Scene_CommandPathList);
 void Scene_CommandPathList(PlayState* play, SceneCmd* cmd) {
     play->setupPathList = SEGMENTED_TO_VIRTUAL(cmd->pathList.data);
 }
 
+// SceneTableEntry Header Command 0x0E: Transition Actor List
 Asm_VanillaHook(Scene_CommandTransitionActorList);
 void Scene_CommandTransitionActorList(PlayState* play, SceneCmd* cmd) {
     play->transiActorCtx.numActors = cmd->transiActorList.length;
     play->transiActorCtx.list = SEGMENTED_TO_VIRTUAL(cmd->transiActorList.data);
 }
 
+// Init function for the transition system.
 Asm_VanillaHook(TransitionActor_InitContext);
 void TransitionActor_InitContext(GameState* state, TransitionActorContext* transiActorCtx) {
     transiActorCtx->numActors = 0;
 }
 
+// SceneTableEntry Header Command 0x0F: Environment Light Settings List
 Asm_VanillaHook(Scene_CommandLightSettingsList);
 void Scene_CommandLightSettingsList(PlayState* play, SceneCmd* cmd) {
     play->envCtx.numLightSettings = cmd->lightSettingList.length;
     play->envCtx.lightSettingsList = SEGMENTED_TO_VIRTUAL(cmd->lightSettingList.data);
 }
 
+// SceneTableEntry Header Command 0x11: Skybox Settings
 Asm_VanillaHook(Scene_CommandSkyboxSettings);
 void Scene_CommandSkyboxSettings(PlayState* play, SceneCmd* cmd) {
     play->skyboxId = cmd->skyboxSettings.skyboxId;
@@ -330,12 +350,14 @@ void Scene_CommandSkyboxSettings(PlayState* play, SceneCmd* cmd) {
     play->envCtx.lightMode = cmd->skyboxSettings.envLightMode;
 }
 
+// SceneTableEntry Header Command 0x12: Skybox Disables
 Asm_VanillaHook(Scene_CommandSkyboxDisables);
 void Scene_CommandSkyboxDisables(PlayState* play, SceneCmd* cmd) {
     play->envCtx.skyboxDisabled = cmd->skyboxDisables.skyboxDisabled;
     play->envCtx.sunMoonDisabled = cmd->skyboxDisables.sunMoonDisabled;
 }
 
+// SceneTableEntry Header Command 0x10: Time Settings
 Asm_VanillaHook(Scene_CommandTimeSettings);
 void Scene_CommandTimeSettings(PlayState* play, SceneCmd* cmd) {
     if ((cmd->timeSettings.hour != 0xFF) && (cmd->timeSettings.min != 0xFF)) {
@@ -374,6 +396,7 @@ void Scene_CommandTimeSettings(PlayState* play, SceneCmd* cmd) {
     }
 }
 
+// SceneTableEntry Header Command 0x05: Wind Settings
 Asm_VanillaHook(Scene_CommandWindSettings);
 void Scene_CommandWindSettings(PlayState* play, SceneCmd* cmd) {
     s8 x = cmd->windSettings.x;
@@ -387,15 +410,18 @@ void Scene_CommandWindSettings(PlayState* play, SceneCmd* cmd) {
     play->envCtx.windSpeed = cmd->windSettings.unk_07;
 }
 
+// SceneTableEntry Header Command 0x13: Exit List
 Asm_VanillaHook(Scene_CommandExitList);
 void Scene_CommandExitList(PlayState* play, SceneCmd* cmd) {
     play->setupExitList = SEGMENTED_TO_VIRTUAL(cmd->exitList.data);
 }
 
+// SceneTableEntry Header Command 0x09: Undefined
 Asm_VanillaHook(Scene_CommandUndefined9);
 void Scene_CommandUndefined9(PlayState* play, SceneCmd* cmd) {
 }
 
+// SceneTableEntry Header Command 0x15: Sound Settings=
 Asm_VanillaHook(Scene_CommandSoundSettings);
 void Scene_CommandSoundSettings(PlayState* play, SceneCmd* cmd) {
     play->sequenceCtx.seqId = cmd->soundSettings.seqId;
@@ -406,11 +432,13 @@ void Scene_CommandSoundSettings(PlayState* play, SceneCmd* cmd) {
     }
 }
 
+// SceneTableEntry Header Command 0x16: Echo Setting
 Asm_VanillaHook(Scene_CommandEchoSettings);
 void Scene_CommandEchoSettings(PlayState* play, SceneCmd* cmd) {
     play->roomCtx.curRoom.echo = cmd->echoSettings.echo;
 }
 
+// SceneTableEntry Header Command 0x18: Alternate Header List=
 Asm_VanillaHook(Scene_CommandAlternateHeaderList);
 void Scene_CommandAlternateHeaderList(PlayState* play, SceneCmd* cmd) {
     SceneCmd* altHeader;
@@ -449,6 +477,8 @@ void Scene_CommandAlternateHeaderList(PlayState* play, SceneCmd* cmd) {
     }
 }
 
+// SceneTableEntry Header Command 0x17: Cutscene Script List
+// Cutscene Command List in OOT
 Asm_VanillaHook(Scene_CommandCutsceneData);
 void Scene_CommandCutsceneData(PlayState* play, SceneCmd* cmd) {
     osSyncPrintf("\ngame_play->demo_play.data=[%x]", play->csCtx.segment);
