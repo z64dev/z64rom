@@ -439,8 +439,6 @@ void Play_Init(GameState* __play) {
         ObjectStatus **status = (ObjectStatus**)&play->objectCtx.status;
         *status = (void*)0x80153764; // tail of message entry table
         *status -= OBJECT_EXCHANGE_BANK_MAX;
-        for (int i = 0; i < OBJECT_EXCHANGE_BANK_MAX; ++i)
-            (*status)[i].id = OBJECT_INVALID;
     }
     
     gLibCtx.state.isPlayGameMode = true;
