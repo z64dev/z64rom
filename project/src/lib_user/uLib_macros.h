@@ -1,10 +1,6 @@
 #ifndef __ULIB_MACROS_H__
 #define __ULIB_MACROS_H__
 
-#ifdef gDPSetTileCustom
-#undef gDPSetTileCustom
-#endif
-
 #define Asm_VanillaHook(func)                    \
     asm (".global " "__vanilla_hook_" #func "\n" \
     "__vanilla_hook_" #func " = " #func)
@@ -38,51 +34,6 @@
 #define Align(val, align) ((((val) % (align)) != 0) ? (val) + (align) - ((val) % (align)) : (val))
 
 #define U32_RGB(x) (u8)(x >> 24), (u8)(x >> 16), (u8)(x >> 8)
-
-#define gDPSetTileCustom(pkt, fmt, siz, width, height, pal, cms, cmt, masks, maskt, shifts, shiftt) \
-    do {                                                                                            \
-        gDPPipeSync(pkt);                                                                           \
-        gDPTileSync(pkt);                                                                           \
-        gDPSetTile(                                                                                 \
-            pkt,                                                                                    \
-            fmt,                                                                                    \
-            siz,                                                                                    \
-            (((width) * siz) + 7) >> 3,                                                             \
-            0,                                                                                      \
-            G_TX_LOADTILE,                                                                          \
-            0,                                                                                      \
-            cmt,                                                                                    \
-            maskt,                                                                                  \
-            shiftt,                                                                                 \
-            cms,                                                                                    \
-            masks,                                                                                  \
-            shifts                                                                                  \
-        );                                                                                          \
-        gDPTileSync(pkt);                                                                           \
-        gDPSetTile(                                                                                 \
-            pkt,                                                                                    \
-            fmt,                                                                                    \
-            siz,                                                                                    \
-            (((width) * siz) + 7) >> 3,                                                             \
-            0,                                                                                      \
-            G_TX_RENDERTILE,                                                                        \
-            pal,                                                                                    \
-            cmt,                                                                                    \
-            maskt,                                                                                  \
-            shiftt,                                                                                 \
-            cms,                                                                                    \
-            masks,                                                                                  \
-            shifts                                                                                  \
-        );                                                                                          \
-        gDPSetTileSize(                                                                             \
-            pkt,                                                                                    \
-            G_TX_RENDERTILE,                                                                        \
-            0,                                                                                      \
-            0,                                                                                      \
-            ((width) - 1) << 2,                                                                     \
-                ((height) - 1) << 2                                                                 \
-        );                                                                                          \
-    } while (0)
 
 // compile-time assert
 #define CASSERT(predicate) _impl_CASSERT_LINE(predicate, __LINE__)
