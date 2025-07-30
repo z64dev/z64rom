@@ -427,22 +427,6 @@ void Play_Init(GameState* __play) {
     s32 i;
     u8 tempSetupIndex;
     
-    // if array was changed to pointer, ensure it points to something!
-    //
-    // unfortunately, there is no way to check this using C preprocessor,
-    // so casting to a pointer-to-pointer is used to achieve polymorphism
-    //
-    // the compiler will optimize if (false) away
-    if (sizeof(play->objectCtx.status) == sizeof(void*))
-    {
-        // repurpose unused PAL text table for extended object status limit
-        ObjectStatus **status = (ObjectStatus**)&play->objectCtx.status;
-        *status = (void*)0x80153764; // tail of message entry table
-        *status -= OBJECT_EXCHANGE_BANK_MAX;
-        for (int i = 0; i < OBJECT_EXCHANGE_BANK_MAX; ++i)
-            (*status)[i].id = OBJECT_INVALID;
-    }
-    
     gLibCtx.state.isPlayGameMode = true;
     
     osLibPrintf("Entrance Index: %04X", gExitParam.nextEntranceIndex);
