@@ -104,13 +104,6 @@
 // will only be changed in this compilation unit
 static u16 gNumSetupActorsSafe;
 
-Asm_VanillaHook(Scene_CommandActorList);
-void Scene_CommandActorList(PlayState* play, SceneCmd* cmd)
-{
-	play->numSetupActors = gNumSetupActorsSafe = cmd->actorList.length;
-	play->setupActorList = SEGMENTED_TO_VIRTUAL(cmd->actorList.data);
-}
-
 void *(Actor_GetPayload)(Actor *actor, PlayState *play)
 {
 	// actor payload data starts immediately after actor setup list
