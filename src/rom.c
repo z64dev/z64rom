@@ -1662,8 +1662,10 @@ static void Build_SceneThread(SceneBuildInstance* this) {
 	Toml toml = Toml_New();
 	List room_list = List_New();
 	const char* fscene = fs_item("scene.zscene");
+	const char* fscenefunc = fs_item("scene-func.zovl");
 	const char* fconfig = fs_item("config.toml");
 	RomFile* room_dma;
+	bool hasEmbeds = false;
 	
 	if (!sys_stat(fscene))
 		fscene = fs_find("*.zscene");
@@ -1728,20 +1730,90 @@ static void Build_SceneThread(SceneBuildInstance* this) {
 	u32 num_header = 0;
 	
 	Memfile_LoadBin(&data, fscene);
-	num_header = Scene_GetHeaderNum(data.data);
-	cnum_room = Scene_GetRoomNum(data.data);
+	void *firstHeader = data.data;
+	num_header = Scene_GetHeaderNum(firstHeader);
+	cnum_room = Scene_GetRoomNum(firstHeader);
 	
 	osLog("scene:      %s", fscene);
 	osLog("num_header: %d", num_header);
 	osLog("cnum_room:  %d", cnum_room);
 	osLog("num_room:   %d", num_room);
 	
+	// scene function embed
+	if (sys_stat(fscenefunc))
+	{
+		u32 ovlStart;
+		u32 ovlEnd;
+		u32 footer;
+		const u32 zero = 0;
+		Memfile overlay = Memfile_New();
+		
+		hasEmbeds = true;
+		
+		// 8 byte alignment in case of embedded textures
+		Memfile_Seek(&data, MEMFILE_SEEK_END);
+		Memfile_Align(&data, 8);
+		Memfile_Seek(&data, MEMFILE_SEEK_END);
+		
+		// inject overlay at eof
+		Memfile_LoadBin(&overlay, fscenefunc);
+		ovlStart = data.seekPoint;
+		Memfile_Insert(&data, overlay.data, overlay.size);
+		data.seekPoint += overlay.size;
+		Memfile_Free(&overlay);
+		
+		// translate entry point
+		{
+			u8 *tmp = firstHeader;
+			tmp += data.seekPoint - 4;
+			u32 tmp32 = (tmp[0] << 24) | (tmp[1] << 16) | (tmp[2] << 8) | (tmp[3]);
+			tmp32 += ovlStart;
+			tmp[0] = tmp32 >> 24;
+			tmp[1] = tmp32 >> 16;
+			tmp[2] = tmp32 >>  8;
+			tmp[3] = tmp32;
+		}
+		
+		// a uptr was to the end of the overlay to store entry point
+		ovlEnd = data.seekPoint - 4;
+		
+		// the footer is a u32 at the end of the overlay
+		footer = ovlEnd - 4;
+		
+		// append information about overlay as part of extended footer
+		SwapBE(ovlStart);
+		SwapBE(ovlEnd);
+		Memfile_Insert(&data, &ovlStart, sizeof(ovlStart)); data.seekPoint += 4;
+		Memfile_Insert(&data, &ovlEnd, sizeof(ovlEnd)); data.seekPoint += 4;
+		
+		// go back to beginning of scene and write the offset of the footer
+		Memfile_Rewind(&data);
+		SwapBE(footer);
+		Memfile_Insert(&data, &footer, sizeof(footer)); data.seekPoint += 4;
+		
+		// and then the remaining zeroes (prefix is u32 jumps[4];)
+		// TODO this is placeholder, address if other embed types are added
+		for (int i = 0; i < 3; ++i)
+		{
+			Memfile_Insert(&data, &zero, sizeof(zero));
+			data.seekPoint += 4;
+		}
+		
+		// original scene is left unchanged by this process,
+		// so this is here for checking my work
+		//Memfile_SaveBin(&data, x_fmt("%s""test.bin", x_path(fscene)));
+	}
+	
+	// when embeds are used, scene has a prefix u32 jumps[4];
+	if (hasEmbeds)
+		firstHeader = data.str + sizeof(u32[4]);
+	
 	if (cnum_room != num_room)
 		osLog("mismatch");
 	
 	for (int j = 0; j < num_header; j++) {
 		mutex_lock(&gSegmentMutex);
-		SceneRoomList* scene_room_list = Scene_GetRoomList(data.data, j);
+		SceneRoomList* scene_room_list = Scene_GetRoomList(firstHeader, j);
 		
 		osLog("scene_room_list: %08X", VirtualToSegment(1, scene_room_list));
 		mutex_unlock(&gSegmentMutex);
@@ -1756,6 +1828,9 @@ static void Build_SceneThread(SceneBuildInstance* this) {
 		entry->vromStart = Dma_WriteMemfile(rom, DMA_FIND_FREE, &data, NOCACHE_COMPRESS);
 		entry->vromEnd = Dma_GetVRomEnd();
 	);
+	
+	if (hasEmbeds)
+		entry->vromStart |= 0x80000000;
 	
 	SwapBE(entry->vromStart);
 	SwapBE(entry->vromEnd);
