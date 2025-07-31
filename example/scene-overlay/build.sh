@@ -9,4 +9,4 @@ mips64-ultra-elf-ld --emit-relocs -o tmp.elf tmp.o -defsym ENTRY_POINT=0x8080000
 ./novl -v -c -A 0x80800000 -o init.zovl tmp.elf
 
 # get func address
-mips64-ultra-elf-objdump --syms tmp.elf | grep -w Init > func.txt
+mips64-ultra-elf-objdump --syms tmp.elf | grep -w SceneFunc > func.txt

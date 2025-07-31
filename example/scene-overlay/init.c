@@ -1,14 +1,20 @@
 //
 // example scene overlay
 //
-// these can be placed in scene folders eventually, to
-// automatically compile and inject them into scenes
+// when placed in the same folder as a zscene, it will
+// automatically be compiled into a relocatable overlay
+// that the game will use for scene-specific code such
+// as animated textures
+//
+// it is a nondestructive build-time operation, so your
+// original scene file will not be modified; only the
+// version that appears in the game itself
 //
 
 #include "global.h"
 
-// function name must be Init()
-void Init(PlayState* play)
+// function name must be SceneFunc()
+void SceneFunc(PlayState* play)
 {
     u32 gameplayFrames;
     u8 spA3;

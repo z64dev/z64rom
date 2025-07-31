@@ -4,6 +4,9 @@
 #define Z64ROM_VERSION_STRING "1.7.0"
 #define Z64ROM_VERSION_NUMBER 1007000 // x,yyy,zzz (major, minor, patch)
 
+// for features dependent on newer versions of z64hdr
+#define MINIMUM_Z64HDR_VERSION_ALLOWED 1000000
+
 #include <ext_lib.h>
 #include "rom.h"
 #include "dma.h"

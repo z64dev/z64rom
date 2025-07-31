@@ -2,7 +2,7 @@
 #include "code/z_play.h"
 #include <code/z_scene_table.h>
 
-//Version: 1.1
+//Version: 1.2
 /*This version value is used by SharpOcarina to determine if it needs to update the Play.c of an old project
 to use newly added features. Put a high value like 99 to stop it from ever asking to update it again.
 */
@@ -14,6 +14,8 @@ extern void z64rom_PrePlayUpdate(PlayState* play);
 extern void z64rom_PostPlayUpdate(PlayState* play);
 extern void z64rom_PrePlayDraw(PlayState* play);
 extern void z64rom_PostPlayDraw(PlayState* play);
+
+static void (*sSceneFunc)(PlayState*);
 
 static s32 Play_FrameAdvance(PlayState* play) {
 #ifdef DEV_BUILD
@@ -214,6 +216,11 @@ static void Play_Draw2(PlayState* play) {
                     }
                     Profiler_Start(&gLibCtx.profiler.sceneDraw);
                     Scene_Draw(play);
+                    
+                    // embedded scene func
+                    if (sSceneFunc)
+                        sSceneFunc(play);
+                    
                     NewRoom_Draw(play, &play->roomCtx.curRoom, sp80 & 3);
                     NewRoom_Draw(play, &play->roomCtx.prevRoom, sp80 & 3);
                     Profiler_End(&gLibCtx.profiler.sceneDraw);
@@ -378,13 +385,54 @@ Asm_VanillaHook(Play_SpawnScene);
 void Play_SpawnScene(PlayState* play, s32 sceneNum, s32 spawn) {
     SceneTableEntry* scene = &gSceneTable[sceneNum];
     u32 roomSize;
+    bool hasEmbeds = false;
+    sSceneFunc = 0;
     
     scene->unk_13 = 0;
     play->loadedScene = scene;
     play->sceneId = sceneNum;
     play->sceneDrawConfig = scene->drawConfig;
     
-    play->sceneSegment = Play_LoadFile(play, &scene->sceneFile);
+    // this bit specifies embeds are present
+    RomFile sceneFile = scene->sceneFile;
+    if (sceneFile.vromStart & 0x80000000)
+    {
+        hasEmbeds = true;
+        sceneFile.vromStart &= 0x7fffffff;
+    }
+    
+    play->sceneSegment = Play_LoadFile(play, &sceneFile);
+    
+    // handle embeds
+    if (hasEmbeds)
+    {
+        u32 *jumps = play->sceneSegment;
+        u8 *scene = play->sceneSegment = &jumps[4];
+        
+        // overlay
+        if (jumps[0])
+        {
+            u32 *footer = (u32*)(scene + jumps[0]);
+            u8 *start  = scene + footer[2];
+            u8 *end    = scene + footer[3];
+            u8 *header = end - footer[0];
+            u32 main   = footer[1];
+            u32 size   = end - start;
+            
+            // relocate overlay from virtual ram to physical ram
+            Overlay_Relocate(start, (void*)header, (void*)0x80800000);
+            
+            // clear instruction cache for memory region occupied by overlay
+            osWritebackDCache(start, size);
+            osInvalICache(start, size);
+            
+            // use main routine as scene func
+            play->sceneDrawConfig = SDC_DEFAULT;
+            sSceneFunc = (void (*)(PlayState*))(scene + main);
+        }
+        // TODO jumps[1..3] are still free: use them wisely! (minimaps??)
+    }
+    
     scene->unk_13 = 0;
     
     gSegments[2] = VIRTUAL_TO_PHYSICAL(play->sceneSegment);
@@ -439,8 +487,6 @@ void Play_Init(GameState* __play) {
         ObjectStatus **status = (ObjectStatus**)&play->objectCtx.status;
         *status = (void*)0x80153764; // tail of message entry table
         *status -= OBJECT_EXCHANGE_BANK_MAX;
-        for (int i = 0; i < OBJECT_EXCHANGE_BANK_MAX; ++i)
-            (*status)[i].id = OBJECT_INVALID;
     }
     
     gLibCtx.state.isPlayGameMode = true;

@@ -293,9 +293,12 @@ const char* Tools_Get(ToolIndex id) {
 
 void Tools_CheckUpdates() {
 	if (!sys_stat(updateChannelFilename)) {
-		info("could not find '%s', cannot check for updates", updateChannelFilename);
+		// deprecated auto-update, so don't want this message popping up
+		//info("could not find '%s', cannot check for updates", updateChannelFilename);
 		return;
 	}
+	info("warning: auto-update has been deprecated and could behave unpredictably if used,");
+	info("         so please refer to the update guide on the z64rom GitHub repository");
 	if (!sys_stat("tools/.update-check")) {
 		sys_touch("tools/.update-check");
 		Tools_CheckUpdateImpl();

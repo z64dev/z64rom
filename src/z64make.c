@@ -3,6 +3,11 @@
 #include <ext_proc.h>
 #include "z64elf.h"
 
+#include <stdio.h>
+#include <stdbool.h>
+#include <sys/stat.h>
+#include <time.h>
+
 static volatile bool sMake = false;
 static volatile bool sMakeUserLibrary = false;
 
@@ -1235,9 +1240,125 @@ static s32 Callback_System(const char* input, MakeCallType type, const char* out
 	return 0;
 }
 
+// use HasFileChanged() to get and set in one step
+bool HasFileChangedAmalgamated(const char *filename)
+{
+	char tmp[512];
+	FILE *fp = 0;
+	time_t date = 0;
+	time_t oldDate = 0;
+	struct stat st;
+	
+	sprintf(tmp, "%s.timestamp", filename);
+	
+	// get date from file
+	if (stat(filename, &st) == 0)
+		date = st.st_mtime;
+	
+	// read stored date
+	if ((fp = fopen(tmp, "rb"))
+		&& fseek(fp, 0, SEEK_END) == 0
+		&& ftell(fp) == sizeof(time_t)
+		&& fseek(fp, 0, SEEK_SET) == 0
+	)
+		fread(&oldDate, sizeof(oldDate), 1, fp);
+	
+	// close stored date
+	if (fp)
+		fclose(fp);
+	
+	// file changed; update stored date
+	if (date != oldDate)
+	{
+		if ((fp = fopen(tmp, "wb")))
+		{
+			fwrite(&date, sizeof(date), 1, fp);
+			fclose(fp);
+		}
+		return true;
+	}
+	
+	return false;
+}
+
+// easy hackaround function for compiling embedded scene functions
+static void HackCompileSceneFunc(const char *input)
+{
+	char *msg;
+	char *oPath = x_fmt("%s""tmp.o", x_path(input));
+	char *elfPath = x_fmt("%s""tmp.elf", x_path(input));
+	char *zovlPath = x_fmt("%s""scene-func.zovl", x_path(input));
+	Proc *exe;
+	Elf64 *elf;
+	bool zovlExists = sys_stat(zovlPath);
+	u32 addr;
+	
+	// only recompile if source code has been updated or zovl doesn't exist
+	if (HasFileChangedAmalgamated(input) == false && zovlExists == true)
+		return;
+	
+	// ensure it doesn't exist, in case of build failure
+	if (zovlExists)
+		sys_rm(zovlPath);
+	
+	// .c -> .o
+	{
+		exe = Proc_New("%s -G 0 -nostdinc -I. -Iinclude/ -Iinclude/z64hdr/include -Iinclude/z64hdr/oot_mq_debug -Isrc/lib_user -Isrc/actor -Os -s --std=gnu99 -march=vr4300 -mfix4300 -mabi=32 -mno-abicalls -mdivide-breaks -fno-zero-initialized-in-bss -fno-toplevel-reorder -ffreestanding -fno-common -fno-merge-constants -mno-explicit-relocs -mno-split-addresses -funsigned-char -mno-memcpy -c %s -o %s", Tools_Get(mips64_gcc), input, oPath);
+		
+		Proc_SetEnv(exe, Make_EnvironmentPath());
+		Proc_SetEnv(exe, Make_TempPath());
+		Proc_SetState(exe, PROC_THROW_ERROR | PROC_MUTE_STDERR);
+		Proc_Exec(exe);
+		msg = Proc_Read(exe, READ_STDERR);
+		Proc_Join(exe);
+		Make_Info("gcc", msg, input);
+		delete(msg);
+	}
+	
+	// .o -> .elf
+	{
+		exe = Proc_New("%s --emit-relocs -o %s %s -defsym ENTRY_POINT=0x80800000 -Linclude/z64hdr/oot_mq_debug -L include/z64hdr/common/ -T z64hdr_no_bss.ld", Tools_Get(mips64_ld), elfPath, oPath);
+		
+		Proc_SetEnv(exe, Make_EnvironmentPath());
+		Proc_SetEnv(exe, Make_TempPath());
+		Proc_SetState(exe, PROC_THROW_ERROR);
+		Proc_Exec(exe);
+		Proc_Join(exe);
+		Make_Info("ld", msg, input);
+	}
+	
+	// .elf -> .zovl
+	exe = Proc_New("%s -v -c -s -A 0x80800000 -o %s %s", Tools_Get(nOVL), zovlPath, elfPath);
+	Proc_SetState(exe, PROC_THROW_ERROR | PROC_MUTE_STDOUT);
+	Proc_Exec(exe);
+	Proc_Join(exe);
+	
+	// get function entry point
+	elf = Elf64_Load(elfPath);
+	addr = Elf64_FindSym(elf, "SceneFunc");
+	Elf64_Free(elf);
+	
+	if (addr == NULL_SYM)
+		errr("could not find SceneFunc() function in %s", input);
+	
+	// append it to the end of the .zovl for convenience
+	addr -= 0x80800000;
+	SwapBE(addr);
+	for (FILE *fp = fopen(zovlPath, "ab"); fp; fp = (fclose(fp), NULL))
+		fwrite(&addr, sizeof(addr), 1, fp);
+}
+
 static s32 Callback_Overlay(const char* input, MakeCallType type, const char* output, void* arg) {
 	char* ovl;
 	char* conf;
+	
+	 // for embedded scene functions
+	if (strstr(input, "/scene/"))
+	{
+		HackCompileSceneFunc(input);
+		
+		return CB_BREAK;
+	}
 	
 	if (type == PRE_GCC) {
 		char* config = arg;
@@ -2268,6 +2389,20 @@ void Make_Code(void) {
 			.callback = Callback_Overlay,
 			.multiFileProcess = true,
 		},{
+			.src = "rom/scene/", // for embedded scene functions
+			.rom = "rom/scene/",
+			.gccFlag = g64.gccFlags.actor,
+			.ldFlag = g64.linkerFlags.code,
+			.callback = Callback_Overlay,
+			.multiFileProcess = true,
+		},{
+			.src = "rom/scene/.vanilla/", // for embedded scene functions
+			.rom = "rom/scene/.vanilla/",
+			.gccFlag = g64.gccFlags.actor,
+			.ldFlag = g64.linkerFlags.code,
+			.callback = Callback_Overlay,
+			.multiFileProcess = true,
+		},{
 			.src = "src/system/state/",
 			.rom = "rom/system/state/",
 			.gccFlag = g64.gccFlags.state,
@@ -2378,6 +2513,39 @@ void Make(Rom* rom, s32 message) {
 	}
 	
 	// create this file if it doesn't exist
+	if (!sys_stat("player_types.h")) {
+		FILE* m = FOPEN("player_types.h", "w");
+		
+		fputs(
+R"(//
+// player_types.h
+//
+// any datatypes declared here can be
+// used as types in player_extras.h
+//
+// you can also use all types from z64hdr
+//
+// this file exists as a portable alternative
+// to modifying your z64hdr installation directly
+//
+// also do not #include here, as this file is
+// strictly for declaring types
+//
+
+/* -------- example --------
+
+typedef struct tagMyCustomType
+{
+	Vec3f hello;
+	Vec3f world;
+} MyCustomType;
+
+ -------- example -------- */
+)", m);
+		fclose(m);
+	}
+	
+	// create this file if it doesn't exist
 	if (!sys_stat("player_extras.h")) {
 		FILE* m = FOPEN("player_extras.h", "w");
 		
@@ -2394,16 +2562,15 @@ R"(//
 // also do not #include here, as this file is
 // strictly for defining variables
 //
-// if you need to access custom data types that
-// are not in z64hdr, declare them in uLib.h
-// anywhere above #include <z64hdr.h>, and then
-// simply #include <uLib.h> in actors that use them
+// if you need to access custom data types that are
+// not in z64hdr, declare them in player_types.h
 //
 
 /* -------- example --------
 
 void *somethingUseful; // add variables and
 int someCounter; // comments as you normally would
+MyCustomType fancy; // from player_types.h
 
  -------- example -------- */
 )", m);
