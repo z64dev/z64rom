@@ -1944,9 +1944,6 @@ static void Build_SizeofPlayer(Rom* rom)
 	const char code[] =
 		"#include \"global.h\"\n"
 		"#include \"z64player.h\"\n"
-		"#if !defined(Z64HDR_VERSION) || Z64HDR_VERSION < 1000000\n"
-		"#    error \"please update to the latest version of z64hdr: https://z64.tools/z64hdr\"\n"
-		"#endif\n"
 		"unsigned int tmp[] = { 0x" STR_DEADBEEF ", sizeof(Player) };\n";
 	const char* fn = "sizeofPlayer";
 	FILE* file;
@@ -2563,6 +2560,24 @@ void Rom_Build(Rom* rom) {
 
 	
 	Patch_Init();
+	
+	// assert minimum z64hdr version
+	{
+		Memfile z64hdr = Memfile_New();
+		const char *match;
+		unsigned int version = 0;
+		
+		Memfile_LoadStr(&z64hdr, "include/z64hdr/z64common.h");
+		
+		if ((match = strstr(z64hdr.str, "Z64HDR_VERSION")))
+			if (sscanf(match, "Z64HDR_VERSION %d", &version) != 1)
+				version = 0;
+		
+		if (version < MINIMUM_Z64HDR_VERSION_ALLOWED)
+			errr("please update to the latest version of z64hdr: https://github.com/z64utils/z64hdr");
+		
+		Memfile_Free(&z64hdr);
+	}
 	
 	Memfile_Alloc(&dataFile, 0x460000);
 	Memfile_Alloc(&config, 0x25000);
