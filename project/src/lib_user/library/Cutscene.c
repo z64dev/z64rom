@@ -507,6 +507,8 @@ void Cutscene_PlaySegment(PlayState* play, void* segment) {
 
 Asm_VanillaHook(Cutscene_HandleEntranceTriggers);
 void Cutscene_HandleEntranceTriggers(PlayState* play) {
+    if(gSaveContext.cutsceneIndex >= 0xFFF0) return; 
+    
     u8 spawnID;
     u8 sceneID;
     s32 playSegment = false;
