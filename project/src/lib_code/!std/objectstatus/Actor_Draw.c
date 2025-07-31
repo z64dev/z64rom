@@ -6,10 +6,10 @@
  */
 
 void Actor_Draw(PlayState* play, Actor* actor) {
-    FaultClient faultClient;
+    //FaultClient faultClient;
     Lights* lights;
 
-    //Fault_AddClient(&faultClient, gBlankString /*Actor_FaultPrint*/, actor, gBlankString/*"Actor_draw"*/);
+    //Fault_AddClient(&faultClient, Actor_FaultPrint, actor, "Actor_draw");
 
     OPEN_DISPS(play->state.gfxCtx, gBlankString, 0);
 
@@ -68,6 +68,6 @@ void Actor_Draw(PlayState* play, Actor* actor) {
 
     CLOSE_DISPS(play->state.gfxCtx, gBlankString, 0);
 
-    Fault_RemoveClient(&faultClient);
+    //Fault_RemoveClient(&faultClient);
 }
 
