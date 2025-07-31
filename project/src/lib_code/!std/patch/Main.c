@@ -26,10 +26,6 @@ extern OSMesgQueue sSerialEventQueue;
 extern OSMesg sSerialMsgBuf[1];
 extern u32 gSystemHeapSize;
 
-#if !defined(Z64HDR_VERSION) || Z64HDR_VERSION < 1000000
-#    error "please update to the latest version of z64hdr: https://z64.tools/z64hdr"
-#endif
-
 asm ("osAppNMIBuffer = 0x8000031C");
 
 void Main(void* arg) {

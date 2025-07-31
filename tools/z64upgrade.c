@@ -12,6 +12,33 @@ const char* gTool =
 #endif
 ;
 
+
+
+
+///////////////////////////////////////////////////////////
+//       _                               _           _   //
+//      | |                             | |         | |  //
+//    __| | ___ _ __  _ __ ___  ___ __ _| |_ ___  __| |  //
+//   / _` |/ _ \ '_ \| '__/ _ \/ __/ _` | __/ _ \/ _` |  //
+//  | (_| |  __/ |_) | | |  __/ (_| (_| | ||  __/ (_| |  //
+//   \__,_|\___| .__/|_|  \___|\___\__,_|\__\___|\__,_|  //
+//             | |                                       //
+//             |_|                                       //
+///////////////////////////////////////////////////////////
+//                                                       //
+//  after experimenting with different update methods,   //
+//  it seems best to phase out this feature in favor of  //
+//  encouraging and teaching users how to use version    //
+//  control so they can safely and confidently update    //
+//  their projects manually                              //
+//                                                       //
+//  leaving the source intact for historical purposes    //
+//                                                       //
+///////////////////////////////////////////////////////////
+
+
+
+
 /* manual update using --offline (recommended)
 how to update projects on older z64rom versions to latest:
  - back up your project

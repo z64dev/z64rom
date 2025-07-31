@@ -2513,6 +2513,39 @@ void Make(Rom* rom, s32 message) {
 	}
 	
 	// create this file if it doesn't exist
+	if (!sys_stat("player_types.h")) {
+		FILE* m = FOPEN("player_types.h", "w");
+		
+		fputs(
+R"(//
+// player_types.h
+//
+// any datatypes declared here can be
+// used as types in player_extras.h
+//
+// you can also use all types from z64hdr
+//
+// this file exists as a portable alternative
+// to modifying your z64hdr installation directly
+//
+// also do not #include here, as this file is
+// strictly for declaring types
+//
+
+/* -------- example --------
+
+typedef struct tagMyCustomType
+{
+	Vec3f hello;
+	Vec3f world;
+} MyCustomType;
+
+ -------- example -------- */
+)", m);
+		fclose(m);
+	}
+	
+	// create this file if it doesn't exist
 	if (!sys_stat("player_extras.h")) {
 		FILE* m = FOPEN("player_extras.h", "w");
 		
@@ -2529,16 +2562,15 @@ R"(//
 // also do not #include here, as this file is
 // strictly for defining variables
 //
-// if you need to access custom data types that
-// are not in z64hdr, declare them in uLib.h
-// anywhere above #include <z64hdr.h>, and then
-// simply #include <uLib.h> in actors that use them
+// if you need to access custom data types that are
+// not in z64hdr, declare them in player_types.h
 //
 
 /* -------- example --------
 
 void *somethingUseful; // add variables and
 int someCounter; // comments as you normally would
+MyCustomType fancy; // from player_types.h
 
  -------- example -------- */
 )", m);
