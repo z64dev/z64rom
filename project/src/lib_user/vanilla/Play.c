@@ -24,7 +24,7 @@ void Scene_CommandSkyboxSettings(PlayState *play, SceneCmd *cmd) {
     u8 *cmd8 = (u8*)cmd;
     sSceneSegmentObj0x06 = (cmd[1] << 8) | (cmd[2];
     if (sSceneSegmentObj0x06)
-        sSceneSegmentObj0x06 = Object_Spawn(objectCtx, obj);
+        sSceneSegmentObj0x06 = Object_Spawn(objectCtx, sSceneSegmentObj0x06);
     play->skyboxId = cmd->skyboxSettings.skyboxId;
     play->envCtx.skyboxConfig = play->envCtx.changeSkyboxNextConfig = cmd->skyboxSettings.skyboxConfig;
     play->envCtx.lightMode = cmd->skyboxSettings.envLightMode;
