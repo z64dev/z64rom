@@ -5,6 +5,7 @@
    z64rom = 0xAA7D88
  */
 
+Asm_VanillaHook(Actor_Draw);
 void Actor_Draw(PlayState* play, Actor* actor) {
     FaultClient faultClient;
     Lights* lights;

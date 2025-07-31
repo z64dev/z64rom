@@ -5,6 +5,7 @@
    z64rom = 0xB0F328
  */
 
+Asm_VanillaHook(Object_IsLoaded);
 s32 Object_IsLoaded(ObjectContext* objectCtx, s32 bankIndex) {
     if (objectCtx->status[bankIndex].id > 0) {
         return true;

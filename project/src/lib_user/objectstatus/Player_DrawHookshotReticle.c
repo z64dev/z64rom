@@ -9,6 +9,7 @@
 asm("D_801260C8 = 0x801260C8;");
 extern Vec3f D_801260C8;
 
+Asm_VanillaHook(Player_DrawHookshotReticle);
 void Player_DrawHookshotReticle(PlayState* play, Player* this, f32 arg2) {
     //static Vec3f D_801260C8 = { -500.0f, -100.0f, 0.0f };
     CollisionPoly* sp9C;

@@ -5,6 +5,7 @@
    z64rom = 0xB0F2CC
  */
 
+Asm_VanillaHook(Object_GetIndex);
 s32 Object_GetIndex(ObjectContext* objectCtx, s16 objectId) {
     s32 i;
 

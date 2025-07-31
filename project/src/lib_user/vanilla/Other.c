@@ -61,6 +61,64 @@ void ActorOverlayTable_LogPrint(void) {
     uLib_DebugMessages(1);
 }
 
+Asm_VanillaHook(Object_Spawn);
+s32 Object_Spawn(ObjectContext* objectCtx, s16 objectId) {
+    u32 size;
+    
+    osLibPrintf("Spawn Object: 0x%04X", (u16)objectId);
+    objectCtx->status[objectCtx->num].id = objectId;
+    size = gObjectTable[objectId].vromEnd - gObjectTable[objectId].vromStart;
+    
+    DmaMgr_SendRequest1(
+        objectCtx->status[objectCtx->num].segment,
+        gObjectTable[objectId].vromStart,
+        size,
+        __FUNCTION__,
+        __LINE__
+    );
+    
+    if (objectCtx->num < OBJECT_EXCHANGE_BANK_MAX - 1)
+        objectCtx->status[objectCtx->num + 1].segment =
+            (void*)ALIGN16((s32)objectCtx->status[objectCtx->num].segment + size);
+    
+    objectCtx->num++;
+    objectCtx->unk_09 = objectCtx->num;
+    
+    return objectCtx->num - 1;
+}
+
+Asm_VanillaHook(Object_UpdateBank);
+void Object_UpdateBank(ObjectContext* objectCtx) {
+    s32 i;
+    ObjectStatus* status = &objectCtx->status[0];
+    RomFile* objectFile;
+    u32 size;
+    
+    for (i = 0; i < objectCtx->num; i++) {
+        if (status->id < 0) {
+            if (status->dmaRequest.vromAddr == 0) {
+                osCreateMesgQueue(&status->loadQueue, &status->loadMsg, 1);
+                objectFile = &gObjectTable[-status->id];
+                size = objectFile->vromEnd - objectFile->vromStart;
+                DmaMgr_SendRequest2(
+                    &status->dmaRequest,
+                    (u32)status->segment,
+                    objectFile->vromStart,
+                    size,
+                    0,
+                    &status->loadQueue,
+                    NULL,
+                    NULL,
+                    0
+                );
+            } else if (osRecvMesg(&status->loadQueue, NULL, OS_MESG_NOBLOCK) == 0) {
+                status->id = -status->id;
+            }
+        }
+        status++;
+    }
+}
+
 Asm_VanillaHook(func_80091738);
 u32 func_80091738(PlayState* playState, u8* segment, SkelAnime* skelAnime) {
     s16 linkObjectId = gLinkObjectIds[(void)0, gSaveContext.linkAge];
