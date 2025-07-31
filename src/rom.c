@@ -2567,7 +2567,7 @@ void Rom_Build(Rom* rom) {
 		const char *match;
 		unsigned int version = 0;
 		
-		Memfile_LoadStr(&z64hdr, "include/z64hdr/z64common.h");
+		Memfile_LoadStr(&z64hdr, "include/z64hdr/common/z64common.h");
 		
 		if ((match = strstr(z64hdr.str, "Z64HDR_VERSION")))
 			if (sscanf(match, "Z64HDR_VERSION %d", &version) != 1)
