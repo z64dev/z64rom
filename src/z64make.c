@@ -2513,39 +2513,6 @@ void Make(Rom* rom, s32 message) {
 	}
 	
 	// create this file if it doesn't exist
-	if (!sys_stat("player_types.h")) {
-		FILE* m = FOPEN("player_types.h", "w");
-		
-		fputs(
-R"(//
-// player_types.h
-//
-// any datatypes declared here can be
-// used as types in player_extras.h
-//
-// you can also use all types from z64hdr
-//
-// this file exists as a portable alternative
-// to modifying your z64hdr installation directly
-//
-// also do not #include here, as this file is
-// strictly for declaring types
-//
-
-/* -------- example --------
-
-typedef struct tagMyCustomType
-{
-	Vec3f hello;
-	Vec3f world;
-} MyCustomType;
-
- -------- example -------- */
-)", m);
-		fclose(m);
-	}
-	
-	// create this file if it doesn't exist
 	if (!sys_stat("player_extras.h")) {
 		FILE* m = FOPEN("player_extras.h", "w");
 		
@@ -2553,26 +2520,97 @@ typedef struct tagMyCustomType
 R"(//
 // player_extras.h
 //
-// any variables declared here will be added
-// as Player struct members during compilation
+// this file exists as a portable alternative to
+// modifying your z64hdr installation directly
 //
-// this file exists as a portable alternative
-// to modifying your z64hdr installation directly
+// also do not use #include here, as this file is
+// strictly for declaring types and variables
 //
-// also do not #include here, as this file is
-// strictly for defining variables
-//
-// if you need to access custom data types that are
-// not in z64hdr, declare them in player_types.h
+// lastly, you do not have to #include <player_extras.h>
+// anywhere in order to access the types you define here
+// (you get them automatically through z64hdr or uLib)
 //
 
-/* -------- example --------
 
-void *somethingUseful; // add variables and
-int someCounter; // comments as you normally would
-MyCustomType fancy; // from player_types.h
 
- -------- example -------- */
+
+
+
+
+
+#ifdef Z64ROM_WANT_PLAYER_EXTRAS_TYPES_H /////////////////////////////////////
+#undef Z64ROM_WANT_PLAYER_EXTRAS_TYPES_H /////////////////////////////////////
+/*////////////////////////////////////////////////////////////////////////////
+
+    ██
+    ██    ██    ██  ██████
+  ██████  ██    ██  ████████      ██        ██
+  ██████  ████  ██  ██    ██    ██████    ████
+    ██      ██████  ██    ██  ████  ██  ████
+    ██        ████  ██  ████  ██  ████    ████
+    ██      ██████  ██████    ██████        ████
+    ██    ██████    ████      ██          ██████
+    ████  ████      ██        ████████  ██████
+      ██  ██        ██          ██████  ████
+//
+//
+// any datatypes defined in this section
+// can be used as types in the next one
+//
+// you can also use all types from z64hdr
+*/
+
+	typedef struct tagMyCustomPlayerTypeExample
+	{
+		Vec3s hello;
+		Vec3s world;
+	} MyCustomPlayerType;
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+#else ////////////////////////////////////////////////////////////////////////
+/*////////////////////////////////////////////////////////////////////////////
+
+                              ██            ██        ██
+                              ██            ██        ██
+  ██    ██  ██████    ██  ██      ██████    ██        ██        ██        ██
+  ██    ██  ████████  ██████  ██  ████████  ██████    ██      ██████    ████
+  ██    ██        ██  ████    ██        ██  ████████  ██    ████  ██  ████
+  ██    ██    ██████  ██      ██    ██████  ██    ██  ██    ██  ████    ████
+  ██  ████  ████  ██  ██      ██  ████  ██  ██    ██  ██    ██████        ████
+  ████████  ██    ██  ██      ██  ██    ██  ██  ████  ██    ██          ██████
+  ██████    ████████  ██      ██  ████████  ██████    ████  ████████  ██████
+    ██        ██████  ██      ██    ██████  ████        ██    ██████  ████
+
+
+//
+//
+// any variables declared in this section will be
+// added as Player struct members during compilation
+//
+*/
+
+	MyCustomType fancy;
+	int someCounter; // you could access this using player->someCounter
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////
+//////////////////// do not insert code below this line ////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+#endif
 )", m);
 		fclose(m);
 	}
