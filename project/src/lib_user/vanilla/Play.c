@@ -22,7 +22,7 @@ static u16 sSceneSegmentObj0x06 = 0;
 Asm_VanillaHook(Scene_CommandSkyboxSettings);
 void Scene_CommandSkyboxSettings(PlayState *play, SceneCmd *cmd) {
     u8 *cmd8 = (u8*)cmd;
-    sSceneSegmentObj0x06 = (cmd[1] << 8) | (cmd[2];
+    sSceneSegmentObj0x06 = (cmd8[1] << 8) | cmd8[2];
     if (sSceneSegmentObj0x06)
         sSceneSegmentObj0x06 = Object_Spawn(objectCtx, sSceneSegmentObj0x06);
     play->skyboxId = cmd->skyboxSettings.skyboxId;
