@@ -2596,7 +2596,7 @@ R"(//
 //
 */
 
-	MyCustomType fancy;
+	MyCustomPlayerType fancy;
 	int someCounter; // you could access this using player->someCounter
 
 
