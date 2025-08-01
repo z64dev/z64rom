@@ -24,7 +24,7 @@ void Scene_CommandSkyboxSettings(PlayState *play, SceneCmd *cmd) {
     u8 *cmd8 = (u8*)cmd;
     sSceneSegmentObj0x06 = (cmd8[1] << 8) | cmd8[2];
     if (sSceneSegmentObj0x06)
-        sSceneSegmentObj0x06 = Object_Spawn(objectCtx, sSceneSegmentObj0x06);
+        sSceneSegmentObj0x06 = Object_Spawn(&play->objectCtx, sSceneSegmentObj0x06);
     play->skyboxId = cmd->skyboxSettings.skyboxId;
     play->envCtx.skyboxConfig = play->envCtx.changeSkyboxNextConfig = cmd->skyboxSettings.skyboxConfig;
     play->envCtx.lightMode = cmd->skyboxSettings.envLightMode;
@@ -234,10 +234,6 @@ static void Play_Draw2(PlayState* play) {
                     // embedded scene func
                     if (sSceneFunc)
                         sSceneFunc(play);
-                    
-                #if SEGMENT_0x06_FOR_SCENES
-                    gSegments[6] = VIRTUAL_TO_PHYSICAL(play->objectCtx.status[sSceneSegmentObj0x06].segment);
-                #endif
                     
                     NewRoom_Draw(play, &play->roomCtx.curRoom, sp80 & 3);
                     NewRoom_Draw(play, &play->roomCtx.prevRoom, sp80 & 3);
@@ -765,6 +761,13 @@ void Play_Draw(PlayState* playState) {
     gSPSegment(POLY_OPA_DISP++, 0x05, playState->objectCtx.status[playState->objectCtx.subKeepIndex].segment);
     gSPSegment(POLY_XLU_DISP++, 0x05, playState->objectCtx.status[playState->objectCtx.subKeepIndex].segment);
     gSPSegment(OVERLAY_DISP++, 0x05, playState->objectCtx.status[playState->objectCtx.subKeepIndex].segment);
+    
+#if SEGMENT_0x06_FOR_SCENES
+    gSegments[6] = VIRTUAL_TO_PHYSICAL(playState->objectCtx.status[sSceneSegmentObj0x06].segment);
+    gSPSegment(POLY_OPA_DISP++, 0x06, playState->objectCtx.status[sSceneSegmentObj0x06].segment);
+    gSPSegment(POLY_XLU_DISP++, 0x06, playState->objectCtx.status[sSceneSegmentObj0x06].segment);
+    gSPSegment(OVERLAY_DISP++, 0x06, playState->objectCtx.status[sSceneSegmentObj0x06].segment);
+#endif
     
     gSPSegment(POLY_OPA_DISP++, 0x02, playState->sceneSegment);
     gSPSegment(POLY_XLU_DISP++, 0x02, playState->sceneSegment);
