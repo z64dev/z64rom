@@ -42,19 +42,22 @@ static s32 ZipProgressCallback(const char* name, f32 prcnt) {
 
 static bool Tools_ValidateTools_Additional(void) {
 	for (int i = 0; i < ArrCount(sTools); i++) {
+		const char *name = sTools[i];
 #ifndef _WIN32
-		/*
-		 * skip tools that are already provided in
-		 * unix system
-		 */
-		if (!strchr(sTools[i], '/'))
+		// if the tool is a linux command, ensure it is available
+		if (!strchr(name, '/'))
+		{
+			if (system(x_fmt("which %s > /dev/null 2>&1", name)) != 0)
+				errr("'%s' command is not available on your linux system", name);
+			
 			continue;
+		}
 #endif
-		if (!sys_stat(sTools[i]))
-			return 1;
+		if (!sys_stat(name))
+			return 1 + printf("tool '%s' was not found\n", name);
 	}
 	
-	if (!sys_stat("include/z64hdr/"))
+	if (!sys_stat("include/z64hdr/common/z64common.h"))
 		return 1;
 	
 	return 0;

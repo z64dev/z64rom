@@ -28,6 +28,7 @@ z64rom
 *.o
 *.elf
 *.ld
+!include/ulib_linker.ld # except for this linker script
 rom/lib_code/*
 rom/lib_user/*
 *.zovl # prevents conflicts in team settings b/c compiler version differences

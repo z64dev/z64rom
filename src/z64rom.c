@@ -950,6 +950,10 @@ void Project_Read(Rom* rom) {
 	delete(g64.build[0], g64.build[1]);
 	g64.build[0] = fmt("%s%s.z64", g64.buildName, g64.suffix[0]);
 	g64.build[1] = fmt("%s%s.z64", g64.buildName, g64.suffix[1]);
+	
+	// assert baserom
+	if (!sys_stat(g64.baseRom))
+		errr("baserom '%s' not found (please make sure it's in the same folder as z64rom.exe)", g64.baseRom);
 }
 
 /*============================================================================*/
@@ -1754,6 +1758,10 @@ s32 main(int narg, const char** arg) {
 		
 		Toml_SetVar(&g64.app_data, APPDATA_ITEM(APPDATA_BUILD_TYPE), "%d", -1);
 	} else {
+		sys_mkdir("rom/sound/sfx/");
+		sys_mkdir("src/sound/sfx/");
+		sys_mkdir("src/object/");
+		sys_mkdir("src/scene/");
 		if (!g64.noMake)
 			Make(rom, true);
 		if (g64.compress && !g64.noCache && !g64.makeOnly)
