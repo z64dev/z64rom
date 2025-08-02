@@ -18,6 +18,8 @@
 tools/*
 include/z64hdr/*
 include/z64hdr.zip
+z64rom.exe
+z64rom
 
 
 # compiled binaries #
