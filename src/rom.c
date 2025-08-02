@@ -1957,7 +1957,7 @@ static void Build_SizeofPlayer(Rom* rom)
 	u32 tmp[2];
 	
 	// if none of the files have changed, don't rebuild them
-	if (HasFileChangedAmalgamated("player_types.h") == false
+	if (HasFileChangedAmalgamated("player_extras.h") == false
 		&& HasFileChangedAmalgamated(dotBin) == false
 	)
 	{
