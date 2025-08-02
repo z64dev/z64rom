@@ -1341,6 +1341,7 @@ static void HackCompileSceneFunc(const char *input)
 	Proc_SetState(exe, PROC_THROW_ERROR | PROC_MUTE_STDOUT);
 	Proc_Exec(exe);
 	Proc_Join(exe);
+	HasFileChangedAmalgamated(zovlPath); // generate timestamp
 	
 	// get function entry point
 	elf = Elf64_Load(elfPath);

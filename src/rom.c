@@ -2011,7 +2011,7 @@ static void Build_SizeofPlayer(Rom* rom)
 		file = fopen(dotBin, "wb");
 		fwrite(data, 1, 4, file);
 		fclose(file);
-		HasFileChangedAmalgamated(dotBin);
+		HasFileChangedAmalgamated(dotBin); // generate timestamp
 	}
 	else
 		errr("Build_SizeofPlayer() failed");
