@@ -1243,7 +1243,7 @@ static s32 Callback_System(const char* input, MakeCallType type, const char* out
 // use HasFileChanged() to get and set in one step
 bool HasFileChangedAmalgamated(const char *filename)
 {
-	char tmp[512];
+	char tmp[1024];
 	FILE *fp = 0;
 	time_t date = 0;
 	time_t oldDate = 0;
@@ -1254,6 +1254,9 @@ bool HasFileChangedAmalgamated(const char *filename)
 	// get date from file
 	if (stat(filename, &st) == 0)
 		date = st.st_mtime;
+	// consider a missing file to have changed
+	else
+		return true;
 	
 	// read stored date
 	if ((fp = fopen(tmp, "rb"))
@@ -1293,8 +1296,10 @@ static void HackCompileSceneFunc(const char *input)
 	bool zovlExists = sys_stat(zovlPath);
 	u32 addr;
 	
-	// only recompile if source code has been updated or zovl doesn't exist
-	if (HasFileChangedAmalgamated(input) == false && zovlExists == true)
+	// only recompile if source code or zovl have changed or zovl doesn't exist
+	if (HasFileChangedAmalgamated(input) == false
+		&& HasFileChangedAmalgamated(zovlPath) == false // also checks if exists
+	)
 		return;
 	
 	// ensure it doesn't exist, in case of build failure

@@ -1940,25 +1940,49 @@ static void Build_State(Rom* rom, Memfile* memData, Memfile* memCfg) {
 // (allows appending new members onto Player struct in z64player.h)
 static void Build_SizeofPlayer(Rom* rom)
 {
-#define STR_DEADBEEF "deadbeef"
+	const char *fn = "sizeofPlayer";
+	char *dotC = x_fmt("%s.c", fn);
+	char *dotO = x_fmt("%s.o", fn);
+	char *dotBin = x_fmt("%s.bin", fn);
+	FILE *file;
+	const char *dump;
+	const char *match;
+	const u32 Player_InitVars = 0xBA2130 - 0xA94000; // relative to code
+	u8 *data = (u8*)(rom->code.str + Player_InitVars + 0xC);
+	#define STR_DEADBEEF "deadbeef"
 	const char code[] =
 		"#include \"global.h\"\n"
 		"#include \"z64player.h\"\n"
 		"unsigned int tmp[] = { 0x" STR_DEADBEEF ", sizeof(Player) };\n";
-	const char* fn = "sizeofPlayer";
-	FILE* file;
-	const char* dump;
-	const char* match;
 	u32 tmp[2];
 	
-	file = fopen(x_fmt("%s.c", fn), "wb");
-	fwrite(code, 1, sizeof(code) - 1, file);
+	// if none of the files have changed, don't rebuild them
+	if (HasFileChangedAmalgamated("player_types.h") == false
+		&& HasFileChangedAmalgamated(dotBin) == false
+	)
+	{
+		// inject the cached result
+		file = fopen(dotBin, "rb");
+		fread(data, 1, 4, file);
+		fclose(file);
+		return;
+	}
+	
+	// write a .c file for compilation
+	file = fopen(dotC, "wb");
+	fputs(code, file);
 	fclose(file);
 	
+	// this is required so it knows where to look for dll's
 #ifdef _WIN32
 	SetDllDirectory("tools/mips64-binutils/bin/");
 #endif
 	
+	// delete the .o file before compiling
+	if (sys_stat(dotO))
+		sys_rm(dotO);
+	
+	// compile
 	sys_exes(x_fmt(
 		"%s -G 0 -nostdinc -DNDEBUG -I. -Iinclude/z64hdr/include -Iinclude/z64hdr/oot_mq_debug"
 		" -Os -s --std=gnu99 -march=vr4300 -mfix4300 -mabi=32 -mno-abicalls -mdivide-breaks"
@@ -1966,28 +1990,41 @@ static void Build_SizeofPlayer(Rom* rom)
 		" -fno-merge-constants -mno-explicit-relocs -mno-split-addresses -funsigned-char"
 		" -mno-memcpy -DZ64ROM_VERSION=%d -c %s.c -o %s.o",
 		Tools_Get(mips64_gcc), Z64ROM_VERSION_NUMBER, fn, fn));
+	
+	// dump syms
 	dump = sys_exes(x_fmt("%s -s %s.o", Tools_Get(mips64_objdump), fn));
 	
-	match = strstr(dump, STR_DEADBEEF);
-	if (match && sscanf(match, "%x %x", &tmp[0], &tmp[1]) == 2)
+	// use syms
+	if (dump
+		&& (match = strstr(dump, STR_DEADBEEF))
+		&& sscanf(match, "%x %x", &tmp[0], &tmp[1]) == 2
+	)
 	{
-		const u32 Player_InitVars = 0xBA2130 - 0xA94000;
-		u8 *data = (u8*)(rom->code.str + Player_InitVars + 0xC);
+		// because tmp[] = { 0xdeadbeef, sizeof(Player) }, use tmp[1]
 		u32 v = tmp[1];
 		data[0] = v >> 24;
 		data[1] = v >> 16;
 		data[2] = v >> 8;
 		data[3] = v;
+		
+		// cache this result into .bin
+		file = fopen(dotBin, "wb");
+		fwrite(data, 1, 4, file);
+		fclose(file);
+		HasFileChangedAmalgamated(dotBin);
 	}
 	else
-		warn("Build_SizeofPlayer() failed");
-#undef STR_DEADBEEF
+		errr("Build_SizeofPlayer() failed");
+	
+	// invoking mips64-binutils breaks console colors; this fixes it
 	IO_FixWin32();
 	
+	// restore to default
 #ifdef _WIN32
 	SetDllDirectory(NULL);
 #endif
 }
+#undef STR_DEADBEEF
 
 static void Build_Kaleido(Rom* rom, Memfile* memData, Memfile* memCfg) {
 	List list = List_New();

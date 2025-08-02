@@ -282,6 +282,8 @@ s32 Transition_GetType(const char* str);
 void Migrate(const char* type, const char* path);
 void GetSymInfo(const char* symbol);
 
+bool HasFileChangedAmalgamated(const char *filename);
+
 void MajorasMaskImport(bool);
 void Chill(void);
 
