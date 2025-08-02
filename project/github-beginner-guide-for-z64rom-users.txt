@@ -1,0 +1,60 @@
+  
+  github beginner guide for z64rom users
+  
+  there will be a video version of this later, or at least a guide
+  that includes pictures; check the official z64rom repo for updates
+  
+  before you proceed, please set up a github account
+  
+  it is also recommended that windows users install notepad++
+  
+  first, set up your project on github by following these steps:
+    1  install github desktop
+    2  click file -> new repository
+    3  create a repository somewhere easily accessible
+       (important: not inside the folder for your project)
+    4  click repository -> show in your file manager (or explorer)
+    5  it will open the folder of your repository
+    6  copy the .gitignore file from the latest z64rom release into that folder
+       (and make sure it is named .gitignore; if you cannot find it, turn on
+        hidden file visibility on your computer; also enable file extensions)
+    7  place the entire contents of your z64rom project in there too
+       (such that project.toml is in the root folder, not in a subdirectory)
+    8  go back to github desktop and you will see a list of files added on
+       the 'changes' tab; those are your project files
+    9  also on the 'changes' tab, there is a 'summary' field; this is where
+       you write your commit message: "wow my project is now on github!"
+   10  you can optionally write a description if you want to include more info
+   11  then click 'commit to main'
+   12  follow steps 8 - 11 any time you reach any project milestone: whether
+       it's a small tweak to npc text, or you've made progress on a 3d model
+       (it's important to commit regularly, as well as before any major change,
+        so that you will always be able to roll back if anything breaks)
+   13  after your first commit, you can click 'publish repository'
+       (don't worry, it won't be public unless you mark it public)
+   14  if you have already published your repository, the same button will
+       read 'push origin'; this is how you back up your work to github, and
+       also how other collaborators can see it
+  
+  then, invite your teammates to your repo, and have them follow these steps:
+    1  install github desktop
+    2  clone your repo using github desktop
+    3  download z64rom.zip
+    4  extract z64rom.zip into their copy of the repo
+    5  run z64rom.exe
+    6  follow the steps to install the tools
+  
+  this is not a completely exhaustive guide, so please learn by experimenting!
+  start by creating a new branch, doing some things on it, and then merging
+  it into main; this is how you will generally work on a team, with everyone
+  working on their own branch, or on specific branches for specific features
+  
+  it may be intimidating at first, so consider watching some videos or reading
+  some tutorials
+  
+  using github for your project will help you recover your work if anything
+  ever goes wrong, and will also make it easier to update to future versions
+  of z64rom releases in the future
+  
+  that should cover everything, now go have fun and make lots of cool projects!
+
