@@ -1978,9 +1978,11 @@ static void Build_SizeofPlayer(Rom* rom)
 	SetDllDirectory("tools/mips64-binutils/bin/");
 #endif
 	
-	// delete the .o file before compiling
+	// delete the .o and .bin files before compiling
 	if (sys_stat(dotO))
 		sys_rm(dotO);
+	if (sys_stat(dotBin))
+		sys_rm(dotBin);
 	
 	// compile
 	sys_exes(x_fmt(
