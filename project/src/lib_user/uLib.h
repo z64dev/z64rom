@@ -39,6 +39,24 @@
 // Enable motion blur + motion blur cutscene command
 #define MOTION_BLUR true
 
+// Enable use of segment 0x06 for scenes, similar to MM
+// Notes:
+//  - The scene header command 0x11 assumes this format:
+//      11wwww00 xx0y0z00
+//       - wwww  = Object ID to load into Segment 0x06 (what this mod adds)
+//       - x/y/z = Unchanged from base game
+//  - If used, the 0x11 command must be set in all scene headers
+//  - One use-case for this is to have multiple scenes reference the same
+//    textures w/o having to store duplicates of those textures in each scene
+//  - That is how it was used in MM, and it does save some space, but the
+//    tradeoff is if the texture bank you load using this method contains
+//    textures you don't need, that's RAM wasted instead
+//  - You might alternatively use this feature to load different textures
+//    for different scene headers: for example, you might want to reuse stage
+//    geometry but have it appear radically different at different points of
+//    the game by loading different texture banks for different scene headers
+#define SEGMENT_0x06_FOR_SCENES true
+
 // Interface Stuff
 // MM-Styled Interface (Corrdinates)
 #define Patch_MM_INTERFACE_BUTTONS_CORDS true
