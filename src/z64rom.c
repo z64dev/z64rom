@@ -112,12 +112,13 @@ void Extra_WadInject(bool successMsg) {
 	
 	int progress = 0;
 	char* line;
+	char* message = gLang.rom.target[LANG_INJECT];
 	
 	while ((line = Proc_ReadLine(p, READ_STDOUT)))
-		info_fastprog(gLang.rom.target[LANG_INJECT],
+		info_fastprog(message,
 			clamp_max((++progress) / 2.0f, 100.0f),
 			100);
-	info_prog_end();
+	info_prog_end(message);
 	
 	Proc_Join(p);
 	patchMediaFmt(buildrom, old);
