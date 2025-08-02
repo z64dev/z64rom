@@ -1984,6 +1984,9 @@ static void Build_SizeofPlayer(Rom* rom)
 	if (sys_stat(dotBin))
 		sys_rm(dotBin);
 	
+	// tell the user what's happening
+	info("recompiling sizeofPlayer.c\n");
+	
 	// compile
 	sys_exes(x_fmt(
 		"%s -G 0 -nostdinc -DNDEBUG -I. -Iinclude/z64hdr/include -Iinclude/z64hdr/oot_mq_debug"
