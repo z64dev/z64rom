@@ -1270,6 +1270,10 @@ bool HasFileChangedAmalgamated(const char *filename)
 	if (fp)
 		fclose(fp);
 	
+	// trigger rebuilds on these flags by treating files as having changed
+	if (g64.makeForce || gForceCodeMake)
+		oldDate = !date;
+	
 	// file changed; update stored date
 	if (date != oldDate)
 	{
