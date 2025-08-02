@@ -6,7 +6,8 @@
   
   before you proceed, please set up a github account
   
-  it is also recommended that windows users install notepad++
+  it is also recommended that windows users install notepad++ for viewing
+  and editing this guide and the files it mentions
   
   first, set up your project on github by following these steps:
     1  install github desktop
@@ -18,6 +19,10 @@
     6  copy the .gitignore file from the latest z64rom release into that folder
        (and make sure it is named .gitignore; if you cannot find it, turn on
         hidden file visibility on your computer; also enable file extensions)
+       (note: if you renamed the .vanilla folders in your project to something
+        other than .vanilla, you must open your .gitignore file in notepad++
+        and replace all occurrences of .vanilla with _vanilla or whatever you
+        renamed .vanilla to)
     7  place the entire contents of your z64rom project in there too
        (such that project.toml is in the root folder, not in a subdirectory)
     8  go back to github desktop and you will see a list of files added on

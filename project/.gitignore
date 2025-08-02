@@ -6,6 +6,13 @@
 #
 
 
+#
+# NOTE:
+#   if you have renamed your .vanilla folder to something else like _vanilla,
+#   please replace all occurrences of .vanilla in this file with the new name!
+#
+
+
 # automatically installed programs #
 ####################################
 tools/*
@@ -21,6 +28,47 @@ include/z64hdr.zip
 *.ld
 rom/lib_code/*
 rom/lib_user/*
+*.zovl # prevents conflicts in team settings b/c compiler version differences
+!**/*.vanilla/**/*.zovl # exceptions for zovl's that aren't being recompiled
+rom/actor/.vanilla/0x002A-Cutscene_Actors/*.zovl # except for those that are
+rom/actor/.vanilla/0x003D-Shopkeeper/*.zovl
+rom/actor/.vanilla/0x004D-Adult_Zelda_Cutscene/*.zovl
+rom/actor/.vanilla/0x0068-Twisted_Hallway/*.zovl
+rom/actor/.vanilla/0x006E-Warp_Pad/*.zovl
+rom/actor/.vanilla/0x0086-Lowering_Circular_Platform/*.zovl
+rom/actor/.vanilla/0x0087-Forest_Temple_Elevator/*.zovl
+rom/actor/.vanilla/0x0088-Forest_Temple_Rotating_Walls/*.zovl
+rom/actor/.vanilla/0x0089-Forest_Temple_Ceiling/*.zovl
+rom/actor/.vanilla/0x00B3-Gate_Guards/*.zovl
+rom/actor/.vanilla/0x00B4-Falling_Rock_Spawner/*.zovl
+rom/actor/.vanilla/0x00CD-Giant_Boulder_Blocking_Dodongos_Cavern/*.zovl
+rom/actor/.vanilla/0x00E2-Ladder_with_Clasp_Unused/*.zovl
+rom/actor/.vanilla/0x00E3-Gates_and_Rotating_Pillars/*.zovl
+rom/actor/.vanilla/0x00E4-Forest_Temple_Well_Water/*.zovl
+rom/actor/.vanilla/0x0117-Silver_Rupee_Large_Rotating_Pot/*.zovl
+rom/actor/.vanilla/0x013C-Cucco_Lady/*.zovl
+rom/actor/.vanilla/0x013D-Medigoron/*.zovl
+rom/actor/.vanilla/0x0162-Running_Man/*.zovl
+rom/actor/.vanilla/0x0163-Kokiri/*.zovl
+rom/actor/.vanilla/0x016C-Graveyard_Boy/*.zovl
+rom/actor/.vanilla/0x016E-Hylians/*.zovl
+rom/actor/.vanilla/0x0171-Title_Screen_rom/actor/*.zovl
+rom/actor/.vanilla/0x0179-Adult_Zelda/*.zovl
+rom/actor/.vanilla/0x0182-Ranch_NPCs_Ending_Cutscene/*.zovl
+rom/actor/.vanilla/0x0189-Uncursed_Skulltula_People/*.zovl
+rom/actor/.vanilla/0x019D-Semi_Built_Shooting_Gallery/*.zovl
+rom/actor/.vanilla/0x01A3-Deku_Panel/*.zovl
+rom/actor/.vanilla/0x01A4-Man_in_Purple_Pants_and_White_Top/*.zovl
+rom/actor/.vanilla/0x01B2-Crumbling_Stone/*.zovl
+rom/actor/.vanilla/0x01C1-Fake_Stomping_Door/*.zovl
+rom/effect/.vanilla/0x0006-Fire_Dodongo/*.zovl
+rom/effect/.vanilla/0x000F-Fragment_1/*.zovl
+rom/effect/.vanilla/0x0010-Broken_Weapon/*.zovl
+rom/effect/.vanilla/0x0013-Magma_2/*.zovl
+rom/effect/.vanilla/0x0016-Shock_Light_Ball/*.zovl
+rom/effect/.vanilla/0x0019-Fragment_2/*.zovl
+rom/effect/.vanilla/0x001E-Score/*.zovl
+rom/effect/.vanilla/0x0024-Ice_Smoke/*.zovl
 
 
 # misc data files #
