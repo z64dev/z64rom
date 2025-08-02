@@ -2370,8 +2370,8 @@ void Make_Code(void) {
 			.callback = Callback_Code,
 			.multiFileProcess = false,
 		},{
-			.src = "src/actor/.vanilla/",
-			.rom = "rom/actor/.vanilla/",
+			.src = x_fmt("src/actor/%s/", g64.vanilla),
+			.rom = x_fmt("rom/actor/%s/", g64.vanilla),
 			.gccFlag = g64.gccFlags.actor,
 			.ldFlag = g64.linkerFlags.code,
 			.callback = Callback_Overlay,
@@ -2384,8 +2384,8 @@ void Make_Code(void) {
 			.callback = Callback_Overlay,
 			.multiFileProcess = true,
 		},{
-			.src = "src/effect/.vanilla/",
-			.rom = "rom/effect/.vanilla/",
+			.src = x_fmt("src/effect/%s/", g64.vanilla),
+			.rom = x_fmt("rom/effect/%s/", g64.vanilla),
 			.gccFlag = g64.gccFlags.actor,
 			.ldFlag = g64.linkerFlags.code,
 			.callback = Callback_Overlay,
@@ -2398,15 +2398,17 @@ void Make_Code(void) {
 			.callback = Callback_Overlay,
 			.multiFileProcess = true,
 		},{
-			.src = "rom/scene/", // for embedded scene functions
+			// NOTE: .src = rom/ is intentional b/c scenes don't use src/
+			.src = "rom/scene/", // scene func overlays
 			.rom = "rom/scene/",
 			.gccFlag = g64.gccFlags.actor,
 			.ldFlag = g64.linkerFlags.code,
 			.callback = Callback_Overlay,
 			.multiFileProcess = true,
 		},{
-			.src = "rom/scene/.vanilla/", // for embedded scene functions
-			.rom = "rom/scene/.vanilla/",
+			// NOTE: .src = rom/ is intentional b/c scenes don't use src/
+			.src = x_fmt("rom/scene/%s/", g64.vanilla), // scene func overlays
+			.rom = x_fmt("rom/scene/%s/", g64.vanilla),
 			.gccFlag = g64.gccFlags.actor,
 			.ldFlag = g64.linkerFlags.code,
 			.callback = Callback_Overlay,
