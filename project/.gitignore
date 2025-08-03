@@ -34,12 +34,15 @@ z64rom
 # prevents conflicts when using different compilers in team settings
 rom/lib_code/*
 rom/lib_user/*
-rom/actor/
-rom/effect/
+rom/actor/*
+rom/effect/*
 
 # exceptions for zovl's that aren't being recompiled
-!**/*.vanilla/**/*.zovl
-!**/*.vanilla/**/*.toml
+*.zovl
+!rom/actor/.vanilla/
+!rom/actor/.vanilla/**
+!rom/effect/.vanilla/
+!rom/effect/.vanilla/**
 
 # these get built from src
 rom/actor/.vanilla/0x002A-Cutscene_Actors/
