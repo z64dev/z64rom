@@ -913,7 +913,7 @@ void Project_Read(Rom* rom) {
 		{ PROJECT_ITEM(LD_SCENE),      .dchar       = &g64.linkerFlags.scene },
 		{ PROJECT_ITEM(LD_ULIB),       .dchar       = &g64.linkerFlags.ulib  },
 	};
-	bool isInProject = false;
+	bool isInProject = !!rom->toml.data;
 	
 	osLog("project read");
 	if (sys_stat("z64project.cfg"))

@@ -324,6 +324,7 @@ s32 Tools_Init(void) {
 		
 		if (!g64.autoInstall && !g64.file.gcc64 && !g64.file.z64hdr) {
 			if (!g64.chill) {
+				info("going to download and install tools...");
 				info(gLang.setup.info_chill);
 				
 				if (cli_yesno())
