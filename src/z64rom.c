@@ -913,6 +913,7 @@ void Project_Read(Rom* rom) {
 		{ PROJECT_ITEM(LD_SCENE),      .dchar       = &g64.linkerFlags.scene },
 		{ PROJECT_ITEM(LD_ULIB),       .dchar       = &g64.linkerFlags.ulib  },
 	};
+	bool isInProject = false;
 	
 	osLog("project read");
 	if (sys_stat("z64project.cfg"))
@@ -922,6 +923,7 @@ void Project_Read(Rom* rom) {
 	if (!rom->toml.data) {
 		if (sys_stat(gProjectConfig)) {
 			Toml_Load(&rom->toml, gProjectConfig);
+			isInProject = true;
 			
 			for (var_t i = 0; i < PROJECT_ENUM_MAX; i++) {
 				if (!Toml_Var(&rom->toml, sTomlProject[i][Z_ITEM])) {
@@ -952,7 +954,7 @@ void Project_Read(Rom* rom) {
 	g64.build[1] = fmt("%s%s.z64", g64.buildName, g64.suffix[1]);
 	
 	// assert baserom
-	if (!sys_stat(g64.baseRom))
+	if (isInProject && !sys_stat(g64.baseRom))
 		errr("baserom '%s' not found (please make sure it's in the same folder as z64rom.exe)", g64.baseRom);
 }
 
