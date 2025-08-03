@@ -28,12 +28,21 @@ z64rom
 *.o
 *.elf
 *.ld
-!include/ulib_linker.ld # except for this linker script
+*.dep
+!include/*.ld
+
+# prevents conflicts when using different compilers in team settings
 rom/lib_code/*
 rom/lib_user/*
-*.zovl # prevents conflicts in team settings b/c compiler version differences
-!**/*.vanilla/**/*.zovl # exceptions for zovl's that aren't being recompiled
-rom/actor/.vanilla/0x002A-Cutscene_Actors/ # these get built from src
+rom/actor/
+rom/effect/
+
+# exceptions for zovl's that aren't being recompiled
+!**/*.vanilla/**/*.zovl
+!**/*.vanilla/**/*.toml
+
+# these get built from src
+rom/actor/.vanilla/0x002A-Cutscene_Actors/
 rom/actor/.vanilla/0x003D-Shopkeeper/
 rom/actor/.vanilla/0x004D-Adult_Zelda_Cutscene/
 rom/actor/.vanilla/0x0068-Twisted_Hallway/
