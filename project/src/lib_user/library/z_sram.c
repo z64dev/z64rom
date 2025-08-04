@@ -2,7 +2,7 @@
 #include "vt.h"
 
 #include <uLib.h>
-#include <z64hdr\include\code\z_sram.h>
+#include <z64hdr/include/code/z_sram.h>
 
 static s16 sDungeonEntrancesHook[] = {
     ENTR_YDAN_0,      ENTR_DDAN_0,      ENTR_BDAN_0,         ENTR_BMORI1_0,           ENTR_HIDAN_0, ENTR_MIZUSIN_0,
