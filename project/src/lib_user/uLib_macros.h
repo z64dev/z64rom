@@ -5,8 +5,6 @@
     asm (".global " "__vanilla_hook_" #func "\n" \
     "__vanilla_hook_" #func " = " #func)
 
-#define CS_CMD_EXITPARAM 0xDE00
-
 #define CHK_ALL(AB, combo)      (~((gPlayState.state.input[0].AB.button) | ~(combo)) == 0)
 #define CHK_ANY(AB, combo)      (((gPlayState.state.input[0].AB.button) & (combo)) != 0)
 #define AVAL(base, type, value) ((type*)((u8*)base + value))
