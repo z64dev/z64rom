@@ -15,6 +15,7 @@ TOOLS_WIN32      := project/tools/novl.exe       \
 					project/tools/z64playas.exe  \
 					project/tools/z64audio.exe   \
 					project/tools/z64convert.exe \
+					project/tools/z64yartool.exe \
 					project/tools/seqas.exe      \
 					project/tools/z64upgrade.exe
 TOOLS_LINUX    := $(foreach f,$(TOOLS_WIN32:.exe=),$f)
@@ -152,6 +153,15 @@ project/tools/z64convert.exe: tools/z64convert/src/z64convert.c
 	@echo "$(PRNT_RSET)[$(PRNT_PRPL)$(notdir $@)$(PRNT_RSET)]"
 	@$(MAKE) -C tools/z64convert wincli -j --no-print-directory --silent
 	@cp tools/z64convert/z64convert-cli.exe $@
+
+project/tools/z64yartool: tools/z64yartool/src/z64yartool.c
+	@echo "$(PRNT_RSET)[$(PRNT_PRPL)$(notdir $@)$(PRNT_RSET)]"
+	(cd tools/z64yartool && ./release-linux.sh)
+	cp tools/z64yartool/bin/z64yartool $@
+project/tools/z64yartool.exe: tools/z64yartool/src/z64yartool.c
+	@echo "$(PRNT_RSET)[$(PRNT_PRPL)$(notdir $@)$(PRNT_RSET)]"
+	(cd tools/z64yartool && ./release-win32.sh)
+	cp tools/z64yartool/bin/z64yartool.exe $@
 	
 project/tools/seqas: tools/seqas.cpp
 	@echo "$(PRNT_RSET)[$(PRNT_PRPL)$(notdir $@)$(PRNT_RSET)]"

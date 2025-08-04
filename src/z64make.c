@@ -973,6 +973,35 @@ void Make_Fast64(void) {
 	List_Free(&paths);
 }
 
+void Make_Retexture(void)
+{
+	List paths = List_New();
+	
+	List_Walk(&paths, "rom/object/", 0, LIST_FOLDERS | LIST_NO_DOT);
+	
+	if (paths.num == 0)
+		goto free;
+	
+	for (int i = 0; i < paths.num; i++) {
+		List files = List_New();
+		
+		List_Walk(&files, paths.item[i], 0, LIST_FILES | LIST_NO_DOT);
+		
+		for (int j = 0; j < files.num; j++) {
+			if (!strend(files.item[j], "/recipe.txt"))
+				continue;
+			
+			// compile
+			sys_exes(x_fmt("%s build %s", Tools_Get(z64yartool), files.item[j]));
+		}
+		
+		List_Free(&files);
+	}
+	
+	free:
+	List_Free(&paths);
+}
+
 // # # # # # # # # # # # # # # # # # # # #
 // # Callback_Helper                     #
 // # # # # # # # # # # # # # # # # # # # #
@@ -2657,6 +2686,7 @@ R"(//
 	if (g64.makeTarget) {
 		if (stristr(g64.makeTarget, "object")) {
 			Make_Object();
+			Make_Retexture();
 		}
 		if (stristr(g64.makeTarget, "audio")) {
 			Make_Sound();
@@ -2672,6 +2702,7 @@ R"(//
 	} else {
 		osLog("Make_Object();");
 		Make_Object();
+		Make_Retexture();
 		
 		osLog("Make_Sequence();");
 		Make_Sequence();

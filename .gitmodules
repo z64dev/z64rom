@@ -16,3 +16,6 @@
 [submodule "ext_lib"]
 	path = ext_lib
 	url = https://github.com/z64utils/ext_lib
+[submodule "tools/z64yartool"]
+	path = tools/z64yartool
+	url = https://github.com/z64utils/z64yartool
