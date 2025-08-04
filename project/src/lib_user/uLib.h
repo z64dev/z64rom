@@ -16,7 +16,7 @@
 #define GC  2
 
 // Wield Hylian shield like Deku shield
-#define Patch_WieldHylianShieldLikeKokiriShield true
+#define Patch_WieldHylianShieldLikeKokiriShield false
 
 // Play cutscene after obtaining Silver Gauntlets
 #define Patch_SilverGauntletObtainCS false
@@ -28,16 +28,16 @@
 #define Patch_MM_TIMER false
 
 // When Bunny Hood is equipped, you run fast like in MM
-#define MM_BUNNYHOOD true
+#define MM_BUNNYHOOD false
 
 // Save anywhere but a grotto
-#define SAVE_ANYWHERE true
+#define SAVE_ANYWHERE false
 
 // Use MM style titlecards
 #define MM_TITLECARD false
 
 // Enable motion blur + motion blur cutscene command
-#define MOTION_BLUR true
+#define MOTION_BLUR false
 
 // Enable use of segment 0x06 for scenes, similar to MM
 // Notes:
@@ -55,26 +55,26 @@
 //    for different scene headers: for example, you might want to reuse stage
 //    geometry but have it appear radically different at different points of
 //    the game by loading different texture banks for different scene headers
-#define SEGMENT_0x06_FOR_SCENES true
+#define SEGMENT_0x06_FOR_SCENES false
 
 // Interface Stuff
 // MM-Styled Interface (Corrdinates)
-#define Patch_MM_INTERFACE_BUTTONS_CORDS true
+#define Patch_MM_INTERFACE_BUTTONS_CORDS false
 
 // MM-Styled Interface (Shadows)
-#define Patch_MM_INTERFACE_SHADOWS true
+#define Patch_MM_INTERFACE_SHADOWS false
 
 // Interface Colors for A and B buttons (OOT/MM/GC)
-#define Patch_INTERFACE_BUTTON_COLORS MM
+#define Patch_INTERFACE_BUTTON_COLORS OOT
 
 // Interface Colors for C buttons (OOT/MM)
-#define Patch_INTERFACE_C_BUTTON_COLORS_MM true
+#define Patch_INTERFACE_C_BUTTON_COLORS_MM false
 
 // Interface TATL height (c-up, requires texture patch)
-#define Patch_INTERFACE_C_UP_TATL true
+#define Patch_INTERFACE_C_UP_TATL false
 
 // Interface Colors for the Rupee counter, according to wallet upgrades 
-#define Patch_MM_INTERFACE_RUPEE_UPGRADES true
+#define Patch_MM_INTERFACE_RUPEE_UPGRADES false
 
 // Space allocated for GI models, expand if needed
 #define Patch_GetItem_SegmentSize 0x3008
