@@ -4,6 +4,12 @@
   there will be a video version of this later, or at least a guide
   that includes pictures; check the official z64rom repo for updates
   
+  in case things have changed, refer to the latest version of this guide here:
+   - https://github.com/z64utils/z64rom/blob/main/project/github-beginner-guide-for-z64rom-users.txt
+  
+  and the latest version of the accompanying .gitignore can be found here:
+   - https://github.com/z64utils/z64rom/blob/main/project/.gitignore
+  
   before you proceed, please set up a github account
   
   it is also recommended that windows users install notepad++ for viewing
