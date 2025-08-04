@@ -6102,6 +6102,13 @@ void func_8083DDC8(Player* this, PlayState* play) {
 
 void Player_SetRunVelAndYaw(Player* this, f32 arg1, s16 arg2) {
     Math_AsymStepToF(&this->linearVelocity, arg1, REG(19) / 100.0f, 1.5f);
+
+#if MM_BUNNYHOOD == true
+    if (this->currentMask == PLAYER_MASK_BUNNY) {
+        this->linearVelocity = arg1 * 1.7f;
+    }
+#endif
+
     Math_ScaledStepToS(&this->currentYaw, arg2, REG(27));
 }
 
