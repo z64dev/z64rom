@@ -573,15 +573,15 @@ void Cutscene_ProcessCommands(PlayState* play, CutsceneContext* csCtx, u8* cutsc
                 CutsceneCmd_ExitParam(play, csCtx, (void*)cutscenePtr);
                 cutscenePtr += 8;
                 break;
-
-            #if MOTION_BLUR
+            
             // z64rom motion blur
             case 0xC001:
                 cutscenePtr += 4;
+                #if MOTION_BLUR
                 CutsceneCmd_MotionBlur(play, csCtx, (void*)cutscenePtr);
+                #endif
                 cutscenePtr += 8;
                 break;
-            #endif
 
             // z64rom play sound
             case 0xC002:
