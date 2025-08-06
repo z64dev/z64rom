@@ -1764,6 +1764,25 @@ s32 main(int narg, const char** arg) {
 		sys_mkdir("src/sound/sfx/");
 		sys_mkdir("src/object/");
 		sys_mkdir("src/scene/");
+		
+		// assert minimum z64hdr version
+		{
+			Memfile z64hdr = Memfile_New();
+			const char *match;
+			unsigned int version = 0;
+			
+			Memfile_LoadStr(&z64hdr, "include/z64hdr/common/z64common.h");
+			
+			if ((match = strstr(z64hdr.str, "Z64HDR_VERSION")))
+				if (sscanf(match, "Z64HDR_VERSION %d", &version) != 1)
+					version = 0;
+			
+			if (version < MINIMUM_Z64HDR_VERSION_ALLOWED)
+				errr("please update to the latest version of z64hdr: https://github.com/z64utils/z64hdr");
+			
+			Memfile_Free(&z64hdr);
+		}
+		
 		if (!g64.noMake)
 			Make(rom, true);
 		if (g64.compress && !g64.noCache && !g64.makeOnly)
