@@ -258,6 +258,7 @@ void Tools_InstallBinutils(void) {
 	Zip_Load(&zip, ZIP_BINUTIL, 'r');
 	Zip_Dump(&zip, "tools/mips64-binutils/", ZipProgressCallback);
 	Zip_Free(&zip);
+	sys_rm(ZIP_BINUTIL);
 	cli_clearln(2);
 	
 	// mark tools executable on linux following installation
@@ -283,6 +284,7 @@ void Tools_InstallHeader(bool update) {
 	Zip_Load(&zip, ZIP_Z64HDR, 'r');
 	Zip_Dump(&zip, "include/", ZipProgressCallback);
 	Zip_Free(&zip);
+	sys_rm(ZIP_Z64HDR);
 	cli_clearln(2);
 	
 	sys_mv("include/z64hdr-main/", "include/z64hdr/");
