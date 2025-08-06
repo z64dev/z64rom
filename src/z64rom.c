@@ -1773,14 +1773,27 @@ s32 main(int narg, const char** arg) {
 			
 			Memfile_LoadStr(&z64hdr, "include/z64hdr/common/z64common.h");
 			
-			if ((match = strstr(z64hdr.str, "Z64HDR_VERSION")))
+			if (z64hdr.str && (match = strstr(z64hdr.str, "Z64HDR_VERSION")))
 				if (sscanf(match, "Z64HDR_VERSION %d", &version) != 1)
 					version = 0;
 			
 			if (version < MINIMUM_Z64HDR_VERSION_ALLOWED)
-				errr("please update to the latest version of z64hdr: https://github.com/z64utils/z64hdr");
+			{
+				info("your z64hdr version either doesn't exist, or is out of date");
+				info("do you want to update to the latest z64hdr automatically? (y/n)");
+				
+				if (cli_yesno())
+				{
+					sys_rmdir("include/z64hdr");
+					sys_rm("include/z64hdr.zip");
+					Tools_InstallHeader(true);
+				}
+				else
+					errr("please update to the latest version of z64hdr: https://github.com/z64utils/z64hdr");
+			}
 			
-			Memfile_Free(&z64hdr);
+			if (z64hdr.str)
+				Memfile_Free(&z64hdr);
 		}
 		
 		if (!g64.noMake)
