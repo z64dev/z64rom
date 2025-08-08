@@ -1005,9 +1005,8 @@ static void DebugMenu_MotionBlur(PlayState* playState, u8 state) {
         else if (sDebugPageInfo[debugSysCtx->page].value < 0)
             sDebugPageInfo[debugSysCtx->page].value = 255;
         playState->motionBlurAlpha = sDebugPageInfo[debugSysCtx->page].value;
+        debugSysCtx->page = DEBUGSYS_PAGE_MAIN;
     }
-
-    debugSysCtx->page = DEBUGSYS_PAGE_MAIN;
     
     
 }
@@ -1143,7 +1142,7 @@ static void DebugMenu_MenuUpdate(PlayState* playState) {
         debugSysCtx->page = debugSysCtx->setPage;
         Audio_PlaySys(NA_SE_SY_FSEL_DECIDE_S);
     }
-    else if (holdR && CHK_ANY(cur, BTN_DLEFT | BTN_DRIGHT))
+    else if (holdR && CHK_ANY(cur, BTN_DLEFT | BTN_DRIGHT) && sDebugPageInfo[debugSysCtx->setPage].setvalue)
     {
         debugSysCtx->page = debugSysCtx->setPage;
     }
