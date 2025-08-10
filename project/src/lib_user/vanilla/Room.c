@@ -3,6 +3,8 @@
 #include <code/z_lights.h>
 #include <code/z_room.h>
 
+#define ABS_ALT(x) ((x) < 0 ? -(x) : (x))
+
 typedef struct RoomPointLights {
     void*      roomSegment;
     u32        numlights;
