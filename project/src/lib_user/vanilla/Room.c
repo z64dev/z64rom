@@ -97,22 +97,6 @@ static void NewRoom_DestroyExpiredLights(PlayState* play) {
     prevTransitionTrigger = play->transitionTrigger;
 }
 
-#if 0
-static void NewRoom_BillboardCylinder(PlayState* play) {
-    u16* cyl = (u16*)(play->billboardMtx + 1);
-    
-    MemCpy(cyl, play->billboardMtx, sizeof(Mtx));
-    
-    /* revert up vector to identity */
-    cyl[8 / 2] = 0;            /* x */
-    cyl[10 / 2] = 1;           /* y */
-    cyl[12 / 2] = 0;           /* z */
-    cyl[40 / 2] = 0;           /* x */
-    cyl[42 / 2] = 0;           /* y */
-    cyl[44 / 2] = 0;           /* z */
-}
-#endif
-
 void NewRoom_Draw(PlayState* play, Room* room, u32 flags) {
     Lights* lightList;
     
@@ -121,7 +105,6 @@ void NewRoom_Draw(PlayState* play, Room* room, u32 flags) {
     
     gSegments[3] = VIRTUAL_TO_PHYSICAL(room->segment);
     NewRoom_DestroyExpiredLights(play);
-    // NewRoom_BillboardCylinder(play);
     lightList = LightContext_NewLights(&play->lightCtx, play->state.gfxCtx);
     NewRoom_BindLight(play, lightList, room);
     
