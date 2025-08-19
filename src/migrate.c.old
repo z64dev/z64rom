@@ -1,0 +1,385 @@
+// This file is left here for archival purposes. Likely to be its own tool eventually.
+// Added 8-18-2025 back to Z64rom's repository by Zeldaboy14.
+// Pulled from an old fork of z64rom.
+// Specific commit from that fork: https://github.com/Zeldaboy14/z64rom/blob/550fbb8d29c4fbd1e8e959764555cc2d90d4b75d/src/migrate.c
+
+#include "z64rom.h"
+
+static void Migrate_Actor(List* list, const char* folName, const char* path) {
+    List_Walk(list, x_fmt("%s%s/", path, folName), 0, LIST_FOLDERS | LIST_RELATIVE);
+    List_Sort(list);
+    
+    for (int i = 0; i < list->num; i++) {
+        Memfile mem = Memfile_New();
+        char* ovl;
+        char* txt;
+        char* new;
+        char* cfg;
+        char* deadbeef;
+        u32 allocType;
+        u32 vramAddr;
+        u32 offset = 0;
+        
+        info_prog("Actor", i + 1, list->num);
+        
+        if (i == 0)
+            continue;
+        
+        fs_set("%s%s/%s", path, folName, list->item[i]);
+        
+        ovl = fs_item("actor.zovl");
+        txt = fs_item("conf.txt");
+        
+        if (!sys_stat(ovl) || !sys_stat(txt)) {
+            continue;
+        }
+        
+        fs_set("rom/actor/0x%04X-%s/", i, x_rep(list->item[i], "/", ""));
+        new = fs_item("actor.zovl");
+        cfg = fs_item("config.cfg");
+        sys_mkdir(x_path(new), x_rep(list->item[i], "/", ""));
+        
+        if (!sys_stat(txt))
+            errr("Where is the conf.txt? [%s]", ovl);
+        
+        Memfile_LoadBin(&mem, ovl);
+        
+        deadbeef = mem.str;
+        while (deadbeef && deadbeef < mem.str + mem.size) {
+            if (!memcmp(deadbeef + 10, "\xBE\xEF", 2))
+                break;
+            deadbeef++;
+            deadbeef = memmem(deadbeef, mem.size - (u32)(deadbeef - mem.str), "\xDE\xAD", 2);
+        }
+        
+        _log("Get 'allocType' from '%s'", txt);
+        allocType = shex(strword(strstr(mem.str, "Allocation"), 1));
+        _log("Get 'VRAM' from '%s'", txt);
+        vramAddr = shex(strword(strstr(mem.str, "VRAM"), 1));
+        
+        if (deadbeef) {
+            offset = deadbeef - mem.str;
+            u16* actorID = (void*)deadbeef;
+            u16* zero = (void*)deadbeef + 10;
+            
+            *actorID = i;
+            *zero = 0;
+            
+            SwapBE(*actorID);
+            offset += vramAddr;
+        }
+        
+        if (!offset) {
+            Memfile tmem = Memfile_New();
+            
+            Memfile_LoadStr(&tmem, txt);
+            
+            if (!strstr(tmem.str, "ivar"))
+                errr("Failed to get Actor Init offset for [%s]", list->item[i]);
+            
+            _log("Get 'IVAR' from '%s'", txt);
+            offset = shex(strword(strstr(mem.str, "ivar"), 1));
+            
+            Memfile_Free(&tmem);
+        }
+        
+        Memfile_SaveBin(&mem, new);
+        
+        Memfile_Null(&mem);
+        Ini_WriteHex(&mem, "vram_addr", vramAddr, NO_COMMENT);
+        Ini_WriteHex(&mem, "init_vars", offset, NO_COMMENT);
+        Ini_WriteInt(&mem, "alloc_type", allocType, NO_COMMENT);
+        Memfile_SaveStr(&mem, cfg);
+        
+        Memfile_Free(&mem);
+    }
+    List_Free(list);
+}
+
+static void Migrate_Effect(List* list, const char* folName, const char* path) {
+    List_Walk(list, x_fmt("%s%s/", path, folName), 0, LIST_FOLDERS | LIST_RELATIVE);
+    List_Sort(list);
+    
+    for (int i = 0; i < list->num; i++) {
+        Memfile mem = Memfile_New();
+        char* ovl;
+        char* new;
+        char* txt;
+        char* cfg;
+        char* tuna;
+        u32 vramAddr;
+        u32 offset;
+        
+        info_prog("Effect", i + 1, list->num);
+        
+        fs_set("%s%s/%s", path, folName, list->item[i]);
+        ovl = fs_item("particle.zovl");
+        txt = fs_item("conf.txt");
+        
+        if (!sys_stat(ovl))
+            continue;
+        
+        fs_set("rom/effect/0x%04X-%s/", i, x_rep(list->item[i], "/", ""));
+        new = fs_item("effect.zovl");
+        cfg = fs_item("config.cfg");
+        sys_mkdir(x_path(new), x_rep(list->item[i], "/", ""));
+        
+        if (!sys_stat(ovl))
+            continue;
+        
+        Memfile_LoadStr(&mem, txt);
+        vramAddr = shex(strword(strstr(mem.str, "VRAM"), 1));
+        Memfile_LoadBin(&mem, ovl);
+        u16* id = (void*)(tuna = memmem(mem.data, mem.size, "tuna", 4));
+        
+        *id = i;
+        SwapBE(*id);
+        Memfile_SaveBin(&mem, new);
+        
+        offset = vramAddr + (tuna - mem.str);
+        
+        Memfile_Null(&mem);
+        Ini_WriteHex(&mem, "vram_addr", vramAddr, NO_COMMENT);
+        Ini_WriteHex(&mem, "init_vars", offset, NO_COMMENT);
+        Memfile_SaveStr(&mem, cfg);
+        
+        Memfile_Free(&mem);
+    }
+    List_Free(list);
+}
+
+static void Migrate_Object(List* list, const char* folName, const char* path) {
+    List_Walk(list, x_fmt("%s%s/", path, folName), 0, LIST_FOLDERS | LIST_RELATIVE);
+    List_Sort(list);
+    
+    for (int i = 0; i < list->num; i++) {
+        char* zobj;
+        char* new;
+        
+        info_prog("Object", i + 1, list->num);
+        
+        if (i == 0x14 || i == 0x15)
+            continue;
+        
+        fs_set("%s%s/%s", path, folName, list->item[i]);
+        zobj = fs_item("zobj.zobj");
+        
+        if (!sys_stat(zobj))
+            continue;
+        
+        fs_set("rom/object/0x%04X-%s/", i, x_rep(list->item[i], "/", ""));
+        new = fs_item("object.zobj");
+        sys_mkdir(x_path(new), x_rep(list->item[i], "/", ""));
+        
+        sys_cp(zobj, new);
+    }
+    List_Free(list);
+}
+
+static void Migrate_Scene(List* list, const char* folName, const char* path) {
+    List_Walk(list, x_fmt("%s%s/", path, folName), 0, LIST_FOLDERS | LIST_RELATIVE);
+    List_Sort(list);
+    
+    for (int i = 0; i < list->num; i++) {
+        List files = List_New();
+        s32 j = 0;
+        Memfile cfg = Memfile_New();
+        u32 roomNum = 0;
+        List rooms = List_New();
+        
+        info_prog("Scene", i + 1, list->num);
+        
+        if (!list->item[i])
+            continue;
+        
+        List_Alloc(&rooms, 64);
+        Memfile_Alloc(&cfg, 0x1000);
+        fs_set("%s%s/%s", path, folName, list->item[i]);
+        List_Walk(&files, fs_item(""), 0, LIST_FILES | LIST_RELATIVE);
+        
+        for (; j < files.num; j++) {
+            s32 copy = false;
+            
+            if (striend(files.item[j], ".zmap")) {
+                copy = true;
+                List_Add(&rooms, x_fmt("room_%d.zmap", roomNum++));
+            } else if (striend(files.item[j], ".zscene")) {
+                copy = true;
+            } else if (striend(files.item[j], ".png")) {
+                copy = true;
+            } else if (striend(files.item[j], ".txt")) {
+                Memfile txt = Memfile_New();
+                
+                Memfile_LoadStr(&txt, fs_item(files.item[j]));
+                
+                Ini_WriteInt(&cfg, "scene_func_id", sint(strword(strstr(txt.str, "shader:"), 1)), NO_COMMENT);
+                
+                fs_set("%s%s/%s", path, folName, list->item[i]);
+                Memfile_Free(&txt);
+                
+                continue;
+            }
+            
+            if (copy) {
+                char* input;
+                char* output;
+                
+                input = fs_item(files.item[j]);
+                fs_set("rom/scene/0x%02X-%s/", i, x_rep(list->item[i], "/", ""));
+                
+                output = fs_item(files.item[j]);
+                fs_set("%s%s/%s", path, folName, list->item[i]);
+                
+                sys_mkdir(x_path(output));
+                sys_cp(input, output);
+            }
+        }
+        
+        fs_set("rom/scene/0x%02X-%s/", i, x_rep(list->item[i], "/", ""));
+        
+        sys_mkdir(fs_item(""));
+        Ini_WriteArr(&cfg, "rooms", &rooms, QUOTES, NO_COMMENT);
+        Memfile_SaveStr(&cfg, fs_item("config.cfg"));
+        
+        List_Free(&files);
+        Memfile_Free(&cfg);
+    }
+    
+    List_Free(list);
+}
+
+static void Migrate_System(List* list, const char* folName, const char* path) {
+    const char* map[][2] = {
+        { "do_action_static",          map[0][0]                   },
+        { "elf_message_field",         map[1][0]                   },
+        { "elf_message_ydan",          map[2][0]                   },
+        { "icon_item_24_static",       map[3][0]                   },
+        { "icon_item_static",          map[4][0]                   },
+        { "item_name_static",          map[5][0]                   },
+        { "link_animetion",            map[6][0]                   },
+        { "map_48x85_static",          map[7][0]                   },
+        { "map_grand_static",          map[8][0]                   },
+        { "map_i_static",              map[9][0]                   },
+        { "map_name_static",           map[10][0]                  },
+        { "message_static",            map[11][0]                  },
+        { "message_texture_static",    map[12][0]                  },
+        { "nes_font_static",           map[13][0]                  },
+        { "nes_message_data_static",   "message_data_static_NES"   },
+        { "staff_message_data_static", "message_data_static_staff" },
+    };
+    
+    List_Walk(list, x_fmt("%s%s/", path, folName), 0, LIST_FILES | LIST_RELATIVE);
+    List_Sort(list);
+    
+    for (int i = 0; i < list->num; i++) {
+        char* mig;
+        char* new = NULL;
+        
+        info_prog("System", i + 1, list->num);
+        fs_set("%s%s/", path, folName);
+        mig = fs_item(list->item[i]);
+        
+        fs_set("rom/system/static/");
+        for (int j = 0; j < 16; j++) {
+            if (!strcmp(list->item[i], map[j][0])) {
+                new = fs_item(map[j][1]);
+            }
+        }
+        
+        if (!new)
+            continue;
+        
+        sys_cp(mig, new);
+    }
+    List_Free(list);
+}
+
+static void Migrate_EntranceTable(const char* table, const char* path) {
+    Memfile mem = Memfile_New();
+    Memfile mou = Memfile_New();
+    u32 lnum;
+    char* line;
+    
+    fs_set(path);
+    if (!sys_stat(fs_item(table)))
+        return;
+    Memfile_LoadStr(&mem, fs_item(table));
+    Memfile_Alloc(&mou, MbToBin(69));
+    
+    line = strline(mem.str, 1);
+    lnum = linenum(line);
+    
+    for (int i = 0; i < lnum; i++, line = strline(line, 1)) {
+        while (isspace(*line)) line++;
+        
+        List list = List_New();
+        
+        List_Alloc(&list, 6);
+        List_Add(&list, x_fmt("0x%02X", sint(strword(line, 1))));
+        List_Add(&list, x_fmt("0x%02X", sint(strword(line, 2))));
+        List_Add(&list, x_fmt("%s", !stricmp(x_cpyword(line, 3), "GO") ? "true" : "false"));
+        List_Add(&list, x_fmt("%s", !stricmp(x_cpyword(line, 4), "ON") ? "true" : "false"));
+        List_Add(&list, x_fmt("\"%s\"", Transition_GetName(sint(strword(line, 5)))));
+        List_Add(&list, x_fmt("\"%s\"", Transition_GetName(sint(strword(line, 6)))));
+        
+        Ini_WriteArr(&mou, x_fmt("0x%04X", i), &list, NO_QUOTES, NO_COMMENT);
+        
+        List_Free(&list);
+    }
+    
+    Memfile_SaveStr(&mou, "rom/system/entrance_table.cfg");
+    
+    Memfile_Free(&mem);
+    Memfile_Free(&mou);
+}
+
+static void Migrate_RomToolLite(const char* path) {
+    List list = List_New();
+    
+    Migrate_Actor(&list, "actor", path);
+    Migrate_Effect(&list, "particle", path);
+    Migrate_Object(&list, "object", path);
+    Migrate_Scene(&list, "scene", path);
+    if (sys_stat(x_fmt("%sscene/route.txt", path)))
+        Migrate_EntranceTable("scene/route.txt", path);
+    else
+        Migrate_EntranceTable("route.txt", path);
+    
+    if (sys_stat(x_fmt("%smessages/", path))) {
+        fs_set("%smessages/", path);
+        sys_cp(fs_item("MessageTbl.tbl"), "rom/system/static/message_data_static_NES.tbl");
+        sys_cp(fs_item("StringData.bin"), "rom/system/static/message_data_static_NES.bin");
+    }
+    
+    List_Free(&list);
+}
+
+static void Migrate_RomTool(const char* path) {
+    List list = List_New();
+    
+    Migrate_Actor(&list, "actor", path);
+    Migrate_Effect(&list, "particle", path);
+    Migrate_Object(&list, "object", path);
+    Migrate_Scene(&list, "scene", path);
+    Migrate_System(&list, "misc", path);
+    Migrate_EntranceTable("route.txt", path);
+    
+    List_Free(&list);
+}
+
+void Migrate(const char* type, const char* path) {
+    if (dir_isrel(path))
+        path = dirabs_f(g64.workDir, path);
+    else
+        path = x_strunq(path);
+    
+    info_title(gToolName, "Migrating Project");
+    info("%s", path);
+    
+    if (!strcmp(type, "zzromtool"))
+        Migrate_RomTool(path);
+    else if (!strcmp(type, "zzrtl"))
+        Migrate_RomToolLite(path);
+    else
+        errr("Provided type [%s] not recognized. Use " PRNT_BLUE "zzromtool " PRNT_RSET "or " PRNT_BLUE "zzrtl" PRNT_RSET ".", type);
+}
