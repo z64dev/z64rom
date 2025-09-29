@@ -576,11 +576,7 @@ Gfx* Gfx_DrawTexQuadIA8(Gfx* gfx, void* texture, s16 textureWidth, s16 textureHe
 		
 Asm_VanillaHook(Interface_DrawItemButtons);
 void Interface_DrawItemButtons(PlayState* play) {
-	#if Patch_INTERFACE_C_UP_TATL == true
     static void* cUpLabelTextures[] = { gNaviCUpJPTex, gNaviCUpJPTex, gNaviCUpJPTex };
-	#elif Patch_INTERFACE_C_UP_TATL == false
-	static void* cUpLabelTextures[] = { gNaviCUpENGTex, gNaviCUpENGTex, gNaviCUpENGTex };
-	#endif
     static s16 startButtonLeftPos[] = { 132, 130, 130 };
     InterfaceContext* interfaceCtx = &play->interfaceCtx;
     Player* player = GET_PLAYER(play);
@@ -833,8 +829,13 @@ void Interface_DrawItemButtons(PlayState* play) {
 			gDPSetPrimColor(OVERLAY_DISP++, 0, 0, R_C_BTN_COLOR(0), R_C_BTN_COLOR(1), R_C_BTN_COLOR(2), temp);
 			#endif
             gDPSetCombineMode(OVERLAY_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+			#if Patch_INTERFACE_C_UP_TATL == true
             gSPTextureRectangle(OVERLAY_DISP++, R_C_UP_BTN_X << 2, R_C_UP_BTN_Y << 2, (R_C_UP_BTN_X + 16) << 2,
                                 (R_C_UP_BTN_Y + 16) << 2, G_TX_RENDERTILE, 0, 0, 2 << 10, 2 << 10);
+			#elif Patch_INTERFACE_C_UP_TATL == false
+            gSPTextureRectangle(OVERLAY_DISP++, 2 + R_C_UP_BTN_X << 2, 2 + R_C_UP_BTN_Y << 2, 2 + (R_C_UP_BTN_X + 16) << 2,
+                               2 + (R_C_UP_BTN_Y + 16) << 2, G_TX_RENDERTILE, 0, 0, 2 << 10, 2 << 10);
+			#endif
             gDPPipeSync(OVERLAY_DISP++);
             gDPSetPrimColor(OVERLAY_DISP++, 0, 0, 255, 255, 255, temp);
             gDPSetEnvColor(OVERLAY_DISP++, 0, 0, 0, 0);
@@ -869,14 +870,29 @@ void Interface_DrawItemButtons(PlayState* play) {
     for (temp = 1; temp < 4; temp++) {
         if (gSaveContext.equips.buttonItems[temp] > 0xF0) {
             if (temp == 1) {
+				#if Patch_INTERFACE_C_BUTTON_COLORS_MM == true
+                gDPSetPrimColor(OVERLAY_DISP++, 0, 0, R_C_BTN_COLOR_MM0, R_C_BTN_COLOR_MM1, R_C_BTN_COLOR_MM2,
+                                interfaceCtx->cLeftAlpha);
+				#elif Patch_INTERFACE_C_BUTTON_COLORS_MM == false
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, R_C_BTN_COLOR(0), R_C_BTN_COLOR(1), R_C_BTN_COLOR(2),
                                 interfaceCtx->cLeftAlpha);
+				#endif
             } else if (temp == 2) {
+				#if Patch_INTERFACE_C_BUTTON_COLORS_MM == true
+                gDPSetPrimColor(OVERLAY_DISP++, 0, 0, R_C_BTN_COLOR_MM0, R_C_BTN_COLOR_MM1, R_C_BTN_COLOR_MM2,
+                                interfaceCtx->cDownAlpha);
+				#elif Patch_INTERFACE_C_BUTTON_COLORS_MM == false
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, R_C_BTN_COLOR(0), R_C_BTN_COLOR(1), R_C_BTN_COLOR(2),
                                 interfaceCtx->cDownAlpha);
+				#endif
             } else {
+				#if Patch_INTERFACE_C_BUTTON_COLORS_MM == true
+                gDPSetPrimColor(OVERLAY_DISP++, 0, 0, R_C_BTN_COLOR_MM0, R_C_BTN_COLOR_MM1, R_C_BTN_COLOR_MM2,
+                                interfaceCtx->cRightAlpha);
+				#elif Patch_INTERFACE_C_BUTTON_COLORS_MM == false
                 gDPSetPrimColor(OVERLAY_DISP++, 0, 0, R_C_BTN_COLOR(0), R_C_BTN_COLOR(1), R_C_BTN_COLOR(2),
                                 interfaceCtx->cRightAlpha);
+				#endif
             }
 
             OVERLAY_DISP = Gfx_TextureIA8(OVERLAY_DISP, ((u8*)gButtonBackgroundTex + ((32 * 32) * (temp + 1))), 32, 32,
