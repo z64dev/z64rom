@@ -8462,6 +8462,7 @@ void Player_EndDie(PlayState* play, Player* this) {
         func_8002F7DC(&this->actor, NA_SE_EV_FIATY_HEAL - SFX_FLAG);
         OnePointCutscene_Init(play, 9908, 125, &this->actor, CAM_ID_MAIN);
     } else if (play->gameOverCtx.state == GAMEOVER_DEATH_WAIT_GROUND) {
+        play->mainCamera.childCamId = 0; // Death Crash Fix on uncompressed Roms
         play->gameOverCtx.state = GAMEOVER_DEATH_DELAY_MENU;
     }
 }
