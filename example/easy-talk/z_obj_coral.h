@@ -1,0 +1,63 @@
+
+/* WARNING:
+ * your 3D software is set to 24fps, so the converted
+ * animations may run faster or slower than expected
+ */
+#define  TEX_CORAL_EYE_PNG_001          0x06000000
+#define  TEX_CORAL_BRAID_PNG_001        0x06000200
+#define  TEX_CORAL_BODY_PNG_001         0x06000400
+#define  TEX_CORAL_STONE_EYE_PNG        0x06000440
+#define  PAL_0                          0x06000840
+#define  PAL_1                          0x06000980
+#define  PAL_2                          0x060009C0
+#define  PAL_3                          0x060009C8
+#define  MTL_CORAL_EYES_001             0x06000B40
+#define  MTL_CORAL_EYES_001_TEXEL0_W                  32
+#define  MTL_CORAL_EYES_001_TEXEL0_H                  16
+#define  MTL_CORAL_EYES_001_PRIMCOLOR                 0x06000B60
+#define  MTL_CORAL_EYES_001_TIMG0                     0x06000B70
+#define  MTL_CORAL_EYES_001_TILESIZE0                 0x06000BA0
+#define  MTL_CORAL_EYES_001_TIMG1                     0x06000BA8
+#define  MTL_CORAL_EYES_001_TILESIZE1                 0x06000BE0
+#define  MTL_CORAL_BRAID_001            0x06000BF0
+#define  MTL_CORAL_BRAID_001_TEXEL0_W                  16
+#define  MTL_CORAL_BRAID_001_TEXEL0_H                  32
+#define  MTL_CORAL_BRAID_001_PRIMCOLOR                 0x06000C10
+#define  MTL_CORAL_BRAID_001_TIMG0                     0x06000C20
+#define  MTL_CORAL_BRAID_001_TILESIZE0                 0x06000C50
+#define  MTL_CORAL_BRAID_001_TIMG1                     0x06000C58
+#define  MTL_CORAL_BRAID_001_TILESIZE1                 0x06000C90
+#define  MTL_CORAL_BODY_001             0x06000CA0
+#define  MTL_CORAL_BODY_001_TEXEL0_W                  8
+#define  MTL_CORAL_BODY_001_TEXEL0_H                  8
+#define  MTL_CORAL_BODY_001_PRIMCOLOR                 0x06000CC0
+#define  MTL_CORAL_BODY_001_TIMG0                     0x06000CD0
+#define  MTL_CORAL_BODY_001_TILESIZE0                 0x06000D00
+#define  MTL_CORAL_BODY_001_TIMG1                     0x06000D08
+#define  MTL_CORAL_BODY_001_TILESIZE1                 0x06000D40
+#define  MTL_CORAL_EYE_PURPLE           0x06000D50
+#define  MTL_CORAL_EYE_PURPLE_TEXEL0_W                  64
+#define  MTL_CORAL_EYE_PURPLE_TEXEL0_H                  16
+#define  MTL_CORAL_EYE_PURPLE_PRIMCOLOR                 0x06000D70
+#define  MTL_CORAL_EYE_PURPLE_TIMG0                     0x06000D80
+#define  MTL_CORAL_EYE_PURPLE_TILESIZE0                 0x06000DB0
+#define  MTL_CORAL_EYE_PURPLE_TIMG1                     0x06000DB8
+#define  MTL_CORAL_EYE_PURPLE_TILESIZE1                 0x06000DF0
+#define  DL_CORAL_BLUE_LIMB_00          0x06001A80
+#define  DL_CORAL_BLUE_LIMB_01          0x060075E8
+#define  SKEL_CORAL_BLUE                0x06009190
+#define  SKEL_CORAL_BLUE_NUMBONES                  2
+#define  SKEL_CORAL_BLUE_NUMBONES_DT               (2+1)
+#define  DL_CORAL_PURPLE_LIMB_00        0x06009F80
+#define  DL_CORAL_PURPLE_LIMB_01        0x0600BAA8
+#define  SKEL_CORAL_PURPLE              0x0600C270
+#define  SKEL_CORAL_PURPLE_NUMBONES                  2
+#define  SKEL_CORAL_PURPLE_NUMBONES_DT               (2+1)
+#define  ANIM_ARMATURE_DANCE                     0x0600C2E4
+#define  ANIM_ARMATURE_DANCE_PURPLE              0x0600C35C
+#define  ANIM_ARMATURE_IDLE                      0x0600C384
+#define  ANIM_ARMATURE_IDLE_PURPLE               0x0600C3AC
+#define  ANIM_ARMATUREPURPLE_DANCE                     0x0600C424
+#define  ANIM_ARMATUREPURPLE_DANCE_PURPLE              0x0600C49C
+#define  ANIM_ARMATUREPURPLE_IDLE                      0x0600C4C4
+#define  ANIM_ARMATUREPURPLE_IDLE_PURPLE               0x0600C4EC
