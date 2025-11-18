@@ -1,6 +1,11 @@
 #include <uLib.h>
 #include "code/z_bgcheck.h"
+#include "variables.h"
 #include <uLib_vector.h>
+//Version: 1.1
+/*This version value is used by SharpOcarina to determine if it needs to update the BgCheck.c of an old project
+to use newly added features. Put a high value like 99 to stop SharpOcarina from ever asking to update it again.
+*/
 
 static bool Col3D_LineVsTriangle(Vec3f tri[3], Vec3f start, Vec3f end, Vec3f* outPos, Vec3f* outNor, bool cullBackface, bool infinite) {
     Vec3f vertex0 = tri[0];
@@ -176,10 +181,13 @@ void BgCheck_Allocate(CollisionContext* colCtx, PlayState* play, CollisionHeader
     colCtx->dyna.polyNodesMax = 1000 * 8;
     colCtx->dyna.polyListMax = 512 * 8;
     colCtx->dyna.vtxListMax = 512 * 8;
-    
-    colCtx->subdivAmount.x = 16;
-    colCtx->subdivAmount.y = 4;
-    colCtx->subdivAmount.z = 16;
+
+    if (colCtx->subdivAmount.x == 0 ||  colCtx->subdivAmount.y == 0 ||  colCtx->subdivAmount.z == 0)
+    {
+        colCtx->subdivAmount.x = 16;
+        colCtx->subdivAmount.y = 4;
+        colCtx->subdivAmount.z = 16;
+    }
     
     colCtx->lookupTbl = THA_AllocEndAlign(
         &play->state.tha,
@@ -233,4 +241,21 @@ void BgCheck_Allocate(CollisionContext* colCtx, PlayState* play, CollisionHeader
     
     DynaPoly_Init(play, &colCtx->dyna);
     DynaPoly_Alloc(play, &colCtx->dyna);
+}
+
+Asm_VanillaHook(Scene_CommandCollisionHeader);
+void Scene_CommandCollisionHeader(PlayState* play, SceneCmd* cmd) {
+    CollisionHeader* colHeader = SEGMENTED_TO_VIRTUAL(cmd->colHeader.data);
+
+    play->colCtx.subdivAmount.x = *AVAL(&cmd->colHeader,u8,1);
+    play->colCtx.subdivAmount.y = *AVAL(&cmd->colHeader,u8,2);
+    play->colCtx.subdivAmount.z = *AVAL(&cmd->colHeader,u8,3);
+
+    colHeader->vtxList = SEGMENTED_TO_VIRTUAL(colHeader->vtxList);
+    colHeader->polyList = SEGMENTED_TO_VIRTUAL(colHeader->polyList);
+    colHeader->surfaceTypeList = SEGMENTED_TO_VIRTUAL(colHeader->surfaceTypeList);
+    colHeader->bgCamList = SEGMENTED_TO_VIRTUAL(colHeader->bgCamList);
+    colHeader->waterBoxes = SEGMENTED_TO_VIRTUAL(colHeader->waterBoxes);
+
+    BgCheck_Allocate(&play->colCtx, play, colHeader);
 }
