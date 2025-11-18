@@ -1,7 +1,7 @@
 #ifndef __Z64ROM_H__
 #define __Z64ROM_H__
 
-#define Z64ROM_VERSION_STRING "1.7.0"
+#define Z64ROM_VERSION_STRING "1.7.1"
 #define Z64ROM_VERSION_NUMBER 1007000 // x,yyy,zzz (major, minor, patch)
 
 // for features dependent on newer versions of z64hdr
