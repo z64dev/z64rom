@@ -1,5 +1,4 @@
 #include "uLib.h"
-#include "variables.h"
 #include "SceneRender.h"
 //Version: 1.3
 /*This version value is used by SharpOcarina to determine if it needs to update the SceneRender.c of an old project
