@@ -420,7 +420,7 @@ void KaleidoScope_HandlePageToggles(PauseContext* pauseCtx, Input* input) {
 #endif
     
 #ifdef MM_DPAD_KALEIDO == true
-	if (CHECK_BTN_ALL(input->cur.button, BTN_DRIGHT) && pauseCtx->debugState == 0 || CHECK_BTN_ALL(input->press.button, BTN_R)) {
+	if (CHECK_BTN_ALL(input->cur.button, BTN_DRIGHT) && pauseCtx->debugState == 0 || CHECK_BTN_ALL(input->press.button, BTN_R) && pauseCtx->debugState == 0) {
 #else
     if (CHECK_BTN_ALL(input->press.button, BTN_R)) {
 #endif
@@ -430,7 +430,7 @@ void KaleidoScope_HandlePageToggles(PauseContext* pauseCtx, Input* input) {
     }
 
 #ifdef MM_DPAD_KALEIDO == true
-	if (CHECK_BTN_ALL(input->cur.button, BTN_DLEFT) && pauseCtx->debugState == 0 || CHECK_BTN_ALL(input->press.button, BTN_Z)) {
+	if (CHECK_BTN_ALL(input->cur.button, BTN_DLEFT) && pauseCtx->debugState == 0 || CHECK_BTN_ALL(input->press.button, BTN_Z) && pauseCtx->debugState == 0) {
 #else
     if (CHECK_BTN_ALL(input->press.button, BTN_Z)) {
 #endif
