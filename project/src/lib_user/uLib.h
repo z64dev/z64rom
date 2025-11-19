@@ -76,6 +76,9 @@
 // Interface Colors for the Rupee counter, according to wallet upgrades 
 #define Patch_MM_INTERFACE_RUPEE_UPGRADES false
 
+// Enable the D-pad usage to toggle pages in the pause menu, akin to Majora's Mask
+#define MM_DPAD_KALEIDO false
+
 // Space allocated for GI models, expand if needed
 #define Patch_GetItem_SegmentSize 0x3008
 
