@@ -429,3 +429,316 @@ s32 Camera_Normal1(Camera* camera) {
     
     return 1;
 }
+
+Asm_VanillaHook(Camera_KeepOn4);
+s32 Camera_KeepOn4(Camera* camera) {
+    static Vec3f D_8015BD50;
+    static Vec3f D_8015BD60;
+    static Vec3f D_8015BD70;
+    Vec3f* eye = &camera->eye;
+    Vec3f* at = &camera->at;
+    Vec3f* eyeNext = &camera->eyeNext;
+    Actor* spCC[2];
+    f32 t = -0.5f;
+    f32 temp_f0_2;
+    CollisionPoly* spC0;
+    VecSph spB8;
+    VecSph spB0;
+    VecSph spA8;
+    s16* temp_s0 = &camera->data2;
+    s16 spA2;
+    s16 spA0;
+    s16 sp9E;
+    s16 sp9C;
+    PosRot* playerPosRot = &camera->playerPosRot;
+    KeepOn4ReadOnlyData* roData = &camera->paramData.keep4.roData;
+    KeepOn4ReadWriteData* rwData = &camera->paramData.keep4.rwData;
+    s32 pad;
+    f32 playerHeight;
+    Player* player = GET_PLAYER(camera->play);
+    s16 angleCnt;
+    s32 i;
+
+    if (RELOAD_PARAMS(camera)) {
+        if (camera->play->view.unk_124 == 0) {
+            camera->unk_14C |= 0x20;
+            camera->unk_14C &= ~(0x4 | 0x2);
+            camera->play->view.unk_124 = camera->camId | 0x50;
+            return 1;
+        }
+        rwData->unk_14 = *temp_s0;
+        camera->unk_14C &= ~0x20;
+    }
+
+    if (rwData->unk_14 != *temp_s0) {
+        osSyncPrintf(VT_COL(YELLOW, BLACK) "camera: item: item type changed %d -> %d\n" VT_RST, rwData->unk_14,
+                     *temp_s0);
+        camera->animState = 20;
+        camera->unk_14C |= 0x20;
+        camera->unk_14C &= ~(0x4 | 0x2);
+        camera->play->view.unk_124 = camera->camId | 0x50;
+        return 1;
+    }
+
+    playerHeight = Player_GetHeight(camera->player);
+    camera->unk_14C &= ~0x10;
+    if (RELOAD_PARAMS(camera) || R_RELOAD_CAM_PARAMS) {
+        CameraModeValue* values = sCameraSettings[camera->setting].cameraModes[camera->mode].values;
+        f32 yNormal = 1.0f + t - (68.0f / playerHeight * t);
+
+        roData->unk_00 = GET_NEXT_SCALED_RO_DATA(values) * playerHeight * yNormal;
+        roData->unk_04 = GET_NEXT_SCALED_RO_DATA(values) * playerHeight * yNormal;
+        roData->unk_08 = GET_NEXT_RO_DATA(values);
+        roData->unk_0C = GET_NEXT_RO_DATA(values);
+        roData->unk_10 = GET_NEXT_RO_DATA(values);
+        roData->unk_18 = GET_NEXT_RO_DATA(values);
+        roData->unk_1C = GET_NEXT_RO_DATA(values);
+        roData->unk_14 = GET_NEXT_SCALED_RO_DATA(values);
+        roData->unk_1E = GET_NEXT_RO_DATA(values);
+        osSyncPrintf("camera: item: type %d\n", *temp_s0);
+        switch (*temp_s0) {
+            case 1:
+                roData->unk_00 = playerHeight * -0.6f * yNormal;
+                roData->unk_04 = playerHeight * 2.0f * yNormal;
+                roData->unk_08 = 10.0f;
+                break;
+            case 2:
+            case 3:
+                roData->unk_08 = -20.0f;
+                roData->unk_18 = 80.0f;
+                break;
+            case 4:
+                roData->unk_00 = playerHeight * -0.2f * yNormal;
+                roData->unk_08 = 25.0f;
+                break;
+            case 8:
+                roData->unk_00 = playerHeight * -0.2f * yNormal;
+                roData->unk_04 = playerHeight * 0.8f * yNormal;
+                roData->unk_08 = 50.0f;
+                roData->unk_18 = 70.0f;
+                break;
+            case 9:
+			#if MM_GETITEM_CAM == true
+				if (LINK_IS_ADULT) {
+					roData->unk_00 = playerHeight * -0.1f * yNormal; // Height
+					roData->unk_04 = playerHeight * 0.7f * yNormal; // Focal Point
+					roData->unk_08 = 35.0f; // Cam Rotation
+					roData->unk_0C = 0.0f; // ???
+					//roData->unk_1C = 0x3540; Rotates cam on Y axis. Not in MM
+					break;
+				} else {
+					roData->unk_00 = playerHeight * 0.06f * yNormal; // Height
+					roData->unk_04 = playerHeight * 0.51f * yNormal; // Focal Point
+					roData->unk_08 = 30.0f; // Cam Rotation
+					roData->unk_0C = 0.0f; // ???
+					//roData->unk_1C = 0x3540; Rotates cam on Y axis. Not in MM
+					break;
+				}
+			#else
+                roData->unk_00 = playerHeight * 0.1f * yNormal;
+                roData->unk_04 = playerHeight * 0.5f * yNormal;
+                roData->unk_08 = -20.0f;
+                roData->unk_0C = 0.0f;
+                roData->unk_1C = 0x2540;
+                break;
+			#endif
+            case 5:
+                roData->unk_00 = playerHeight * -0.4f * yNormal;
+                roData->unk_08 = -10.0f;
+                roData->unk_0C = 45.0f;
+                roData->unk_1C = 0x2002;
+                break;
+            case 10:
+                roData->unk_00 = playerHeight * -0.5f * yNormal;
+                roData->unk_04 = playerHeight * 1.5f * yNormal;
+                roData->unk_08 = -15.0f;
+                roData->unk_0C = 175.0f;
+                roData->unk_18 = 70.0f;
+                roData->unk_1C = 0x2202;
+                roData->unk_1E = 0x3C;
+                break;
+            case 12:
+                roData->unk_00 = playerHeight * -0.6f * yNormal;
+                roData->unk_04 = playerHeight * 1.6f * yNormal;
+                roData->unk_08 = -2.0f;
+                roData->unk_0C = 120.0f;
+                roData->unk_10 = player->stateFlags1 & PLAYER_STATE1_27 ? 0.0f : 20.0f;
+                roData->unk_1C = 0x3212;
+                roData->unk_1E = 0x1E;
+                roData->unk_18 = 50.0f;
+                break;
+            case 0x5A:
+                roData->unk_00 = playerHeight * -0.3f * yNormal;
+                roData->unk_18 = 45.0f;
+                roData->unk_1C = 0x2F02;
+                break;
+            case 0x5B:
+                roData->unk_00 = playerHeight * -0.1f * yNormal;
+                roData->unk_04 = playerHeight * 1.5f * yNormal;
+                roData->unk_08 = -3.0f;
+                roData->unk_0C = 10.0f;
+                roData->unk_18 = 55.0f;
+                roData->unk_1C = 0x2F08;
+                break;
+            case 0x51:
+                roData->unk_00 = playerHeight * -0.3f * yNormal;
+                roData->unk_04 = playerHeight * 1.5f * yNormal;
+                roData->unk_08 = 2.0f;
+                roData->unk_0C = 20.0f;
+                roData->unk_10 = 20.0f;
+                roData->unk_1C = 0x2280;
+                roData->unk_1E = 0x1E;
+                roData->unk_18 = 45.0f;
+                break;
+            case 11:
+                roData->unk_00 = playerHeight * -0.19f * yNormal;
+                roData->unk_04 = playerHeight * 0.7f * yNormal;
+                roData->unk_0C = 130.0f;
+                roData->unk_10 = 10.0f;
+                roData->unk_1C = 0x2522;
+                break;
+            default:
+                break;
+        }
+    }
+
+    if (R_RELOAD_CAM_PARAMS) {
+        Camera_CopyPREGToModeValues(camera);
+    }
+
+    sUpdateCameraDirection = 1;
+    sCameraInterfaceFlags = roData->unk_1C;
+    OLib_Vec3fDiffToVecSphGeo(&spB0, at, eye);
+    OLib_Vec3fDiffToVecSphGeo(&spA8, at, eyeNext);
+    D_8015BD50 = playerPosRot->pos;
+    D_8015BD50.y += playerHeight;
+    temp_f0_2 = BgCheck_CameraRaycastDown2(&camera->play->colCtx, &spC0, &i, &D_8015BD50);
+    if (temp_f0_2 > (roData->unk_00 + D_8015BD50.y)) {
+        D_8015BD50.y = temp_f0_2 + 10.0f;
+    } else {
+        D_8015BD50.y += roData->unk_00;
+    }
+
+    sp9C = 0;
+    switch (camera->animState) {
+        case 0:
+        case 20:
+            spCC[sp9C] = &camera->player->actor;
+            sp9C++;
+            func_80043ABC(camera);
+            camera->unk_14C &= ~(0x4 | 0x2);
+            rwData->unk_10 = roData->unk_1E;
+            rwData->unk_08 = playerPosRot->pos.y - camera->playerPosDelta.y;
+            if (roData->unk_1C & 2) {
+                spA2 = CAM_DEG_TO_BINANG(roData->unk_08);
+                spA0 = (s16)((s16)(playerPosRot->rot.y - 0x7FFF) - spA8.yaw) > 0
+                           ? (s16)(playerPosRot->rot.y - 0x7FFF) + CAM_DEG_TO_BINANG(roData->unk_0C)
+                           : (s16)(playerPosRot->rot.y - 0x7FFF) - CAM_DEG_TO_BINANG(roData->unk_0C);
+            } else if (roData->unk_1C & 4) {
+                spA2 = CAM_DEG_TO_BINANG(roData->unk_08);
+                spA0 = CAM_DEG_TO_BINANG(roData->unk_0C);
+            } else if ((roData->unk_1C & 8) && camera->target != NULL) {
+                PosRot sp60;
+
+                Actor_GetWorldPosShapeRot(&sp60, camera->target);
+                spA2 = CAM_DEG_TO_BINANG(roData->unk_08) - sp60.rot.x;
+                spA0 = (s16)((s16)(sp60.rot.y - 0x7FFF) - spA8.yaw) > 0
+                           ? (s16)(sp60.rot.y - 0x7FFF) + CAM_DEG_TO_BINANG(roData->unk_0C)
+                           : (s16)(sp60.rot.y - 0x7FFF) - CAM_DEG_TO_BINANG(roData->unk_0C);
+                spCC[1] = camera->target;
+                sp9C++;
+            } else if ((roData->unk_1C & 0x80) && camera->target != NULL) {
+                PosRot sp4C;
+
+                Actor_GetWorld(&sp4C, camera->target);
+                spA2 = CAM_DEG_TO_BINANG(roData->unk_08);
+                sp9E = Camera_XZAngle(&sp4C.pos, &playerPosRot->pos);
+                spA0 = ((s16)(sp9E - spA8.yaw) > 0) ? sp9E + CAM_DEG_TO_BINANG(roData->unk_0C)
+                                                    : sp9E - CAM_DEG_TO_BINANG(roData->unk_0C);
+                spCC[1] = camera->target;
+                sp9C++;
+            } else if (roData->unk_1C & 0x40) {
+                spA2 = CAM_DEG_TO_BINANG(roData->unk_08);
+                spA0 = spA8.yaw;
+            } else {
+                spA2 = spA8.pitch;
+                spA0 = spA8.yaw;
+            }
+
+            spB8.pitch = spA2;
+            spB8.yaw = spA0;
+            spB8.r = roData->unk_04;
+            Camera_Vec3fVecSphGeoAdd(&D_8015BD70, &D_8015BD50, &spB8);
+            if (!(roData->unk_1C & 1)) {
+                //angleCnt = ARRAY_COUNT(D_8011D3B0);
+                for (i = 0; i < angleCnt; i++) {
+                    if (!CollisionCheck_LineOCCheck(camera->play, &camera->play->colChkCtx, &D_8015BD50, &D_8015BD70,
+                                                    spCC, sp9C) &&
+                        !Camera_BGCheck(camera, &D_8015BD50, &D_8015BD70)) {
+                        break;
+                    }
+                    spB8.yaw = D_8011D3B0[i] + spA0;
+                    spB8.pitch = D_8011D3CC[i] + spA2;
+                    Camera_Vec3fVecSphGeoAdd(&D_8015BD70, &D_8015BD50, &spB8);
+                }
+                osSyncPrintf("camera: item: BG&collision check %d time(s)\n", i);
+            }
+            rwData->unk_04 = (s16)(spB8.pitch - spA8.pitch) / (f32)rwData->unk_10;
+            rwData->unk_00 = (s16)(spB8.yaw - spA8.yaw) / (f32)rwData->unk_10;
+            rwData->unk_0C = spA8.yaw;
+            rwData->unk_0E = spA8.pitch;
+            camera->animState++;
+            rwData->unk_12 = 1;
+            break;
+        case 10:
+            rwData->unk_08 = playerPosRot->pos.y - camera->playerPosDelta.y;
+        default:
+            break;
+    }
+    camera->xzOffsetUpdateRate = 0.25f;
+    camera->yOffsetUpdateRate = 0.25f;
+    camera->atLERPStepScale = 0.75f;
+    Camera_LERPCeilVec3f(&D_8015BD50, at, 0.5f, 0.5f, 0.2f);
+    if (roData->unk_10 != 0.0f) {
+        spB8.r = roData->unk_10;
+        spB8.pitch = 0;
+        spB8.yaw = playerPosRot->rot.y;
+        Camera_Vec3fVecSphGeoAdd(at, at, &spB8);
+    }
+    camera->atLERPStepScale = 0.0f;
+    camera->dist = Camera_LERPCeilF(roData->unk_04, camera->dist, 0.25f, 2.0f);
+    spB8.r = camera->dist;
+    if (rwData->unk_10 != 0) {
+        camera->unk_14C |= 0x20;
+        rwData->unk_0C += (s16)rwData->unk_00;
+        rwData->unk_0E += (s16)rwData->unk_04;
+        rwData->unk_10--;
+    } else if (roData->unk_1C & 0x10) {
+        camera->unk_14C |= (0x400 | 0x10);
+        camera->unk_14C |= (0x4 | 0x2);
+        camera->unk_14C &= ~8;
+        if (camera->timer > 0) {
+            camera->timer--;
+        }
+    } else {
+        camera->unk_14C |= (0x400 | 0x10);
+        if (camera->unk_14C & 8 || roData->unk_1C & 0x80) {
+            sCameraInterfaceFlags = 0;
+            camera->unk_14C |= (0x4 | 0x2);
+            camera->unk_14C &= ~8;
+            if (camera->prevBgCamIndex < 0) {
+                Camera_ChangeSettingFlags(camera, camera->prevSetting, 2);
+            } else {
+                Camera_ChangeBgCamIndex(camera, camera->prevBgCamIndex);
+                camera->prevBgCamIndex = -1;
+            }
+        }
+    }
+    spB8.yaw = Camera_LERPCeilS(rwData->unk_0C, spA8.yaw, roData->unk_14, 4);
+    spB8.pitch = Camera_LERPCeilS(rwData->unk_0E, spA8.pitch, roData->unk_14, 4);
+    Camera_Vec3fVecSphGeoAdd(eyeNext, at, &spB8);
+    *eye = *eyeNext;
+    Camera_BGCheck(camera, at, eye);
+    camera->fov = Camera_LERPCeilF(roData->unk_18, camera->fov, camera->fovUpdateRate, 1.0f);
+    camera->roll = Camera_LERPCeilS(0, camera->roll, 0.5f, 0xA);
+}

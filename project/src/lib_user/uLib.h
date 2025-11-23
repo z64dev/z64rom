@@ -27,6 +27,9 @@
 // MM Timer (faked)
 #define Patch_MM_TIMER false
 
+// Make Camera_KeepOn4, case9, mimic how getting an item looks in Majora's Mask (Perspective from above)
+#define MM_GETITEM_CAM false
+
 // When Bunny Hood is equipped, you run fast like in MM
 #define MM_BUNNYHOOD false
 
@@ -57,9 +60,8 @@
 //    the game by loading different texture banks for different scene headers
 #define SEGMENT_0x06_FOR_SCENES false
 
-/*Used to correct MM's UV scrolling direction (this exists because my original implementation had it backwards; 
-it is left off by default so older projects and tools will not be broken by it)
-*/
+//Used to correct MM's UV scrolling direction (this exists because my original implementation had it backwards; 
+//it is left off by default so older projects and tools will not be broken by it)
 #define MATCH_MM_TEXSCROLL false
 
 // Interface Stuff
