@@ -8,11 +8,7 @@ to use newly added features. Put a high value like 99 to stop SharpOcarina from 
 void func_8009BEEC(PlayState* play);
 asm ("func_8009BEEC = 0x8009BEEC");
 
-/*add -DMATCH_MM_UV_SCROLL to your build flags (or add #define MATCH_MM_UV_SCROLL to the top of this file)
-to use MM's UV scrolling direction (this exists because my original implementation hadit backwards; 
-it is left off by default so older projects and tools will not be broken by it)
-*/
-#ifdef MATCH_MM_TEXSCROLL
+#if MATCH_MM_TEXSCROLL == true
 #    define VSCROLL -1
 #else
 #    define VSCROLL 1

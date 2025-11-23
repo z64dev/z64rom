@@ -57,6 +57,11 @@
 //    the game by loading different texture banks for different scene headers
 #define SEGMENT_0x06_FOR_SCENES false
 
+/*Used to correct MM's UV scrolling direction (this exists because my original implementation had it backwards; 
+it is left off by default so older projects and tools will not be broken by it)
+*/
+#define MATCH_MM_TEXSCROLL false
+
 // Interface Stuff
 // MM-Styled Interface (Corrdinates)
 #define Patch_MM_INTERFACE_BUTTONS_CORDS false
