@@ -106,6 +106,11 @@
 #include "uLib_types.h"
 #include "sfx_enum.h"
 
+// these asserts make sure the savecontext and playstate structs remain vanilla size, player row is commented out as it may interfere with the expand player structure feature 
+_Static_assert(sizeof(SaveContext) == 0x1428, "savectxt size mismatch");
+_Static_assert(sizeof(PlayState) == 0x12518, "playstate size mismatch");
+//_Static_assert(sizeof(Player) == 0xA94, "player size mismatch");
+
 extern DmaEntry __ext_gDmaDataTable[EXT_DMA_MAX];
 extern ActorOverlay __ext_gActorOverlayTable[EXT_ACTOR_MAX];
 extern RomFile __ext_gObjectTable[EXT_OBJECT_MAX];
