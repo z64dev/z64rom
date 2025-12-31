@@ -196,5 +196,24 @@ typedef struct EasyTalkNpcArgs
 } EasyTalkNpcArgs;
 #define EasyTalkNpcArgsDefaults \
     .distance = 100, \
+	
+typedef struct Vec2s
+{
+    s16 x, y;
+} Vec2s;
+
+// NOTE: do not use this directly; use the StaticUvRotateConfig() helper!
+typedef struct
+{
+    u32 segAddr;
+    s16 numVerts;
+    s16 speed;
+    Vtx *data;
+    Vec2s *uvData;
+} UvRotateConfig;
+
+#define static_UvRotateConfig(name, segAddr, numVerts, speed) \
+    static Vec2s name##uvData[numVerts]; \
+    static UvRotateConfig name = { segAddr, numVerts, speed, 0, name##uvData };
 
 #endif

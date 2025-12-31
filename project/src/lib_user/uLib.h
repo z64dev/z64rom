@@ -396,4 +396,6 @@ void Text_Finish(Gfx* gfx);
     #define motionBlurAlpha unk_12428[0]
 #endif
 
+void UvRotate(PlayState *play, UvRotateConfig *config);
+
 #endif
