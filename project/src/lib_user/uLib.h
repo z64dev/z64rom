@@ -397,5 +397,6 @@ void Text_Finish(Gfx* gfx);
 #endif
 
 void UvRotate(PlayState *play, UvRotateConfig *config);
+Gfx* Gfx_QuickTwoTexScroll(PlayState* play, TextureScroll* params);
 
 #endif

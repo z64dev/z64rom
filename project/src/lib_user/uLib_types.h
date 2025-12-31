@@ -215,5 +215,10 @@ typedef struct
 #define static_UvRotateConfig(name, segAddr, numVerts, speed) \
     static Vec2s name##uvData[numVerts]; \
     static UvRotateConfig name = { segAddr, numVerts, speed, 0, name##uvData };
+	
+typedef struct {
+    s16 xSpeed, ySpeed;
+    s16 width, height;
+} TextureScroll;
 
 #endif

@@ -39,3 +39,11 @@ void UvRotate(PlayState *play, UvRotateConfig *config)
         dst->y = (s16)vRot;
     }
 }
+
+Gfx* Gfx_QuickTwoTexScroll(PlayState* play, TextureScroll* params) {
+    u32 frames = play->gameplayFrames;
+
+    return Gfx_TwoTexScroll(play->state.gfxCtx, 0, params[0].xSpeed * frames, -(params[0].ySpeed * frames),
+                            params[0].width, params[0].height, 1, params[1].xSpeed * frames,
+                            -(params[1].ySpeed * frames), params[1].width, params[1].height);
+}
