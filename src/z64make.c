@@ -1318,6 +1318,23 @@ bool HasFileChangedAmalgamated(const char *filename)
 }
 
 // easy hackaround function for compiling embedded scene functions
+static char *gQueuedSceneFuncs[1024];
+static int gNumQueuedSceneFuncs = 0;
+static void HackCompileSceneFunc(const char *input);
+static void HackQueueSceneFunc(const char *input)
+{
+	gQueuedSceneFuncs[gNumQueuedSceneFuncs++] = strdup(input);
+}
+static void HackCompileAllSceneFuncs(void)
+{
+	for (int i = 0; i < gNumQueuedSceneFuncs; ++i)
+	{
+		char *each = gQueuedSceneFuncs[i];
+		HackCompileSceneFunc(each);
+		free(each);
+	}
+	gNumQueuedSceneFuncs = 0;
+}
 static void HackCompileSceneFunc(const char *input)
 {
 	char *msg;
@@ -1355,7 +1372,7 @@ static void HackCompileSceneFunc(const char *input)
 	
 	// .o -> .elf
 	{
-		exe = Proc_New("%s --emit-relocs -o %s %s -defsym ENTRY_POINT=0x80800000 -Linclude/z64hdr/oot_mq_debug -L include/z64hdr/common/ -T z64hdr_no_bss.ld", Tools_Get(mips64_ld), elfPath, oPath);
+		exe = Proc_New("%s --emit-relocs -o %s %s -defsym ENTRY_POINT=0x80800000 -Linclude/z64hdr/oot_mq_debug -L include/z64hdr/common/ -T z64hdr_no_bss.ld -T include/z_lib_user.ld", Tools_Get(mips64_ld), elfPath, oPath);
 		
 		Proc_SetEnv(exe, Make_EnvironmentPath());
 		Proc_SetEnv(exe, Make_TempPath());
@@ -1394,7 +1411,7 @@ static s32 Callback_Overlay(const char* input, MakeCallType type, const char* ou
 	 // for embedded scene functions
 	if (strstr(input, "/scene/"))
 	{
-		HackCompileSceneFunc(input);
+		HackQueueSceneFunc(input);
 		
 		return CB_BREAK;
 	}
@@ -2513,6 +2530,8 @@ void Make_Code(void) {
 	Parallel_Exec(g64.threadNum);
 	
 	FreeList_Free();
+	
+	HackCompileAllSceneFuncs();
 	
 	if (g64.info) info(
 			"Kaleido: %.4f\n"
