@@ -1,9 +1,10 @@
 #ifndef __ULIB_MACROS_H__
 #define __ULIB_MACROS_H__
 
-#define Asm_VanillaHook(func)                    \
+#define Asm_VanillaHookImpl(func)                \
     asm (".global " "__vanilla_hook_" #func "\n" \
     "__vanilla_hook_" #func " = " #func)
+#define Asm_VanillaHook(func) Asm_VanillaHookImpl(func)
 
 #define CHK_ALL(AB, combo)      (~((gPlayState.state.input[0].AB.button) | ~(combo)) == 0)
 #define CHK_ANY(AB, combo)      (((gPlayState.state.input[0].AB.button) & (combo)) != 0)
