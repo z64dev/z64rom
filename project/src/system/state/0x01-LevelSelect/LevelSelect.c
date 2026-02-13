@@ -61,7 +61,6 @@ void Select_LoadGame(MapSelectState* this, u8 sceneIndex) {
         gSaveContext.magicFillTarget = gSaveContext.magic;
         // Set `magicLevel` and `magic` to 0 so `magicCapacity` then `magic` grows from nothing
         // to respectively the full capacity and `magicFillTarget`
-        gSaveContext.magicCapacity = 0;
         gSaveContext.magicLevel = gSaveContext.magic = 0;
     }
     
